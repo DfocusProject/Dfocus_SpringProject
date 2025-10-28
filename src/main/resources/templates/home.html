@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>홈 | GGM 근태관리 시스템</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:src="@{/js/script.js}" defer></script>
 </head>
-<body>
-    로그인 성공(홈 페이지 입니다)
+
+<body class="sidebar-page">
+
+<!-- sidebar + header 삽입 -->
+<div th:insert="sidebar :: sidebarHeaderAndMenu"></div>
+
+<!-- 메인 콘텐츠 -->
+<main id="main">
+    <div id="main-content">
+        <h2>홈 화면</h2>
+        <p>GGM 근태관리 시스템에 오신 것을 환영합니다.</p>
+    </div>
+</main>
+
 </body>
+
 </html>
