@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>근태관리_로그인</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/login.css">
 </head>
 <body class="login-page"> <!-- body에 고유 클래스 추가 -->
 <div class="login-container">
     <div class="login-box">
-        <img src="../static/images/logo.png" alt="GGM 로고" class="logo" />
+        <img src="/images/logo.png" alt="GGM 로고" class="logo" />
         <h1>ESS시스템</h1>
         <form action="/login" method="post">
             <input type="text" name="empCode" placeholder="ID" required />
@@ -17,17 +18,15 @@
             <button type="submit">Login</button>
         </form>
         <div id="error-message" th:text="${error}" style="display:none;"></div>
-        <script>
-            const error = document.getElementById("error-message").innerText;
-            if (error) {
-                alert(error);
-            }
-        </script>
-
-
     </div>
     <p class="info">본 시스템은 <span>Chrome</span> 브라우저와 <span>1920×1080</span> 해상도에 최적화되어 있습니다.</p>
     <p class="copyright">Copyright © 2020 Gwangju Global Motors Co., Ltd. All Rights Reserved.</p>
 </div>
+<script>
+    const error = document.getElementById("error-message").innerText;
+    if (error) {
+        alert(error);
+    }
+</script>
 </body>
 </html>

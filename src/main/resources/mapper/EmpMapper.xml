@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skuniv.dfocus_project.mapper.EmpMapper">
+
+    <select id="findByDepartmentId" parameterType="String" resultType="com.skuniv.dfocus_project.domain.emp.Emp">
+        SELECT
+            emp_code as empCode,
+            emp_name as empName,
+            social_num as socialNum,
+            gender,
+            enter_date as enterDate,
+            position_code as positionCode,
+            position_date as positionDate,
+            duty_code as dutyCode,
+            duty_date as dutyDate,
+            dept_code as deptCode,
+            retire_date as retireDate,
+            retire_reason as retireReason,
+            work_pattern_code as workPatternCode
+        FROM WEBEMPINFO
+        WHERE dept_code = #{deptCode}
+    </select>
+    <update id="deleteEmpFromDept" parameterType="map">
+        UPDATE WEBEMPINFO
+        SET dept_code = NULL
+        WHERE emp_code IN
+        <foreach collection="empCodes" item="code" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </update>
+
+    <update id="updateDeptCode" parameterType="map">
+        UPDATE WEBEMPINFO
+        SET dept_code = #{newDeptCode}
+        WHERE emp_code IN
+        <foreach item="empCode" collection="empCodes" open="(" separator="," close=")">
+            #{empCode}
+        </foreach>
+    </update>
+    <select id="findEmpNoDept" parameterType="String" resultType="com.skuniv.dfocus_project.dto.EmpDto">
+        SELECT
+            emp_code AS empCode,
+            emp_name AS empName,
+            position_code AS positionCode,
+            dept_code AS deptCode,
+            work_pattern_code AS workPatternCode
+        FROM WEBEMPINFO
+        WHERE dept_code is null or dept_code = ''
+        ORDER BY emp_name
+    </select>
+    <update id="assignDept" parameterType="map">
+        UPDATE WEBEMPINFO
+        SET dept_code = #{deptCode}
+        WHERE emp_code IN
+        <foreach item="empCode" collection="empCodes" open="(" separator="," close=")">
+            #{empCode}
+        </foreach>
+    </update>
+</mapper>

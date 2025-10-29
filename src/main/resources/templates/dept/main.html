@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부서 관리</title>
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/dept.css" />
+
+</head>
+<body>
+<div th:replace="~{ header.html::header}"></div>
+
+<main>
+    <div th:replace="~{ sidebar.html::sidebar}"></div>
+    <div class="container">
+        <div class="header">
+            <h1>부서 관리</h1>
+            <a href="/dept/create">
+                <button class="create-btn">부서 생성</button>
+            </a>
+        </div>
+        <div class="tree-container">
+            <ul class="tree">
+                <th:block th:replace="~{::departmentNode(${rootDepartment})}"></th:block>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<th:block th:fragment="departmentNode(dept)">
+    <!-- 재귀 구조라서 하위부서로 내려오다가 dept에 null들어갈 수 있음 조건 검사 안하면 에러남 ㅎㅎ -->
+    <li class="tree-item" th:if="${dept != null}">
+        <div class="tree-toggle" onclick="toggleNode(this)">
+            <span class="toggle-icon" th:if="${!#lists.isEmpty(dept.children)}">▶</span>
+            <span class="department-icon">📁</span>
+            <a th:href="@{/dept/detail(id=${dept.deptCode})}"
+               class="department-link"
+               th:text="${dept.deptName}">부서명</a>
+        </div>
+
+        <!-- 하위 부서 재귀 호출 -->
+        <!-- 여기서 null 검사하면 안되나? -->
+        <ul class="children" th:if="${!#lists.isEmpty(dept.children)}">
+            <th:block th:each="child : ${dept.children}">
+                <th:block th:replace="~{::departmentNode(${child})}"></th:block>
+            </th:block>
+        </ul>
+    </li>
+</th:block>
+
+<script th:src="@{/js/dept.js}"></script>
+<script th:src="@{/js/script.js}"></script>
+
+</body>
+</html>

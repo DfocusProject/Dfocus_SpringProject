@@ -1,0 +1,339 @@
+/**************************************
+ * 🔷 부서 페이지 전용 스타일
+ * common.css를 먼저 로드한 후 이 파일을 로드하세요
+ **************************************/
+
+/* 부서 메인 페이지 헤더 */
+.header {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #212529;
+}
+
+.create-btn {
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.create-btn:hover {
+    background: #e9ecef;
+}
+
+/* 트리 구조 */
+.tree-container {
+    padding: 20px;
+    margin: 10px;
+}
+
+.tree {
+    list-style: none;
+}
+
+.tree ul {
+    list-style: none;
+    padding-left: 25px;
+    margin-top: 2px;
+}
+
+.tree-item {
+    margin: 2px 0;
+}
+
+.tree-toggle {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 6px;
+    width: 100%;
+}
+
+.tree-toggle:hover {
+    background: #f5f5f5;
+}
+
+.toggle-icon {
+    display: inline-block;
+    width: 16px;
+    font-size: 11px;
+    color: #666;
+    transform: rotate(90deg);
+}
+
+.toggle-icon.collapsed {
+    transform: rotate(0deg);
+}
+
+.department-icon {
+    color: #666;
+    margin-right: 5px;
+    font-size: 13px;
+}
+
+.person-icon {
+    color: #999;
+    margin-right: 5px;
+    font-size: 13px;
+}
+
+.department-link {
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 17px;
+    flex: 1;
+    font-weight: 500;
+}
+
+.department-link:hover {
+    text-decoration: underline;
+}
+
+.employee-link {
+    color: #333;
+    text-decoration: none;
+    font-size: 13px;
+    flex: 1;
+}
+
+.employee-link:hover {
+    text-decoration: underline;
+}
+
+.employee-id {
+    color: #666;
+    font-size: 12px;
+}
+
+.children {
+    display: block;
+}
+
+.children.hide {
+    display: none;
+}
+
+.no-children {
+    width: 16px;
+    display: inline-block;
+}
+
+/* 부서 상세 페이지 */
+.dept-detail-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    height: calc(100vh - 140px);
+}
+
+.dept-info {
+    flex: 1;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    overflow-y: auto;
+}
+
+.dept-info h2 {
+    margin-bottom: 15px;
+    color: #333;
+    border-bottom: 2px solid #4a90e2;
+    padding-bottom: 5px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.info-item label {
+    font-weight: bold;
+    color: #555;
+}
+
+.info-item span {
+    color: #222;
+}
+
+.info-item span.used {
+    color: green;
+    font-weight: bold;
+}
+
+.info-item span.not-used {
+    color: red;
+    font-weight: bold;
+}
+
+.dept-side {
+    flex: 2;
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.dept-side form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 10px;
+    flex: 1;
+}
+
+.member-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.member-section h3 {
+    color: #333;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.no-dept-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-top: 2px solid #dee2e6;
+    padding-top: 10px;
+}
+
+.no-dept-section h3 {
+    color: #333;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.emp-actions {
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+#moveDeptSelect {
+    flex-shrink: 0;
+}
+
+.table-scroll {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.emp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.emp-table th,
+.emp-table td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+}
+
+.emp-table th {
+    background-color: #f0f0f0;
+    color: #333;
+    text-align: left;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.emp-table tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* 부서 생성 페이지 */
+.container h2 {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    padding: 15px 20px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #212529;
+}
+
+.container form {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    padding: 20px 30px;
+    gap: 3px;
+}
+
+.container form label {
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+    margin-top: 10px;
+    margin-bottom: 3px;
+}
+
+.container form label:first-of-type {
+    margin-top: 0;
+}
+
+.container form input[type="text"],
+.container form input[type="date"],
+.container form select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.container form label[for="useYn"] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.container form input[type="checkbox"] {
+    width: auto;
+    cursor: pointer;
+}
+
+.container form button[type="submit"] {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #0066b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    width: fit-content;
+    font-weight: bold;
+}
+
+.container form button[type="submit"]:hover {
+    background-color: #004d8a;
+}

@@ -1,56 +1,12 @@
-<!DOCTYPE html>
-<html lang="ko">
-
-<head>
-    <meta charset="UTF-8">
-    <title>GGM 근태관리 시스템</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
-    <script src="../static/js/script.js" defer></script>
-</head>
-
-<body class="sidebar-page">
-
-<!-- 사이드바 -->
-<div id="sideBar" class="sidebar">
-    <div class="sidebar-header">
-
+<div th:fragment="sidebar">
+    <div id="sideBar" class="sidebar">
+        <a th:href="@{/dept/main}">부서 관리</a>
+        <a th:href="@{/pattern/main}">근태 패턴</a>
+        <button class="dropdown-btn">근태신청 및 내역</button>
+        <div class="dropdown-container">
+            <a href="#">일반근태 신청</a>
+            <a href="#">기타근태 신청</a>
+        </div>
+        <a href="#">일근태 승인</a>
     </div>
-
-    <!-- 근태패턴 -->
-    <a href="#" onclick="loadPage('attPattern/pattern.html', this)">근태패턴</a>
-
-    <!-- 부서관리 -->
-    <a href="#" onclick="loadPage('deptManage/main.html', this)">부서 관리</a>
-
-    <!-- 근태신청 및 내역 -->
-    <button class="dropdown-btn">근태신청 및 내역</button>
-    <div class="dropdown-container">
-        <a href="#" onclick="loadPage('att/basic.html', this)">일반근태 신청</a>
-        <a href="#" onclick="loadPage('att/etc.html', this)">기타근태 신청</a>
-    </div>
-
-    <!-- 일근태 승인 -->
-    <a href="#" onclick="loadPage('home.html', this)">일근태 승인</a>
 </div>
-
-<!-- 상단 헤더 -->
-<header class="top-header">
-    <div class="header-left">
-        <img src="../static/images/logo2.png" alt="회사 로고" class="sidebar-logo" />
-        <h1>ESS</h1>
-    </div>
-    <div class="header-right">
-        <span class="user-info">홍길동</span>
-    </div>
-</header>
-
-<!-- 메인 콘텐츠 -->
-<main id="main">
-    <div id="main-content">
-        <!-- 페이지 컨텐츠가 여기에 로드됩니다 -->
-    </div>
-</main>
-
-</body>
-
-</html>

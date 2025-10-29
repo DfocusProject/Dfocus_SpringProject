@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>부서 상세 정보</title>
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/dept.css" />
+</head>
+<body>
+<div th:replace="~{ header.html::header}"></div>
+<main>
+    <div th:replace="~{ sidebar.html::sidebar}"></div>
+    <div class="container">
+        <div class="dept-detail-container">
+            <!-- 왼쪽: 부서 상세 -->
+            <div class="dept-info">
+                <h2 th:utext="${dept.deptName} + '<br/>부서 상세 정보'">부서 상세 정보</h2>
+
+                <div class="info-item">
+                    <label>부서 코드</label>
+                    <span th:text="${dept.deptCode}">D001</span>
+                </div>
+
+                <div class="info-item">
+                    <label>상위 부서</label>
+                    <span th:text="${dept.parentDept}">경영본부</span>
+                </div>
+
+                <div class="info-item">
+                    <label>현재 리더</label>
+                    <span th:text="${dept.deptLeader}">홍길동</span>
+                </div>
+
+                <div class="info-item">
+                    <label>카테고리</label>
+                    <span th:text="${dept.deptCategory}">팀</span>
+                </div>
+
+                <div class="info-item">
+                    <label>부서 시작일</label>
+                    <span th:text="${dept.startDate}">2023-01-01</span>
+                </div>
+
+                <div class="info-item">
+                    <label>사용 여부</label>
+                    <span th:text="${dept.useYn == 'Y' ? '사용 중' : '미사용'}"
+                          th:classappend="${dept.useYn == 'Y' ? 'used' : 'not-used'}">
+                        사용 중
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <label>근태 패턴 코드</label>
+                    <span th:text="${dept.workPattern}">A1001</span>
+                </div>
+            </div>
+
+            <!-- 오른쪽: 구성원 목록 -->
+            <div class="dept-side">
+                <form th:action="@{/dept/empAction}" method="post">
+                    <input type="hidden" name="deptCode" th:value="${dept.deptCode}" />
+
+                    <!-- 상단 섹션: 부서 구성원 -->
+                    <div class="member-section">
+                        <h3>부서 구성원</h3>
+
+                        <div class="emp-actions">
+                            <button type="submit" name="action" value="delete">부서에서 삭제</button>
+                            <button type="submit" name="action" value="setLeader">리더로 지정</button>
+                            <button type="button" id="moveDeptBtn">다른 부서로 이동</button>
+                        </div>
+
+                        <!-- 부서 이동 선택 영역 (숨김) -->
+                        <div id="moveDeptSelect" style="display: none; margin-bottom: 10px;">
+                            <label for="newDept">이동할 부서 선택:</label>
+                            <select name="newDeptCode" id="newDept" required>
+                                <option th:each="d : ${allDepts}" th:value="${d.deptCode}" th:text="${d.deptName}">부서명</option>
+                            </select>
+                            <button type="submit" name="action" value="moveDept">이동 실행</button>
+                        </div>
+
+                        <!-- 스크롤 영역 -->
+                        <div class="table-scroll">
+                            <table class="emp-table">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>사원 코드</th>
+                                    <th>사원 이름</th>
+                                    <th>직위 코드</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="emp : ${emps}">
+                                    <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
+                                    <td th:text="${emp.empCode}">E001</td>
+                                    <td th:text="${emp.empName}">홍길동</td>
+                                    <td th:text="${emp.positionCode}">P1001</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 하단 섹션: 부서 미배정 사원 -->
+                    <div class="no-dept-section">
+                        <h3>부서 미배정 사원</h3>
+
+                        <div class="emp-actions">
+                            <button type="submit" name="action" value="assignDept">이 부서로 배정</button>
+                        </div>
+
+                        <!-- 스크롤 영역 -->
+                        <div class="table-scroll">
+                            <table class="emp-table">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>사원 코드</th>
+                                    <th>사원 이름</th>
+                                    <th>직위 코드</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="emp : ${empsNoDept}">
+                                    <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
+                                    <td th:text="${emp.empCode}">E999</td>
+                                    <td th:text="${emp.empName}">김무소속</td>
+                                    <td th:text="${emp.positionCode}">P0000</td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(empsNoDept)}">
+                                    <td colspan="4" style="text-align:center;">모든 사원이 부서에 배정되어 있습니다.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    const moveBtn = document.getElementById('moveDeptBtn');
+    const moveSelect = document.getElementById('moveDeptSelect');
+
+    moveBtn.addEventListener('click', () => {
+        moveSelect.style.display = moveSelect.style.display === 'none' ? 'block' : 'none';
+    });
+</script>
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>

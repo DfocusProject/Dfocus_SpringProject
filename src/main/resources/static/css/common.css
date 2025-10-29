@@ -1,0 +1,223 @@
+/**************************************
+ * 🔷 전역 스타일 (모든 페이지 공통)
+ **************************************/
+* {
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+
+body, button, input, select, textarea {
+    font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    background-color: #f4f6f8;
+    height: 100%;
+    /*padding: 100px 20px 60px 220px;*/
+}
+
+main {
+    display: flex;
+    height: calc(100% - 80px);
+}
+
+/**************************************
+ * 🔷 상단바 (헤더)
+ **************************************/
+.top-header {
+    /*position: fixed;*/
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #0066b3;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-left img {
+    height: 40px;
+}
+
+.header-left h1 {
+    font-size: 50px;
+    margin: 0;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/**************************************
+ * 🔷 사이드바
+ **************************************/
+.sidebar {
+    /*position: fixed;*/
+    top: 60px;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    background-color: #2b2f33;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    z-index: 900;
+}
+
+.sidebar-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar-logo {
+    width: 120px;
+}
+
+.sidebar a,
+.sidebar .dropdown-btn {
+    padding: 8px 35px 8px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    color: #fff;
+    display: block;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    transition: 0.3s;
+    position: relative;
+    font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+}
+
+.sidebar a:hover,
+.sidebar .dropdown-btn:hover {
+    color: #a9cfe2;
+}
+
+.active-menu {
+    background-color: #1e1f22;
+    color: #a9cfe2 !important;
+    border-radius: 4px;
+}
+
+.sidebar .dropdown-btn::after {
+    content: "▼";
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%) rotate(0deg);
+    transition: transform 0.3s ease;
+    font-size: 14px;
+    color: #a9cfe2;
+}
+
+.sidebar .dropdown-btn.active::after {
+    transform: translateY(-50%) rotate(180deg);
+    color: #a9cfe2;
+}
+
+.sidebar .dropdown-container {
+    display: none;
+    background-color: #242a2f;
+    padding-left: 15px;
+}
+
+.sidebar .dropdown-container a {
+    font-size: 14px;
+    padding: 6px 8px 6px 20px;
+}
+
+/**************************************
+ * 🔷 공통 컨테이너
+ **************************************/
+.container {
+    flex: 1 1 0%;
+    height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    border: 1px solid #ccc;
+    overflow-x: auto;
+}
+
+/**************************************
+ * 🔷 공통 폼 요소
+ **************************************/
+input[type="text"],
+input[type="date"],
+select {
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+select:focus {
+    border-color: #0066b3;
+    box-shadow: 0 0 5px rgba(0, 102, 179, 0.3);
+}
+
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #8c8c8c;
+    border: 1px solid #7a7a7a;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+}
+
+button:hover {
+    background-color: #707070;
+}
+
+/**************************************
+ * 🔷 공통 테이블
+ **************************************/
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
+    color: #333;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #fafafa;
+}
