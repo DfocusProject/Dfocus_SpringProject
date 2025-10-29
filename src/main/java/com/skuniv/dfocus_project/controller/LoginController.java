@@ -16,7 +16,7 @@ public class LoginController {
         this.accountService = accountService;
     }
 
-    @GetMapping("/login")
+    @GetMapping({"/", "/login"})
     public String loginForm() {
         return "login"; // login.html
     }
@@ -30,14 +30,13 @@ public class LoginController {
         Account account = accountService.login(empCode, password);
         if (account != null) {
             session.setAttribute("loginAccount", account);
-            return "redirect:/home";
+            return "redirect:/dept/main";
         } else {
             model.addAttribute("error", "사번 또는 비밀번호가 일치하지 않습니다.");
             //여기 model에 들어있는 거 FE에서 받아서 화면에 출력해야 됨 !!
             return "login";
         }
     }
-
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>근태패턴별 캘린더</title>
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/pattern.css" />
+</head>
+<body>
+<div th:replace="~{ header.html::header}"></div>
+
+<main>
+    <div th:replace="~{ sidebar.html::sidebar}"></div>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <h2>🏢 근태패턴별 캘린더</h2>
+                <button type="button" id="addPatternBtn">➕ 패턴 추가</button>
+            </div>
+            <form th:action="@{/pattern/main}" method="get" id="searchForm">
+                <label>조회월:</label>
+                <input type="month" name="yearMonth" th:value="${selectedYearMonth}">
+                <label>패턴명:</label>
+                <input name="pattern">
+                <button type="submit">🔍 조회</button>
+            </form>
+        </div>
+
+        <div class="main-content">
+            <form th:action="@{/pattern/save}" method="post" class="calendar-form">
+                <div class="calendar-container">
+                    <table id="patternTable">
+                        <thead>
+                        <tr>
+                            <th class="pattern-header">근태패턴</th>
+                            <th th:each="date : ${dates}" class="date-header"
+                                th:classappend="${date.dayOfWeek.value >= 6} ? 'weekend' : ''"
+                                th:data-full-date="${date}">
+                                <div class="date-header-date" th:text="${#numbers.formatInteger(date.dayOfMonth,2)} + '일'">01일</div>
+                                <div class="date-header-day"
+                                     th:text="'(' + ${date.dayOfWeek.toString().substring(0,3)} + ')'">(MON)</div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody id="patternBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="actions">
+                    <button type="submit">💾 저장</button>
+                </div>
+            </form>
+
+            <!-- 근태코드 패널 -->
+            <div class="code-panel">
+                <h3>📋 근태코드 목록</h3>
+                <table class="code-table">
+                    <thead>
+                    <tr>
+                        <th>코드</th>
+                        <th>근태명</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="shift : ${shiftTypes}">
+                        <td th:text="${shift.shiftCode}">00</td>
+                        <td th:text="${shift.shiftName}">정상근무</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const addBtn = document.getElementById("addPatternBtn");
+        const tbody = document.getElementById("patternBody");
+
+        addBtn.addEventListener("click", () => {
+            const dateHeaders = document.querySelectorAll(".date-header");
+            const tr = document.createElement("tr");
+
+            // 패턴명
+            const nameTd = document.createElement("td");
+            const nameInput = document.createElement("input");
+            nameInput.type = "text";
+            nameInput.name = "patternName";
+            nameInput.placeholder = "패턴명";
+            nameTd.appendChild(nameInput);
+            tr.appendChild(nameTd);
+
+            // 날짜별 코드
+            dateHeaders.forEach(header => {
+                const td = document.createElement("td");
+                const codeInput = document.createElement("input");
+                codeInput.type = "text";
+
+                const fullDate = header.dataset.fullDate;
+                codeInput.name = `dateCodeMap[${fullDate}]`;
+
+                // input 이벤트 리스너 추가
+                codeInput.addEventListener("input", function() {
+                    applyCodeColor(this);
+                });
+
+                td.appendChild(codeInput);
+                tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+        });
+
+        // 색상 적용 함수
+        function applyCodeColor(input) {
+            const td = input.parentElement;
+            const value = input.value.trim().toUpperCase();
+
+            // 기존 code 클래스 모두 제거
+            td.className = td.className.split(' ').filter(c => !c.startsWith('code-')).join(' ');
+
+            if (value) {
+                td.classList.add(`code-${value}`);
+                console.log(`Applied class: code-${value}`); // 디버깅용
+            }
+        }
+
+        // 페이지 로드 시 기존 input들에도 이벤트 리스너 추가
+        document.querySelectorAll('input[name^="dateCodeMap"]').forEach(input => {
+            input.addEventListener("input", function() {
+                applyCodeColor(this);
+            });
+            // 이미 값이 있으면 색상 적용
+            if (input.value) {
+                applyCodeColor(input);
+            }
+        });
+
+        // 근태코드 패널에 색상 적용
+        document.querySelectorAll('.code-table tbody tr').forEach(row => {
+            const codeCell = row.cells[0];
+            if (codeCell) {
+                const code = codeCell.textContent.trim();
+                codeCell.classList.add(`code-${code}`);
+            }
+        });
+    });
+</script>
+<script th:src="@{/js/script.js}"></script>
+
+</body>
+</html>
