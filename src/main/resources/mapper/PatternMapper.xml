@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skuniv.dfocus_project.mapper.PatternMapper">
+
+    <select id="selectAllShiftTypes" parameterType="String" resultType="com.skuniv.dfocus_project.domain.pattern.ShiftType">
+        SELECT
+            shift_code AS shiftCode,
+            shift_name AS shiftName
+        FROM WEBSHIFTTYPE
+        ORDER BY shift_code
+    </select>
+    <insert id="insertPattern" parameterType="string">
+        INSERT INTO WEBWORKPATTERN (work_pattern_code)
+        VALUES (#{patternName})
+    </insert>
+    <insert id="insertPatternDetail" parameterType="map">
+        INSERT INTO WEBWORKPATTERNDETAIL (work_pattern_code, work_date, shift_code)
+        VALUES (#{patternName}, #{date}, #{code})
+    </insert>
+</mapper>
