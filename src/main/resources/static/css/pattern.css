@@ -1,0 +1,271 @@
+/**************************************
+ * 🔷 근태 패턴 페이지 전용 스타일
+ * common.css를 먼저 로드한 후 이 파일을 로드하세요
+ **************************************/
+
+/* pattern 페이지 전용 container 오버라이드 */
+.container {
+    max-width: none !important;
+    width: 100%;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    background: #e8e8e8;
+    padding: 15px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.header h2 {
+    font-size: 16px;
+    margin: 0;
+}
+
+#addPatternBtn {
+    padding: 6px 14px;
+    border: 1px solid #000;
+    background: white;
+    color: #000;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 0;
+}
+
+#addPatternBtn:hover {
+    background: #f0f0f0;
+}
+
+.header form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.header form label {
+    font-size: 13px;
+}
+
+.header form input {
+    padding: 4px 8px;
+    border: 1px solid #aaa;
+    font-size: 13px;
+}
+
+.header form button {
+    padding: 6px 20px;
+    border: 1px solid #000;
+    background: white;
+    color: #000;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 0;
+    margin-right: 10px;
+}
+
+.header form button:hover {
+    background: #f0f0f0;
+}
+
+/* 메인 컨텐츠 레이아웃 */
+.main-content {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+    padding: 0 10px 10px 10px;
+}
+
+.calendar-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.calendar-container {
+    flex: 1;
+    background: white;
+    border: 1px solid #ccc;
+    overflow: auto;
+}
+
+table {
+    border-collapse: collapse;
+    width: 150%;
+    table-layout: fixed;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 10px 5px;
+    font-size: 12px;
+    width: 40px;
+}
+
+thead th {
+    background: #f5f5f5;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.pattern-header {
+    min-width: 100px;
+    width: 100px;
+    border-right: 2px solid #999;
+}
+
+tbody td:first-child {
+    background: #fafafa !important;
+    font-weight: normal;
+    text-align: left;
+    padding-left: 15px;
+    border-right: 2px solid #999;
+    min-width: 100px;
+    width: 100px;
+}
+
+.date-header {
+    font-size: 10px;
+}
+
+.date-header-date {
+    font-weight: bold;
+}
+
+.date-header-day {
+    color: #666;
+}
+
+/* 테이블 내부 input 스타일 */
+table input[type="text"] {
+    width: 100%;
+    height: 100%;
+    border: none;
+    padding: 6px;
+    font-size: 12px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+table input[type="text"]:focus {
+    outline: 2px solid #4a90e2;
+    background: #fffacd;
+}
+
+/* 패턴명 입력칸 */
+tbody td:first-child input {
+    text-align: left;
+    padding-left: 15px;
+    font-size: 13px;
+}
+
+/* 코드 입력칸 */
+table input[name^="dateCodeMap"] {
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* 근태 코드별 색상 (메인 테이블 + 코드 패널 공통) */
+.code-00, .code-00 input, .code-table .code-00 { background: #a8d5ff !important; }
+.code-05, .code-05 input, .code-table .code-05 { background: white !important; }
+.code-05-A, .code-05-A input, .code-table .code-05-A { background: #f0f0f0 !important; }
+.code-06, .code-06 input, .code-table .code-06 { background: #e8e8e8 !important; }
+.code-10, .code-10 input, .code-table .code-10 { background: #d4f4ff !important; }
+.code-12, .code-12 input, .code-table .code-12 { background: #ffb8b8 !important; }
+.code-13, .code-13 input, .code-table .code-13 { background: #ffe0b8 !important; }
+.code-14-1, .code-14-1 input, .code-table .code-14-1 { background: #ffcccc !important; }
+.code-31, .code-31 input, .code-table .code-31 { background: #fff4b8 !important; }
+.code-32, .code-32 input, .code-table .code-32 { background: #fffacd !important; }
+.code-33, .code-33 input, .code-table .code-33 { background: #ffeb9c !important; }
+.code-45, .code-45 input, .code-table .code-45 { background: #ffd4d4 !important; }
+.code-46, .code-46 input, .code-table .code-46 { background: #ffe8cc !important; }
+.code-61, .code-61 input, .code-table .code-61 { background: #b8e6b8 !important; }
+.code-62, .code-62 input, .code-table .code-62 { background: #c8f0c8 !important; }
+.code-64, .code-64 input, .code-table .code-64 { background: #d4e4f7 !important; }
+.code-65, .code-65 input, .code-table .code-65 { background: #e0ecff !important; }
+
+.weekend { background: #ffe4e4; }
+
+/* 근태코드 패널 */
+.code-panel {
+    flex-shrink: 0;
+    width: 200px;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.code-panel h3 {
+    font-size: 13px;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.code-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.code-table thead th {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 4px;
+    font-size: 11px;
+}
+
+.code-table tbody td {
+    border: 1px solid #ddd;
+    padding: 3px 4px;
+    text-align: center;
+}
+
+.code-table tbody td:first-child {
+    width: 40px;
+    font-weight: bold;
+    text-align: center;
+    padding-left: 4px;
+    border-right: 1px solid #ddd;
+    min-width: auto;
+}
+
+.code-table tbody td:last-child {
+    text-align: left;
+}
+
+.actions {
+    margin-top: 10px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.actions button {
+    padding: 8px 20px;
+    border: 1px solid #000;
+    background: white;
+    color: #000;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 0;
+}
+
+.actions button:hover {
+    background: #f0f0f0;
+}
