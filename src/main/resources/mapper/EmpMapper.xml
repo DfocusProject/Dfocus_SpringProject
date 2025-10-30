@@ -16,9 +16,8 @@
             duty_code as dutyCode,
             duty_date as dutyDate,
             dept_code as deptCode,
-            retire_date as retireDate,
-            retire_reason as retireReason,
-            work_pattern_code as workPatternCode
+            work_pattern_code as workPatternCode,
+            status
         FROM WEBEMPINFO
         WHERE dept_code = #{deptCode}
     </select>
@@ -58,4 +57,10 @@
             #{empCode}
         </foreach>
     </update>
+    <update id="setPattern" parameterType="map">
+        UPDATE WEBEMPINFO
+        SET work_pattern_code = #{patternCode}
+        WHERE dept_code = #{deptCode}
+    </update>
+
 </mapper>

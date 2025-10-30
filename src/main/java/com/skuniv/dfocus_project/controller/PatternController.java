@@ -1,9 +1,10 @@
 package com.skuniv.dfocus_project.controller;
 
-import com.skuniv.dfocus_project.domain.pattern.PatternForm;
+import com.skuniv.dfocus_project.domain.pattern.Pattern;
 import com.skuniv.dfocus_project.domain.pattern.ShiftType;
 import com.skuniv.dfocus_project.service.PatternService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,11 +14,11 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/pattern")
 public class PatternController {
+
     private final PatternService patternService;
 
     @GetMapping("/main")
@@ -36,7 +37,12 @@ public class PatternController {
         for (int i = 1; i <= lengthOfMonth; i++) {
             dates.add(start.withDayOfMonth(i));
         }
+
         List<ShiftType> shiftTypes = patternService.getShiftTypes();
+
+        // ★ 여기서 패턴 조회 필요
+        List<Pattern> patternList = patternService.getAllPatterns(); // Service에 메서드 추가
+        model.addAttribute("patternList", patternList);
 
         model.addAttribute("shiftTypes", shiftTypes);
         model.addAttribute("dates", dates);
@@ -47,11 +53,10 @@ public class PatternController {
         return "pattern/main";
     }
 
+
     @PostMapping("/save")
-    public String savePatterns(@ModelAttribute PatternForm form) {
-
+    public String savePatterns(@ModelAttribute Pattern form) {
         patternService.savePattern(form);
-
-        return "redirect:/pattern/main"; // 저장 후 다시 화면으로
+        return "redirect:/pattern/main";
     }
 }

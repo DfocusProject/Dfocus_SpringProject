@@ -32,4 +32,8 @@ public class EmpService {
     public void assignEmployeesToDept(List<String> empCodes, String deptCode) {
         empMapper.assignDept(empCodes, deptCode);
     }
+
+    public void setPattern(String deptCode, String patternCode) {
+        empMapper.setPattern(deptCode, patternCode);
+    }
 }

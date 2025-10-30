@@ -19,4 +19,37 @@
         INSERT INTO WEBWORKPATTERNDETAIL (work_pattern_code, work_date, shift_code)
         VALUES (#{patternName}, #{date}, #{code})
     </insert>
+    <select id="selectAllPatternNames" resultType="string">
+        SELECT work_pattern_code
+        FROM WEBWORKPATTERN
+    </select>
+    <!-- 패턴 리스트 조회 -->
+    <select id="selectPatternList" resultMap="PatternResultMap" parameterType="string">
+        SELECT
+            p.work_pattern_code AS pattern_name,
+            pd.work_date,
+            pd.shift_code
+        FROM WEBWORKPATTERN p
+                 LEFT JOIN WEBWORKPATTERNDETAIL pd
+                           ON p.work_pattern_code = pd.work_pattern_code
+        WHERE p.work_pattern_code = #{patternName}
+    </select>
+
+
+    <!-- 결과 매핑 -->
+    <resultMap id="PatternResultMap" type="com.skuniv.dfocus_project.domain.pattern.Pattern">
+        <id property="patternName" column="pattern_name"/>
+        <collection property="dateShiftList" ofType="com.skuniv.dfocus_project.dto.DateShiftDto">
+            <id property="date" column="work_date"/>
+            <result property="shiftCode" column="shift_code"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectDeptsByPattern" resultType="string">
+        SELECT dept_code
+        FROM WEBDEPTINFO
+        WHERE work_pattern = #{patternName}
+    </select>
+
+
 </mapper>

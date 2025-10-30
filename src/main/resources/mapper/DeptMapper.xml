@@ -70,10 +70,21 @@
         WHERE dept_code = #{deptCode}
         ORDER BY emp_name
     </select>
+    <select id="getDeptByEmpCode" parameterType="String" resultType="com.skuniv.dfocus_project.dto.DeptDto">
+        SELECT d.dept_code AS deptCode,
+               d.dept_name AS deptName
+        FROM WEBEMPINFO e
+                 JOIN WEBDEPTINFO d ON e.dept_code = d.dept_code
+        WHERE e.emp_code = #{empCode}
+    </select>
     <update id="updateDeptLeader" parameterType="map">
         UPDATE WEBDEPTINFO
         SET dept_leader = #{emp}
         WHERE dept_code = #{deptCode}
     </update>
-
+    <update id="savePattern">
+        UPDATE WEBDEPTINFO
+        SET work_pattern = #{patternCode}
+        WHERE dept_code = #{deptCode}
+    </update>
 </mapper>

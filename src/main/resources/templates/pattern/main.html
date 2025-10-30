@@ -43,7 +43,17 @@
                         </tr>
                         </thead>
                         <tbody id="patternBody">
+                        <tr th:each="pattern : ${patternList}">
+                            <!-- 패턴명 -->
+                            <td th:text="${pattern.patternName}">패턴명</td>
+
+                            <!-- 날짜별 근무코드 -->
+                            <td th:each="date : ${dates}"
+                                th:text="${pattern.dateCodeMap[date.toString()]}">코드</td>
+
+                        </tr>
                         </tbody>
+
                     </table>
                 </div>
 

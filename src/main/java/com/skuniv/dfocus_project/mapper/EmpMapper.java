@@ -17,4 +17,6 @@ public interface EmpMapper {
     List<EmpDto> findEmpNoDept();
 
     void assignDept(List<String> empCodes, String deptCode);
+
+    void setPattern(String deptCode, String patternCode);
 }

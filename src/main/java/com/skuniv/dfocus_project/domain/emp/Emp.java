@@ -16,7 +16,6 @@ public class Emp {
     String dutyCode;
     String dutyDate;
     String deptCode;
-    String retireDate;
-    String retireReason;
     String workPatternCode;
+    String status;
 }
