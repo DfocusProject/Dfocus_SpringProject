@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequiredArgsConstructor
@@ -44,7 +45,14 @@ public class AttController {
             redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
             return "redirect:/"; // 로그인 필요 시 홈으로 리다이렉트
         }
-
         return "att/general";
+    }
+    @GetMapping("/search")
+    public String search(@RequestParam String attType,
+                         @RequestParam String workDate,
+                         @RequestParam(required = false) String empCode,
+                         @RequestParam String deptName) {
+
+        return "redirect:/att/general";
     }
 }

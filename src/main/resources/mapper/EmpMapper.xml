@@ -40,15 +40,19 @@
     </update>
     <select id="findEmpNoDept" parameterType="String" resultType="com.skuniv.dfocus_project.dto.EmpDto">
         SELECT
-            emp_code AS empCode,
-            emp_name AS empName,
-            position_code AS positionCode,
-            dept_code AS deptCode,
-            work_pattern_code AS workPatternCode
-        FROM WEBEMPINFO
+            e.emp_code AS empCode,
+            e.emp_name AS empName,
+            p.position_name AS positionName,
+            e.dept_code AS deptCode,
+            e.work_pattern_code AS workPatternCode
+        FROM WEBEMPINFO e
+                 LEFT JOIN WEBPOSITIONINFO p
+                           ON e.position_code = p.position_code
         WHERE dept_code is null or dept_code = ''
-        ORDER BY emp_name
+        ORDER BY e.emp_name;
     </select>
+
+
     <update id="assignDept" parameterType="map">
         UPDATE WEBEMPINFO
         SET dept_code = #{deptCode}

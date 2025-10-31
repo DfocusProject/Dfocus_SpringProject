@@ -8,7 +8,7 @@ import lombok.Setter;
 public class EmpDto {
     String empCode;
     String empName;
-    String positionCode;
+    String positionName;
     String deptCode;
     String workPatternCode;
 }

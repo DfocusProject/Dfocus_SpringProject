@@ -59,17 +59,21 @@
         FROM WEBDEPTINFO
         WHERE dept_code = #{deptCode}
     </select>
+
     <select id="findAllEmpByDeptCode" parameterType="String" resultType="com.skuniv.dfocus_project.dto.EmpDto">
         SELECT
-            emp_code AS empCode,
-            emp_name AS empName,
-            position_code AS positionCode,
-            dept_code AS deptCode,
-            work_pattern_code AS workPatternCode
-        FROM WEBEMPINFO
-        WHERE dept_code = #{deptCode}
-        ORDER BY emp_name
+            e.emp_code AS empCode,
+            e.emp_name AS empName,
+            p.position_name AS positionName,   <!-- position_name으로 변경 -->
+            e.dept_code AS deptCode,
+            e.work_pattern_code AS workPatternCode
+        FROM WEBEMPINFO e
+        LEFT JOIN WEBPOSITIONINFO p
+        ON e.position_code = p.position_code
+        WHERE e.dept_code = #{deptCode}
+        ORDER BY e.emp_name
     </select>
+
     <select id="getDeptByEmpCode" parameterType="String" resultType="com.skuniv.dfocus_project.dto.DeptDto">
         SELECT d.dept_code AS deptCode,
                d.dept_name AS deptName
