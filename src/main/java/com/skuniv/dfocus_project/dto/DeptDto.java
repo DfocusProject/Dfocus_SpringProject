@@ -5,10 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EmpDto {
-    String empCode;
-    String empName;
-    String positionName;
+public class DeptDto {
     String deptCode;
-    String workPatternCode;
+    String deptName;
 }

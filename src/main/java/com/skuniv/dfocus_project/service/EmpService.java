@@ -1,5 +1,6 @@
 package com.skuniv.dfocus_project.service;
 
+import com.skuniv.dfocus_project.dto.AttEmpDto;
 import com.skuniv.dfocus_project.dto.EmpDto;
 import com.skuniv.dfocus_project.mapper.DeptMapper;
 import com.skuniv.dfocus_project.mapper.EmpMapper;
@@ -31,5 +32,13 @@ public class EmpService {
 
     public void assignEmployeesToDept(List<String> empCodes, String deptCode) {
         empMapper.assignDept(empCodes, deptCode);
+    }
+
+    public void setPattern(String deptCode, String patternCode) {
+        empMapper.setPattern(deptCode, patternCode);
+    }
+
+    public List<AttEmpDto> getAttEmpList(String attType, String workDate, String empCode, String deptName) {
+        return empMapper.findAttEmpList(attType, workDate, empCode, deptName);
     }
 }

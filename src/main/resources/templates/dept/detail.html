@@ -51,8 +51,40 @@
 
                 <div class="info-item">
                     <label>근태 패턴 코드</label>
-                    <span th:text="${dept.workPattern}">A1001</span>
+
+                    <!-- 현재 패턴 표시 -->
+                    <span th:if="${dept.workPattern != null}" th:text="${dept.workPattern}">A1001</span>
+
+                    <!-- 버튼: 패턴 없으면 '지정하기', 있으면 '변경하기' -->
+                    <button type="button" id="setPatternBtn"
+                            th:text="${dept.workPattern != null ? '변경하기' : '패턴 지정하기'}">
+                        패턴 지정하기
+                    </button>
+
+                    <!-- 드롭다운 & 저장 (숨김) -->
+                    <div id="patternSelect" style="display:none; margin-top:5px;">
+                        <form th:action="@{/dept/patternSave}" method="post" id="patternForm">
+                            <input type="hidden" name="deptCode" th:value="${dept.deptCode}" />
+                            <select name="patternCode" required>
+                                <option th:each="p : ${patternList}" th:value="${p}" th:text="${p}"
+                                        th:selected="${p == dept.workPattern}">패턴명</option>
+                            </select>
+                            <button type="submit">저장</button>
+                        </form>
+                    </div>
                 </div>
+
+                <script>
+                    const setPatternBtn = document.getElementById('setPatternBtn');
+                    const patternSelect = document.getElementById('patternSelect');
+
+                    if (setPatternBtn) {
+                        setPatternBtn.addEventListener('click', () => {
+                            patternSelect.style.display = patternSelect.style.display === 'none' ? 'block' : 'none';
+                        });
+                    }
+                </script>
+
             </div>
 
             <!-- 오른쪽: 구성원 목록 -->
@@ -85,9 +117,9 @@
                                 <thead>
                                 <tr>
                                     <th></th>
-                                    <th>사원 코드</th>
+                                    <th>사원 번호</th>
                                     <th>사원 이름</th>
-                                    <th>직위 코드</th>
+                                    <th>직위</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -95,7 +127,7 @@
                                     <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
                                     <td th:text="${emp.empCode}">E001</td>
                                     <td th:text="${emp.empName}">홍길동</td>
-                                    <td th:text="${emp.positionCode}">P1001</td>
+                                    <td th:text="${emp.positionName}">P1001</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -116,9 +148,9 @@
                                 <thead>
                                 <tr>
                                     <th></th>
-                                    <th>사원 코드</th>
+                                    <th>사원 번호</th>
                                     <th>사원 이름</th>
-                                    <th>직위 코드</th>
+                                    <th>직위</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -126,7 +158,7 @@
                                     <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
                                     <td th:text="${emp.empCode}">E999</td>
                                     <td th:text="${emp.empName}">김무소속</td>
-                                    <td th:text="${emp.positionCode}">P0000</td>
+                                    <td th:text="${emp.positionName}">P0000</td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(empsNoDept)}">
                                     <td colspan="4" style="text-align:center;">모든 사원이 부서에 배정되어 있습니다.</td>
@@ -148,6 +180,17 @@
         moveSelect.style.display = moveSelect.style.display === 'none' ? 'block' : 'none';
     });
 </script>
+<script>
+    const setPatternBtn = document.getElementById('setPatternBtn');
+    const patternSelect = document.getElementById('patternSelect');
+
+    if (setPatternBtn) {
+        setPatternBtn.addEventListener('click', () => {
+            patternSelect.style.display = patternSelect.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+</script>
+
 <script th:src="@{/js/script.js}"></script>
 </body>
 </html>

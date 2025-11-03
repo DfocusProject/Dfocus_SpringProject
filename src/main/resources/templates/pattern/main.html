@@ -15,7 +15,13 @@
         <div class="header">
             <div class="header-top">
                 <h2>🏢 근태패턴별 캘린더</h2>
-                <button type="button" id="addPatternBtn">➕ 패턴 추가</button>
+                <!-- 상단 액션 버튼 -->
+                <div class="button-group">
+                    <button type="button" class="btn">초기 생성</button>
+                    <button type="button" id="topActionBtn" class="btn">패턴 추가</button>
+                    <button type="button" id="registerPatternBtn" class="btn">패턴 등록</button>
+                    <button type="button" id="savePatternBtn" class="btn">저장</button>
+                </div>
             </div>
             <form th:action="@{/pattern/main}" method="get" id="searchForm">
                 <label>조회월:</label>
@@ -25,13 +31,14 @@
                 <button type="submit">🔍 조회</button>
             </form>
         </div>
-
         <div class="main-content">
-            <form th:action="@{/pattern/save}" method="post" class="calendar-form">
+            <form th:action="@{/pattern/save}" method="post" class="calendar-form" id="patternSaveForm">
+                <input type="hidden" name="patternName" id="savePatternName">
                 <div class="calendar-container">
                     <table id="patternTable">
                         <thead>
                         <tr>
+                            <th class="pattern-header"></th>
                             <th class="pattern-header">근태패턴</th>
                             <th th:each="date : ${dates}" class="date-header"
                                 th:classappend="${date.dayOfWeek.value >= 6} ? 'weekend' : ''"
@@ -43,12 +50,17 @@
                         </tr>
                         </thead>
                         <tbody id="patternBody">
+                        <tr th:each="pattern, stat : ${patternList}" th:data-pattern-name="${pattern.patternName}">
+                            <td><input type="radio" name="selectedPattern" th:value="${pattern.patternName}"></td>
+                            <td th:text="${pattern.patternName}">패턴명</td>
+                            <td th:each="date : ${dates}"
+                                class="code-cell"
+                                th:classappend="${pattern.dateCodeMap[date.toString()] != null ? 'code-' + pattern.dateCodeMap[date.toString()] : ''}"
+                                th:data-date="${date.toString()}"
+                                th:text="${pattern.dateCodeMap[date.toString()]}">코드</td>
+                        </tr>
                         </tbody>
                     </table>
-                </div>
-
-                <div class="actions">
-                    <button type="submit">💾 저장</button>
                 </div>
             </form>
 
@@ -74,81 +86,180 @@
     </div>
 </main>
 
+<!-- 패턴 추가 모달 -->
+<div class="modal-overlay" id="patternModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            새 패턴 추가
+        </div>
+        <div class="modal-body">
+            <div class="modal-input-group">
+                <label for="modalPatternName">패턴명 *</label>
+                <input type="text" id="modalPatternName" placeholder="예: 주간, 4전, 육아휴직..." required>
+            </div>
+            <div class="modal-input-group">
+                <label for="modalPatternDesc">패턴 설명</label>
+                <input type="text" id="modalPatternDesc" placeholder="패턴에 대한 간단한 설명">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="modal-btn modal-btn-cancel" id="modalCancelBtn">취소</button>
+            <button type="button" class="modal-btn modal-btn-confirm" id="modalConfirmBtn">추가</button>
+        </div>
+    </div>
+</div>
+
+<!-- 패턴 생성용 숨은 form -->
+<form id="createPatternForm" method="post" th:action="@{/pattern/create}">
+    <input type="hidden" name="patternName" id="patternNameInput">
+    <input type="hidden" name="description" id="patternDescInput">
+</form>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const addBtn = document.getElementById("addPatternBtn");
+        const topBtn = document.getElementById("topActionBtn");
+        const registerBtn = document.getElementById("registerPatternBtn");
+        const saveBtn = document.getElementById("savePatternBtn");
         const tbody = document.getElementById("patternBody");
+        const modal = document.getElementById("patternModal");
+        const modalCancelBtn = document.getElementById("modalCancelBtn");
+        const modalConfirmBtn = document.getElementById("modalConfirmBtn");
+        const modalPatternName = document.getElementById("modalPatternName");
+        const modalPatternDesc = document.getElementById("modalPatternDesc");
+        let rowAdded = false;
+        let editingRow = null;
 
-        addBtn.addEventListener("click", () => {
-            const dateHeaders = document.querySelectorAll(".date-header");
-            const tr = document.createElement("tr");
-
-            // 패턴명
-            const nameTd = document.createElement("td");
-            const nameInput = document.createElement("input");
-            nameInput.type = "text";
-            nameInput.name = "patternName";
-            nameInput.placeholder = "패턴명";
-            nameTd.appendChild(nameInput);
-            tr.appendChild(nameTd);
-
-            // 날짜별 코드
-            dateHeaders.forEach(header => {
-                const td = document.createElement("td");
-                const codeInput = document.createElement("input");
-                codeInput.type = "text";
-
-                const fullDate = header.dataset.fullDate;
-                codeInput.name = `dateCodeMap[${fullDate}]`;
-
-                // input 이벤트 리스너 추가
-                codeInput.addEventListener("input", function() {
-                    applyCodeColor(this);
-                });
-
-                td.appendChild(codeInput);
-                tr.appendChild(td);
-            });
-
-            tbody.appendChild(tr);
-        });
-
-        // 색상 적용 함수
-        function applyCodeColor(input) {
-            const td = input.parentElement;
-            const value = input.value.trim().toUpperCase();
-
-            // 기존 code 클래스 모두 제거
-            td.className = td.className.split(' ').filter(c => !c.startsWith('code-')).join(' ');
-
-            if (value) {
-                td.classList.add(`code-${value}`);
-                console.log(`Applied class: code-${value}`); // 디버깅용
-            }
-        }
-
-        // 페이지 로드 시 기존 input들에도 이벤트 리스너 추가
-        document.querySelectorAll('input[name^="dateCodeMap"]').forEach(input => {
-            input.addEventListener("input", function() {
-                applyCodeColor(this);
-            });
-            // 이미 값이 있으면 색상 적용
-            if (input.value) {
-                applyCodeColor(input);
-            }
-        });
-
-        // 근태코드 패널에 색상 적용
+        // 근태코드 패널 색상 적용
         document.querySelectorAll('.code-table tbody tr').forEach(row => {
             const codeCell = row.cells[0];
-            if (codeCell) {
-                const code = codeCell.textContent.trim();
-                codeCell.classList.add(`code-${code}`);
+            if (codeCell) codeCell.classList.add(`code-${codeCell.textContent.trim()}`);
+        });
+
+        // 모달 열기
+        topBtn.addEventListener("click", () => {
+            if (!rowAdded) {
+                modal.classList.add("active");
+                modalPatternName.focus();
             }
         });
+
+        // 모달 닫기 (취소 버튼)
+        modalCancelBtn.addEventListener("click", () => {
+            modal.classList.remove("active");
+            modalPatternName.value = "";
+            modalPatternDesc.value = "";
+        });
+
+        // 모달 닫기 (배경 클릭)
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.classList.remove("active");
+                modalPatternName.value = "";
+                modalPatternDesc.value = "";
+            }
+        });
+
+        // 모달 확인 버튼
+        modalConfirmBtn.addEventListener("click", () => {
+            const patternName = modalPatternName.value.trim();
+
+            if (!patternName) {
+                alert("패턴명을 입력해주세요.");
+                modalPatternName.focus();
+                return;
+            }
+
+            document.getElementById("patternNameInput").value = patternName;
+            document.getElementById("patternDescInput").value = modalPatternDesc.value.trim();
+
+            document.getElementById("createPatternForm").submit();
+            rowAdded = true;
+        });
+
+        // Enter 키로 확인
+        modalPatternDesc.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                modalConfirmBtn.click();
+            }
+        });
+
+        // 패턴 등록 버튼 클릭
+        registerBtn.addEventListener("click", () => {
+            const selectedRadio = document.querySelector('input[name="selectedPattern"]:checked');
+
+            if (!selectedRadio) {
+                alert("패턴을 선택해주세요.");
+                return;
+            }
+
+            const patternName = selectedRadio.value;
+            const row = selectedRadio.closest('tr');
+
+            // 이미 편집 중인 행이 있으면 되돌리기
+            if (editingRow && editingRow !== row) {
+                restoreRow(editingRow);
+            }
+
+            editingRow = row;
+
+            // 패턴명 저장
+            document.getElementById("savePatternName").value = patternName;
+
+            // 코드 셀들을 input으로 변경
+            const codeCells = row.querySelectorAll('.code-cell');
+            codeCells.forEach(cell => {
+                const currentValue = cell.textContent.trim();
+                const date = cell.getAttribute('data-date');
+
+                // 기존 색상 클래스 제거
+                cell.className = 'code-cell editable-cell';
+
+                cell.innerHTML = `<input type="text"
+                                         autocomplete="off"
+                                         name="dateCodeMap[${date}]"
+                                         value="${currentValue}"
+                                         data-date="${date}">`;
+            });
+
+            // 저장 버튼 표시
+            saveBtn.style.display = "block";
+            registerBtn.style.display = "none";
+        });
+
+        // 저장 버튼 클릭
+        saveBtn.addEventListener("click", () => {
+            if (!editingRow) return;
+
+            const patternName = document.getElementById("savePatternName").value;
+
+            if (!patternName) {
+                alert("패턴명이 누락되었습니다.");
+                return;
+            }
+
+            // 폼 제출
+            document.getElementById("patternSaveForm").submit();
+        });
+
+        // 행 복원 함수
+        function restoreRow(row) {
+            const codeCells = row.querySelectorAll('.code-cell');
+            codeCells.forEach(cell => {
+                if (cell.classList.contains('editable-cell')) {
+                    const input = cell.querySelector('input');
+                    const value = input ? input.value.trim() : '';
+                    cell.classList.remove('editable-cell');
+
+                    // 색상 클래스 다시 적용
+                    if (value) {
+                        cell.classList.add(`code-${value}`);
+                    }
+                    cell.innerHTML = value;
+                }
+            });
+        }
     });
 </script>
 <script th:src="@{/js/script.js}"></script>
-
 </body>
 </html>

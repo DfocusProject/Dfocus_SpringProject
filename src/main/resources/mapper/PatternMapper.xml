@@ -15,8 +15,51 @@
         INSERT INTO WEBWORKPATTERN (work_pattern_code)
         VALUES (#{patternName})
     </insert>
-    <insert id="insertPatternDetail" parameterType="map">
-        INSERT INTO WEBWORKPATTERNDETAIL (work_pattern_code, work_date, shift_code)
-        VALUES (#{patternName}, #{date}, #{code})
+    <insert id="upsertPatternDetail" parameterType="map">
+        MERGE INTO WEBWORKPATTERNDETAIL AS target
+            USING (
+                SELECT #{patternName} AS work_pattern_code,
+                       #{date} AS work_date,
+                       #{code} AS shift_code
+            ) AS source
+            ON (target.work_pattern_code = source.work_pattern_code
+                AND target.work_date = source.work_date)
+            WHEN MATCHED THEN
+                UPDATE SET target.shift_code = source.shift_code
+            WHEN NOT MATCHED THEN
+                INSERT (work_pattern_code, work_date, shift_code)
+                    VALUES (source.work_pattern_code, source.work_date, source.shift_code);
     </insert>
+    <select id="selectAllPatternNames" resultType="string">
+        SELECT work_pattern_code
+        FROM WEBWORKPATTERN
+    </select>
+    <!-- 패턴 리스트 조회 -->
+    <select id="selectPatternList" resultMap="PatternResultMap" parameterType="string">
+        SELECT
+            p.work_pattern_code AS pattern_name,
+            pd.work_date,
+            pd.shift_code
+        FROM WEBWORKPATTERN p
+                 LEFT JOIN WEBWORKPATTERNDETAIL pd
+                           ON p.work_pattern_code = pd.work_pattern_code
+        WHERE p.work_pattern_code = #{patternName}
+    </select>
+
+
+    <!-- 결과 매핑 -->
+    <resultMap id="PatternResultMap" type="com.skuniv.dfocus_project.domain.pattern.Pattern">
+        <id property="patternName" column="pattern_name"/>
+        <collection property="dateShiftList" ofType="com.skuniv.dfocus_project.dto.DateShiftDto">
+            <id property="date" column="work_date"/>
+            <result property="shiftCode" column="shift_code"/>
+        </collection>
+    </resultMap>
+
+    <insert id="createPattern" parameterType="map">
+        INSERT INTO WEBWORKPATTERN (work_pattern_code, description)
+        VALUES (#{patternName}, #{description})
+    </insert>
+
+
 </mapper>

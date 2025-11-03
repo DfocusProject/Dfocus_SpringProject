@@ -16,9 +16,8 @@
             duty_code as dutyCode,
             duty_date as dutyDate,
             dept_code as deptCode,
-            retire_date as retireDate,
-            retire_reason as retireReason,
-            work_pattern_code as workPatternCode
+            work_pattern_code as workPatternCode,
+            status
         FROM WEBEMPINFO
         WHERE dept_code = #{deptCode}
     </select>
@@ -41,15 +40,19 @@
     </update>
     <select id="findEmpNoDept" parameterType="String" resultType="com.skuniv.dfocus_project.dto.EmpDto">
         SELECT
-            emp_code AS empCode,
-            emp_name AS empName,
-            position_code AS positionCode,
-            dept_code AS deptCode,
-            work_pattern_code AS workPatternCode
-        FROM WEBEMPINFO
+            e.emp_code AS empCode,
+            e.emp_name AS empName,
+            p.position_name AS positionName,
+            e.dept_code AS deptCode,
+            e.work_pattern_code AS workPatternCode
+        FROM WEBEMPINFO e
+                 LEFT JOIN WEBPOSITIONINFO p
+                           ON e.position_code = p.position_code
         WHERE dept_code is null or dept_code = ''
-        ORDER BY emp_name
+        ORDER BY e.emp_name;
     </select>
+
+
     <update id="assignDept" parameterType="map">
         UPDATE WEBEMPINFO
         SET dept_code = #{deptCode}
@@ -58,4 +61,47 @@
             #{empCode}
         </foreach>
     </update>
+    <update id="setPattern" parameterType="map">
+        UPDATE WEBEMPINFO
+        SET work_pattern_code = #{patternCode}
+        WHERE dept_code = #{deptCode}
+    </update>
+    <select id="selectEmpsByPattern" parameterType="String">
+        SELECT
+            emp_code
+        FROM WEBEMPINFO
+        WHERE work_pattern_code = #{patternName}
+        ORDER BY emp_code;
+    </select>
+    <insert id="insertEmpPlan" parameterType="map" >
+        INSERT INTO WEBEMPPLAN
+        (work_date, emp_code, dept_code, shift_code, origin_shift_code, work_pattern_code, holiday_yn)
+        VALUES
+            (#{workDate}, #{empCode}, #{deptCode}, #{shiftCode}, NULL, #{patternName}, #{holidayYn});
+    </insert>
+
+    <select id="findAttEmpList" resultType="com.skuniv.dfocus_project.dto.AttEmpDto">
+        SELECT
+        P.EMP_CODE       AS empNo,
+        I.EMP_NAME       AS name,
+        I.POSITION_CODE  AS position,
+        #{deptName}      AS department,   <!-- 요청 파라미터 값 사용 -->
+        P.SHIFT_CODE     AS [plan],
+        NULL             AS result,
+        #{attType}       AS workType
+        FROM WEBEMPPLAN P
+        INNER JOIN WEBEMPINFO I ON P.EMP_CODE = I.EMP_CODE
+        <where>
+            P.WORK_DATE = #{workDate}
+            AND P.HOLIDAY_YN = 'N'
+
+            <if test="empCode != null and empCode != ''">
+                AND P.EMP_CODE = #{empCode}
+            </if>
+        </where>
+        ORDER BY P.EMP_CODE
+    </select>
+
 </mapper>
+
+

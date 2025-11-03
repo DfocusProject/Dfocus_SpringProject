@@ -2,6 +2,7 @@ package com.skuniv.dfocus_project.service;
 
 import com.skuniv.dfocus_project.domain.dept.Dept;
 import com.skuniv.dfocus_project.domain.emp.Emp;
+import com.skuniv.dfocus_project.dto.DeptDto;
 import com.skuniv.dfocus_project.dto.EmpDto;
 import com.skuniv.dfocus_project.mapper.DeptMapper;
 import com.skuniv.dfocus_project.mapper.EmpMapper;
@@ -18,6 +19,10 @@ import java.util.Map;
 public class DeptService {
     private final DeptMapper deptMapper;
     private final EmpMapper empMapper;
+
+    public void setPattern(String deptCode, String patternCode) {
+        deptMapper.savePattern(deptCode, patternCode);
+    }
 
     public List<Dept> getAllDepartments() {
         return deptMapper.findAll();
@@ -63,5 +68,9 @@ public class DeptService {
     }
     public List<EmpDto> getEmpByDeptCode(String deptCode){
         return deptMapper.findAllEmpByDeptCode(deptCode);
+    }
+
+    public DeptDto getDeptByEmpCode(String empCode) {
+        return deptMapper.getDeptByEmpCode(empCode);
     }
 }
