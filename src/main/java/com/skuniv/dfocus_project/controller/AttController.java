@@ -1,9 +1,10 @@
 package com.skuniv.dfocus_project.controller;
 
 import com.skuniv.dfocus_project.domain.account.Account;
-import com.skuniv.dfocus_project.domain.account.Role;
+import com.skuniv.dfocus_project.dto.AttEmpDto;
 import com.skuniv.dfocus_project.dto.DeptDto;
 import com.skuniv.dfocus_project.service.DeptService;
+import com.skuniv.dfocus_project.service.EmpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import jakarta.servlet.http.HttpSession;
@@ -13,12 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Controller
 @RequestMapping("/att")
 public class AttController {
 
     private final DeptService deptService;
+    private final EmpService empService;
 
     @GetMapping("/general")
     public String getUserInfo(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
@@ -27,7 +31,6 @@ public class AttController {
 
         if (loginAccount != null) {
             String empCode = loginAccount.getEmpCode();
-            Role role = loginAccount.getRole();
 
             // 부서 정보 조회
             DeptDto deptDto = deptService.getDeptByEmpCode(empCode); // 사번으로 부서 조회
@@ -51,8 +54,12 @@ public class AttController {
     public String search(@RequestParam String attType,
                          @RequestParam String workDate,
                          @RequestParam(required = false) String empCode,
-                         @RequestParam String deptName) {
-
-        return "redirect:/att/general";
+                         @RequestParam String deptName,
+                         Model model) {
+        //해당 부서 해당 날짜에 근무계획에서 holiday_yn이 n인 사원
+        List<AttEmpDto> empList = empService.getAttEmpList(attType, workDate, empCode, deptName);
+        model.addAttribute("empList", empList);
+        return "/att/general";
     }
+
 }

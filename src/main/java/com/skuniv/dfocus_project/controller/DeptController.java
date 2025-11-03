@@ -1,10 +1,12 @@
 package com.skuniv.dfocus_project.controller;
 
+import com.skuniv.dfocus_project.domain.account.Account;
 import com.skuniv.dfocus_project.domain.dept.Dept;
 import com.skuniv.dfocus_project.dto.EmpDto;
 import com.skuniv.dfocus_project.service.DeptService;
 import com.skuniv.dfocus_project.service.EmpService;
 import com.skuniv.dfocus_project.service.PatternService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,9 +29,11 @@ public class DeptController {
         return "redirect:/dept/main";
     }
     @GetMapping("/main")
-    public String departmentTree(Model model) {
+    public String departmentTree(Model model, HttpSession session) {
+            Account loginAccount = (Account) session.getAttribute("loginAccount");
             Dept rootDepartment = deptService.getDepartmentTree();
             model.addAttribute("rootDepartment", rootDepartment);
+            model.addAttribute("role", loginAccount.getRole());
             return "dept/main";
     }
 
@@ -62,8 +66,8 @@ public class DeptController {
                          @RequestParam String parentDeptCode,
                          @RequestParam String deptCategory,
                          @RequestParam String startDate,
-                         @RequestParam String useYn,
-                         Model model) {
+                         @RequestParam String useYn
+                         ) {
         String formattedDate = startDate.replace("-", "");
         String formattedUseYn;
         if ("on".equals(useYn)) {

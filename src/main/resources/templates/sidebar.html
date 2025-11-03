@@ -1,7 +1,7 @@
 <div th:fragment="sidebar">
     <div id="sideBar" class="sidebar">
-        <a th:href="@{/dept/main}">부서 관리</a>
-        <a th:href="@{/pattern/main}">근태 패턴</a>
+        <a th:href="@{/dept/main}" th:if="${session.loginAccount.role.toString() == 'ADMIN'}">부서 관리</a>
+        <a th:href="@{/pattern/main}" th:if="${session.loginAccount.role.toString() == 'ADMIN'}">근태 패턴</a>
         <button class="dropdown-btn">근태신청 및 내역</button>
         <div class="dropdown-container">
             <a th:href="@{/att/general}">일반근태 신청</a>
