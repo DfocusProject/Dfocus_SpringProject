@@ -4,132 +4,173 @@
 <head>
     <meta charset="UTF-8">
     <title>일반근태 신청</title>
-    <link rel="stylesheet" th:href="@{/css/att.css}" />
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/att.css" />
 </head>
 
 <body>
+<div th:replace="~{ header.html::header}"></div>
 
-<h2>일반근태 신청</h2>
+<main>
+    <div th:replace="~{ sidebar.html::sidebar}"></div>
+    <div class="container">
+        <div class="header">
+            <h1>일반 근태 신청</h1>
+        </div>
 
-<form th:action="@{/att/search}" method="get" class="search-box">
-    <div class="row">
-        <label for="attType">근무유형</label>
-        <select id="attType" name="attType">
-            <option value="OT">연장근로</option>
-            <option value="HOLIDAY">휴일근로</option>
-            <option value="EARLY">조퇴</option>
-            <option value="GOOUT">외출</option>
-            <option value="HALF">반차</option>
-        </select>
+        <!-- 🔍 검색 폼 -->
+        <form id="searchForm" class="search-box" action="/att/search" method="get">
+            <label>근무유형
+                <select name="attType">
+                    <option value="OT">연장근로</option>
+                    <option value="HOLIDAY">휴일근로</option>
+                    <option value="EARLY">조퇴</option>
+                    <option value="GOOUT">외출</option>
+                    <option value="HALF">반차</option>
+                </select>
+            </label>
+            <label>근무일
+                <input type="date" name="workDate" id="workDate">
+            </label>
+            <label for="empCode">사번</label>
+            <input type="text" id="empCode" name="empCode"
+                   th:value="${role == 'USER' ? empCode : ''}"
+                   th:readonly="${role == 'USER'}" placeholder="사번 입력" />
 
-        <label for="workDate">근무일</label>
-        <input id="workDate" name="workDate" type="date" />
+            <label for="deptName">부서</label>
+            <input type="text" id="deptName" name="deptName"
+                   th:value="${deptName}" readonly placeholder="부서명" />
 
-        <label for="empCode">사번</label>
-        <input type="text" id="empCode" name="empCode"
-               th:value="${role == 'USER' ? empCode : ''}"
-               th:readonly="${role == 'USER'}"
-               placeholder="사번 입력" />
+            <button type="submit" id="btnSearch">조회</button>
 
-        <label for="deptName">부서</label>
-        <input type="text" id="deptName" name="deptName"
-               th:value="${deptName}"
-               readonly
-               th:readonly="${role == 'USER' or role == 'LEADER'}"
-               placeholder="부서명" />
+            <span class="note">※ 근무일 선택 후 ‘조회’ 클릭</span>
+        </form>
 
-        <button type="submit">조회</button>
+        <!-- 버튼 영역 -->
+        <div class="btn-area">
+            <button class="btn btn-save" id="btnSave">저장</button>
+            <button class="btn btn-delete" id="btnDelete">삭제</button>
+            <button class="btn btn-request" id="btnRequest">상신</button>
+            <button class="btn btn-cancel" id="btnRequestCancel">상신 취소</button>
+        </div>
 
-        <span class="note">※ 근무일 선택 후 ‘조회’ 클릭</span>
+        <!-- 근태 테이블 -->
+        <table id="attTable">
+            <thead>
+            <tr>
+                <th><input type="checkbox" id="checkAll"></th>
+                <th>사번</th>
+                <th>성명</th>
+                <th>직위</th>
+                <th>부서</th>
+                <th>계획</th>
+                <th>실적</th>
+                <th>구분</th>
+                <th>사유</th>
+                <th>사유내용</th>
+                <th>시작시간</th>
+                <th>종료시간</th>
+                <th class="highlight">예상근로시간</th>
+                <th>상태</th>
+                <th>신청자</th>
+            </tr>
+            </thead>
+            <tbody id="tableBody">
+            <tr th:each="emp : ${empList}">
+                <td><input type="checkbox" class="rowCheck" th:value="${emp.empNo}"></td>
+                <td class="empNo" th:text="${emp.empNo}"></td>
+                <td class="name" th:text="${emp.name}"></td>
+                <td class="position" th:text="${emp.position}"></td>
+                <td class="department" th:text="${emp.department}"></td>
+                <td class="plan" th:text="${emp.plan}"></td>
+                <td class="result" th:text="${emp.result}"></td>
+                <td class="workType" th:text="${emp.workType}"></td>
+                <td>
+                    <select class="reason">
+                        <option value="">--선택--</option>
+                        <option value="업무지연">업무지연</option>
+                        <option value="프로젝트마감">프로젝트 마감</option>
+                        <option value="고객요청">고객 요청</option>
+                        <option value="기타">기타</option>
+                    </select>
+                </td>
+                <td><input type="text" class="reasonDetail"></td>
+                <td><input type="time" class="startTime"></td>
+                <td><input type="time" class="endTime"></td>
+                <td class="expectedHours highlight"></td>
+                <td class="status"></td>
+                <td class="applicant"></td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(empList)}">
+                <td colspan="15" style="text-align:center;">조회된 데이터가 없습니다.</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-</form>
-
-<div class="btn-area">
-    <button class="btn btn-save">저장</button>
-    <button class="btn btn-delete">삭제</button>
-    <button class="btn btn-request">상신</button>
-    <button class="btn btn-cancel">상신 취소</button>
-</div>
-
-<div class="table-container">
-    <table th:if="${empList != null and #lists.size(empList) > 0}">
-        <thead>
-        <tr>
-            <th><input type="checkbox" id="checkAll" /></th>
-            <th>사번</th>
-            <th>성명</th>
-            <th>직위</th>
-            <th>부서</th>
-            <th>계획</th>
-            <th>실적</th>
-            <th>구분</th>
-            <th>사유</th>
-            <th>사유내용</th>
-            <th>시작시간</th>
-            <th>종료시간</th>
-            <th class="highlight">예상근로시간</th>
-            <th>상태</th>
-            <th>신청자</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="work : ${empList}">
-            <td><input type="checkbox" class="rowCheck" th:value="${work.id}" /></td>
-            <td th:text="${work.empNo}"></td>
-            <td th:text="${work.name}"></td>
-            <td th:text="${work.position}"></td>
-            <td th:text="${work.department}"></td>
-            <td th:text="${work.plan}"></td>
-            <td th:text="${work.result}"></td>
-            <td th:text="${work.type}"></td>
-            <td th:text="${work.reason}"></td>
-            <td th:text="${work.reasonDetail}"></td>
-            <td th:text="${work.startTime}"></td>
-            <td th:text="${work.endTime}"></td>
-            <td th:text="${work.expectedHours}" class="highlight"></td>
-            <td th:text="${work.status}"></td>
-            <td th:text="${work.applicant}"></td>
-        </tr>
-        </tbody>
-    </table>
-
-    <div th:if="${empList == null or #lists.isEmpty(empList)}"
-         style="text-align:center; color:#888; margin-top:10px;">
-        조회된 데이터가 없습니다.
-    </div>
-
-    <div class="note important">
-        🔹 상신 후 신청 시간 적용됩니다.
-    </div>
-</div>
+</main>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        // 오늘 날짜 자동 입력
-        const dateInput = document.getElementById("workDate");
-        if (dateInput) {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            dateInput.value = `${year}-${month}-${day}`;
-        }
+    // 오늘 날짜 자동 입력
+    const dateInput = document.getElementById("workDate");
+    const today = new Date();
+    dateInput.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-        // 전체 선택/해제 기능
-        const checkAll = document.getElementById('checkAll');
-        const rowChecks = document.querySelectorAll('.rowCheck');
+    // 전체 체크
+    document.getElementById('checkAll').addEventListener('change', e => {
+        const checked = e.target.checked;
+        document.querySelectorAll('.rowCheck').forEach(cb => cb.checked = checked);
+    });
 
-        if (checkAll) {
-            checkAll.addEventListener('change', () => {
-                rowChecks.forEach(cb => cb.checked = checkAll.checked);
-            });
+    // 선택된 행 데이터 수집
+    function collectSelectedRows() {
+        return Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => {
+            const row = cb.closest('tr');
+            return {
+                empNo: row.querySelector('.empNo').innerText,
+                name: row.querySelector('.name').innerText,
+                position: row.querySelector('.position').innerText,
+                department: row.querySelector('.department').innerText,
+                workType: row.querySelector('.workType').innerText,
+                reason: row.querySelector('.reason').value,
+                reasonDetail: row.querySelector('.reasonDetail').value,
+                startTime: row.querySelector('.startTime').value,
+                endTime: row.querySelector('.endTime').value,
+                expectedHours: row.querySelector('.expectedHours').innerText,
+                status: row.querySelector('.status').innerText,
+                applicant: row.querySelector('.applicant').innerText
+            };
+        });
+    }
 
-            rowChecks.forEach(cb => {
-                cb.addEventListener('change', () => {
-                    checkAll.checked = Array.from(rowChecks).every(c => c.checked);
-                });
-            });
-        }
+    // 공통 POST 요청
+    async function postRequest(action, rows) {
+        console.log(`POST ${action}`, rows);
+        alert(`✅ ${action} 요청 완료`);
+    }
+
+    // 버튼 이벤트
+    document.getElementById('btnSave').addEventListener('click', () => {
+        const rows = collectSelectedRows();
+        if (!rows.length) { alert('선택된 행이 없습니다'); return; }
+        postRequest('/att/save', rows);
+    });
+
+    document.getElementById('btnDelete').addEventListener('click', () => {
+        const rows = collectSelectedRows();
+        if (!rows.length) { alert('선택된 행이 없습니다'); return; }
+        postRequest('/att/delete', rows);
+    });
+
+    document.getElementById('btnRequest').addEventListener('click', () => {
+        const rows = collectSelectedRows();
+        if (!rows.length && !confirm('선택된 행이 없습니다. 전체 상신하시겠습니까?')) return;
+        postRequest('/att/request', rows);
+    });
+
+    document.getElementById('btnRequestCancel').addEventListener('click', () => {
+        const rows = collectSelectedRows();
+        if (!rows.length) { alert('선택된 행이 없습니다'); return; }
+        postRequest('/att/request-cancle', rows);
     });
 </script>
 
