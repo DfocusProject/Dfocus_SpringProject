@@ -15,9 +15,20 @@
         INSERT INTO WEBWORKPATTERN (work_pattern_code)
         VALUES (#{patternName})
     </insert>
-    <insert id="insertPatternDetail" parameterType="map">
-        INSERT INTO WEBWORKPATTERNDETAIL (work_pattern_code, work_date, shift_code)
-        VALUES (#{patternName}, #{date}, #{code})
+    <insert id="upsertPatternDetail" parameterType="map">
+        MERGE INTO WEBWORKPATTERNDETAIL AS target
+            USING (
+                SELECT #{patternName} AS work_pattern_code,
+                       #{date} AS work_date,
+                       #{code} AS shift_code
+            ) AS source
+            ON (target.work_pattern_code = source.work_pattern_code
+                AND target.work_date = source.work_date)
+            WHEN MATCHED THEN
+                UPDATE SET target.shift_code = source.shift_code
+            WHEN NOT MATCHED THEN
+                INSERT (work_pattern_code, work_date, shift_code)
+                    VALUES (source.work_pattern_code, source.work_date, source.shift_code);
     </insert>
     <select id="selectAllPatternNames" resultType="string">
         SELECT work_pattern_code
@@ -45,11 +56,10 @@
         </collection>
     </resultMap>
 
-    <select id="selectDeptsByPattern" resultType="string">
-        SELECT dept_code
-        FROM WEBDEPTINFO
-        WHERE work_pattern = #{patternName}
-    </select>
+    <insert id="createPattern" parameterType="map">
+        INSERT INTO WEBWORKPATTERN (work_pattern_code, description)
+        VALUES (#{patternName}, #{description})
+    </insert>
 
 
 </mapper>

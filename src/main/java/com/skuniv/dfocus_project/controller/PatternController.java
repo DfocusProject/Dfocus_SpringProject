@@ -1,8 +1,10 @@
 package com.skuniv.dfocus_project.controller;
 
+import com.skuniv.dfocus_project.domain.account.Account;
 import com.skuniv.dfocus_project.domain.pattern.Pattern;
 import com.skuniv.dfocus_project.domain.pattern.ShiftType;
 import com.skuniv.dfocus_project.service.PatternService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -53,6 +55,14 @@ public class PatternController {
         return "pattern/main";
     }
 
+
+    @PostMapping("/create")
+    public String createPattern(@RequestParam String patternName,
+                                @RequestParam String description
+                                ) {
+        patternService.createPattern(patternName, description);
+        return "redirect:/pattern/main";
+    }
 
     @PostMapping("/save")
     public String savePatterns(@ModelAttribute Pattern form) {

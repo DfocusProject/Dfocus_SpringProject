@@ -3,13 +3,15 @@ package com.skuniv.dfocus_project.service;
 import com.skuniv.dfocus_project.domain.pattern.Pattern;
 import com.skuniv.dfocus_project.domain.pattern.ShiftType;
 import com.skuniv.dfocus_project.dto.DateShiftDto;
+import com.skuniv.dfocus_project.dto.DeptDto;
+import com.skuniv.dfocus_project.mapper.DeptMapper;
+import com.skuniv.dfocus_project.mapper.EmpMapper;
 import com.skuniv.dfocus_project.mapper.PatternMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,32 +22,29 @@ import java.util.Map;
 public class PatternService {
 
     private final PatternMapper patternMapper;
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final EmpMapper empMapper;
+    private final DeptMapper deptMapper;
 
     @Transactional
     public void savePattern(Pattern form) {
-        // 1. 패턴 저장
-        patternMapper.insertPattern(form.getPatternName());
         form.getDateCodeMap().forEach((dateStr, code) -> {
             LocalDate date = LocalDate.parse(dateStr);
-            patternMapper.insertPatternDetail(form.getPatternName(), date, code);
+            patternMapper.upsertPatternDetail(form.getPatternName(), date, code);
         });
 
-        List<String> deptCodes = patternMapper.selectDeptsByPattern(form.getPatternName());
+        List<String> empCodes = empMapper.selectEmpsByPattern(form.getPatternName());
 
-//        // 3. 부서 직원 조회
-//        List<String> empCodes = patternMapper.selectEmpCodesByDeptCodes(deptCodes);
-//
-//        // 4. WEBEMPPLAN에 일정 추가
-//        form.getDateCodeMap().forEach((dateStr, shiftCode) -> {
-//            LocalDate workDate = LocalDate.parse(dateStr);
-//            for (String empCode : empCodes) {
-//                String holidayYn = "Y";
-//                if ("13".equals(shiftCode)) holidayYn = "N";
-//                patternMapper.insertEmpPlan(workDate, empCode, shiftCode, form.getPatternName(), holidayYn);
-//            }
-//        });
+        form.getDateCodeMap().forEach((dateStr, shiftCode) -> {
+            LocalDate workDate = LocalDate.parse(dateStr);
+            for (String empCode : empCodes) {
+                String holidayYn = "N";
+                if ("13".equals(shiftCode) || "12".equals(shiftCode)) {
+                    holidayYn = "Y";
+                }
+                DeptDto dept = deptMapper.getDeptByEmpCode(empCode);
+                empMapper.insertEmpPlan(workDate, empCode, dept.getDeptCode(), shiftCode, form.getPatternName(), holidayYn);
+            }
+        });
     }
 
 
@@ -85,4 +84,7 @@ public class PatternService {
         return patterns;
     }
 
+    public void createPattern(String patternName, String description) {
+        patternMapper.createPattern(patternName, description);
+    }
 }
