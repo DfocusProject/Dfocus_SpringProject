@@ -61,5 +61,9 @@
         VALUES (#{patternName}, #{description})
     </insert>
 
-
+    <select id="findShiftCodeByShiftName" resultType="string">
+        SELECT shift_code
+        FROM WEBSHIFTTYPE
+        WHERE shift_name = #{ShiftName}
+    </select>
 </mapper>

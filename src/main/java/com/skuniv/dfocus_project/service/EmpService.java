@@ -7,6 +7,7 @@ import com.skuniv.dfocus_project.mapper.EmpMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class EmpService {
         empMapper.setPattern(deptCode, patternCode);
     }
 
-    public List<AttEmpDto> getAttEmpList(String attType, String workDate, String empCode, String deptName) {
+    public List<AttEmpDto> getAttEmpList(String attType, LocalDate workDate, String empCode, String deptName) {
         return empMapper.findAttEmpList(attType, workDate, empCode, deptName);
     }
 }

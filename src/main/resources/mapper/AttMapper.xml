@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skuniv.dfocus_project.mapper.AttMapper">
+    <!-- 실제 출퇴근 기록 시간 -->
+    <select id="getActualCommuteRecord" resultType="com.skuniv.dfocus_project.dto.CommuteRecordDto" parameterType="map">
+        SELECT
+            start_time as startTime,
+            end_time as endTime
+        FROM WEBCOMMUTERECORD
+        WHERE emp_code = #{empCode}
+          AND work_date = #{selectedDate}
+    </select>
+
+    <!-- 계획된 근태 코드 -->
+    <select id="getPlannedShift" resultType="string" parameterType="map">
+        SELECT
+            s.shift_code
+        FROM WEBEMPPLAN p
+                 JOIN WEBSHIFTTYPE s
+                      ON p.shift_code = s.shift_code
+        WHERE p.emp_code = #{empCode}
+          AND p.work_date = #{selectedDate}
+    </select>
+
+    <!-- 출근 기록 추가 -->
+    <insert id="addRecordOnCommute" parameterType="map">
+        INSERT INTO WEBCOMMUTERECORD (emp_code, work_date, start_time)
+        VALUES (#{empCode}, #{today}, #{now})
+    </insert>
+
+    <!-- 퇴근 기록 업데이트 -->
+    <update id="addRecordOffCommute" parameterType="map">
+        UPDATE WEBCOMMUTERECORD
+        SET end_time = #{now}
+        WHERE emp_code = #{empCode}
+          AND work_date = #{today}
+          AND start_time IS NOT NULL
+    </update>
+    <!-- 출퇴근 계획 시간 -->
+    <!-- 근무유형(shift_type) 기준으로 근무시간 조회 -->
+    <select id="getPlannedCommuteTime"
+            parameterType="string"
+            resultType="map">
+        SELECT
+            CASE
+                WHEN over2_start_time IS NOT NULL
+                    THEN STUFF(over2_start_time, 3, 0, ':')
+                ELSE STUFF(work_on_time, 3, 0, ':')
+                END AS start_time,
+            CASE
+                WHEN over_end_time IS NOT NULL
+                    THEN STUFF(over_end_time, 3, 0, ':')
+                ELSE STUFF(work_off_time, 3, 0, ':')
+                END AS end_time
+        FROM WEBSHIFTTYPE
+        WHERE shift_code = #{shiftCode}
+    </select>
+
+    <!-- 신청 내역(시간) 가져오기 -->
+    <select id="getRequestHours" resultType="map" parameterType="map">
+        SELECT TOP 1
+            g.start_time,
+            g.end_time
+        FROM WEBATTREQUEST r
+                 JOIN WEBATTREQUESTGENERAL g
+                      ON r.request_id = g.request_id
+        WHERE r.emp_code = #{empCode}
+          AND r.request_date = #{date}
+          AND r.attendance_type = #{type}
+          AND r.req_status IN ('approval', 'pending')
+    </select>
+    <select id="getShiftName" resultType="string" parameterType="string">
+        SELECT shift_name
+        FROM WEBSHIFTTYPE
+        WHERE shift_code = #{shiftCode}
+    </select>
+
+    <select id="existsAttendanceRequest" resultType="int">
+        SELECT COUNT(*)
+        FROM WEBATTREQUEST
+        WHERE emp_code = #{empCode}
+          AND request_date = #{selectedDate}
+          AND attendance_type = #{attType}
+    </select>
+
+    <insert id="insertAttendanceRequest" parameterType="com.skuniv.dfocus_project.dto.AttendanceDto">
+        INSERT INTO WEBATTREQUEST (
+            emp_code,
+            req_reason,
+            request_date,
+            req_status,
+            req_reason_detail,
+            [current_date],
+            attendance_type,
+            applicant
+        )
+        VALUES (
+                   #{empNo, jdbcType=VARCHAR},
+                   #{reason, jdbcType=VARCHAR},
+                   #{workDate, jdbcType=DATE},
+                   #{status, jdbcType=VARCHAR},
+                   #{reasonDetail, jdbcType=VARCHAR},
+                   GETDATE(),
+                   #{workType, jdbcType=VARCHAR},
+                   #{applicant}
+               )
+    </insert>
+
+    <update id="updateAttendanceRequest" parameterType="com.skuniv.dfocus_project.dto.AttendanceDto">
+        UPDATE WEBATTREQUEST
+        SET
+            req_reason = #{reason},
+            req_status = #{status},
+            req_reason_detail = #{reasonDetail},
+            [current_date] = GETDATE(),
+            applicant = #{applicant}
+        WHERE emp_code = #{empNo}
+          AND request_date = #{workDate, jdbcType=DATE}
+          AND attendance_type = #{workType}
+    </update>
+
+    <select id="findAttendanceRecord" resultType="com.skuniv.dfocus_project.dto.AttEmpDto">
+        SELECT
+            req_reason AS reqReason,
+            req_reason_detail AS reqReasonDetail,
+            req_status AS reqStatus,
+            applicant
+        FROM WEBATTREQUEST
+        WHERE emp_code = #{empCode}
+          AND request_date = #{selectedDate}
+          AND attendance_type = #{attType}
+    </select>
+    <delete id="deleteAttendanceRecord" parameterType="map">
+        DELETE FROM WEBATTREQUEST
+        WHERE emp_code = #{empNo}
+          AND request_date = #{workDate}
+          AND attendance_type = #{workType}
+          AND req_status = 'SAVED'
+    </delete>
+</mapper>

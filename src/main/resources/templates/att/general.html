@@ -154,6 +154,11 @@
             const workDate = document.querySelector('#workDate').value;
             submitDelete('/att/delete', workDate);
         });
+        // 상신 버튼 (POST /att/request)
+        document.getElementById('btnRequest').addEventListener('click', () => {
+            const workDate = document.querySelector('#workDate').value;
+            submitDelete('/att/request', workDate);
+        });
     });
 </script>
 
