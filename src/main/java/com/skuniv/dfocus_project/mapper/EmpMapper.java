@@ -26,5 +26,5 @@ public interface EmpMapper {
 
     void insertEmpPlan(LocalDate workDate, String empCode, String deptCode, String shiftCode, String patternName, String holidayYn);
 
-    List<AttEmpDto> findAttEmpList(String attType, String workDate, String empCode, String deptName);
+    List<AttEmpDto> findAttEmpList(String attType, LocalDate workDate, String empCode, String deptName);
 }

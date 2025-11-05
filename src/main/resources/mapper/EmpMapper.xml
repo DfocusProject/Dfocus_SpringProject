@@ -79,28 +79,47 @@
         VALUES
             (#{workDate}, #{empCode}, #{deptCode}, #{shiftCode}, NULL, #{patternName}, #{holidayYn});
     </insert>
-
     <select id="findAttEmpList" resultType="com.skuniv.dfocus_project.dto.AttEmpDto">
         SELECT
         P.EMP_CODE       AS empNo,
         I.EMP_NAME       AS name,
-        I.POSITION_CODE  AS position,
-        #{deptName}      AS department,   <!-- 요청 파라미터 값 사용 -->
-        P.SHIFT_CODE     AS [plan],
-        NULL             AS result,
+        PI.POSITION_NAME AS position,
+        D.DEPT_NAME      AS department,
+        S.SHIFT_NAME     AS [plan],  <!-- shift_name으로 변경 -->
         #{attType}       AS workType
         FROM WEBEMPPLAN P
         INNER JOIN WEBEMPINFO I ON P.EMP_CODE = I.EMP_CODE
+        INNER JOIN WEBDEPTINFO D ON P.DEPT_CODE = D.DEPT_CODE
+        INNER JOIN WEBPOSITIONINFO PI ON I.POSITION_CODE = PI.POSITION_CODE
+        INNER JOIN WEBSHIFTTYPE S ON P.SHIFT_CODE = S.SHIFT_CODE  <!-- shift_name 조인 추가 -->
         <where>
-            P.WORK_DATE = #{workDate}
-            AND P.HOLIDAY_YN = 'N'
+            <choose>
+                <!-- 휴일근로일 때 -->
+                <when test="attType eq '휴일'">
+                    AND (P.HOLIDAY_YN = 'Y' AND I.status != 'OFF')
+                </when>
+                <!-- 일반 근무일 때 -->
+                <otherwise>
+                    AND P.HOLIDAY_YN = 'N'
+                    AND I.status != 'OFF'
+                </otherwise>
+            </choose>
+
+            AND P.WORK_DATE = #{workDate}
 
             <if test="empCode != null and empCode != ''">
                 AND P.EMP_CODE = #{empCode}
             </if>
+
+            <if test="deptName != null and deptName != ''">
+                AND D.DEPT_NAME = #{deptName}
+            </if>
         </where>
-        ORDER BY P.EMP_CODE
+
+        ORDER BY PI.POSITION_NAME, P.EMP_CODE, I.EMP_NAME
     </select>
+
+
 
 </mapper>
 

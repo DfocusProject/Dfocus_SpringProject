@@ -13,6 +13,16 @@
     <div class="container">
         <h2>홈 화면</h2>
         <div id="error-message" th:text="${error}" style="display:none;"></div>
+
+        <!-- 출퇴근 버튼 추가 -->
+        <div class="attendance-buttons" style="margin-top: 20px;">
+            <form th:action="@{/att/on}" method="post" style="display:inline;">
+                <button type="submit">출근</button>
+            </form>
+            <form th:action="@{/att/off}" method="post" style="display:inline; margin-left:10px;">
+                <button type="submit">퇴근</button>
+            </form>
+        </div>
     </div>
 </main>
 
@@ -22,5 +32,7 @@
         alert(error);
     }
 </script>
+<script th:src="@{/js/script.js}"></script>
+
 </body>
 </html>

@@ -9,8 +9,6 @@ import java.util.List;
 public interface PatternMapper {
     List<ShiftType> selectAllShiftTypes();
 
-    void insertPattern(String patternName);
-
     void upsertPatternDetail(String patternName, LocalDate date, String code);
 
     // 모든 패턴 이름 조회
@@ -20,6 +18,8 @@ public interface PatternMapper {
     List<Pattern> selectPatternList(String patternName);
 
     void createPattern(String patternName, String description);
+
+    String findShiftCodeByShiftName(String patternName);
 
     //List<String> selectDeptsByPattern(String patternName);
 }
