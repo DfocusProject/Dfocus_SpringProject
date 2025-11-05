@@ -1,88 +1,62 @@
+/* === 전체 페이지 스타일 통합 === */
+
+/* Body & 기본 폰트 */
 body {
-    /* font-family: "맑은 고딕", Arial, sans-serif; */
     background-color: #f9f9f9;
-    margin: 0; /* 20px에서 0으로 변경 */
+    margin: 0;
+    font-family: "맑은 고딕", Arial, sans-serif;
+    color: #212529;
 }
 
-h2 {
-    margin-bottom: 10px;
-    margin-top: 0; /* 상단 여백 제거 */
-    padding: 15px 20px 10px 20px; /* 내부 패딩으로 조정 */
+/* Header */
+.header {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
+.header h1 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Search Box */
 .search-box {
     border: 2px solid #1e88e5;
     padding: 10px;
     background-color: #fff;
-    margin: 0 20px; /* 좌우 여백만 유지 */
+    margin: 10px 20px; /* ✅ 좌우 margin 제거 */
 }
-
 
 .search-box select,
 .search-box input {
     margin-right: 10px;
-    padding: 3px 5px;
+    padding: 4px 6px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
 }
 
 .search-box button {
     background-color: #1e88e5;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 6px 12px;
     cursor: pointer;
+    border-radius: 3px;
 }
 
-/* readonly 전용 (부서 input 전용) */
-input[readonly] {
-    background-color: #f4f6f8; /* 살짝 회색톤 */
-    border: 1px solid #bbb;    /* 경계선 조금 더 진하게 */
-    color: #555;               /* 글자색 조금 어둡게 */
-    cursor: default;           /* 마우스 포인터를 일반 화살표로 */
-    font-weight: 500;
+.note {
+    color: #888;
+    font-size: 0.9em;
+    margin-left: 10px;
 }
 
-input[readonly]:focus {
-    outline: none;     /* 기본 파란 테두리 제거 */
-    border-color: #bbb; /* 클릭 전과 동일하게 유지 */
-    box-shadow: none;  /* 그림자 효과 제거 */
-}
-
-/* .table-container {
-    margin-top: 0px;
-} */
-
-.table-container {
-    padding: 0 20px; /* 좌우 여백만 유지 */
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-}
-
-th, td {
-    border: 1px solid #ccc;
-    padding: 8px;
-    text-align: center;
-}
-
-th {
-    background-color: #f1f1f1;
-}
-
-.required {
-    border: 2px solid red;
-}
-
-.highlight {
-    background-color: #ffeaea;
-}
-
+/* Buttons */
 .btn-area {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 0 20px; /* 좌우 여백 추가 */
+    margin: 10px 20px; /* ✅ 좌우 margin 제거 */
     text-align: right;
 }
 
@@ -92,31 +66,129 @@ th {
     cursor: pointer;
     color: white;
     border-radius: 3px;
+    margin-left: 5px;
 }
 
-.btn-save {
-    background-color: #4caf50;
+.btn-save { background-color: #4caf50; }
+.btn-delete { background-color: #f44336; }
+.btn-request { background-color: #2196f3; }
+.btn-cancel { background-color: #9e9e9e; }
+
+/* Readonly input (부서 등) */
+input[readonly] {
+    background-color: #f4f6f8;
+    border: 1px solid #bbb;
+    color: #555;
+    cursor: default;
+    font-weight: 500;
+}
+input[readonly]:focus {
+    outline: none;
+    border-color: #bbb;
+    box-shadow: none;
 }
 
-.btn-delete {
-    background-color: #f44336;
+/**************************************
+ * 📋 근태 테이블 (attTable)
+ **************************************/
+#attTable {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    /* 기존: margin: 0px 20px; */
+    margin: 10px auto; /* 가운데 정렬 + 좌우 여백 제거 */
+    width: calc(100% - 40px); /* search-box 여백과 맞춤 (선택사항) */
 }
 
-.btn-request {
-    background-color: #2196f3;
+/* 헤더 스타일 */
+#attTable thead th {
+    background-color: #f4f6f8;
+    color: #333;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 2px solid #ccc;
+    padding: 10px 8px;
 }
 
-.btn-cancel {
-    background-color: #9e9e9e;
+/* 일반 셀 */
+#attTable td {
+    border-bottom: 1px solid #e2e2e2;
+    text-align: center;
+    vertical-align: middle;
 }
 
-.note {
-    color: #888;
-    font-size: 0.9em;
-    flex-shrink: 0;
+/* 줄무늬 효과 */
+#attTable tr:nth-child(even) {
+    background-color: #fafafa;
 }
 
-.important {
-    color: red;
-    margin-top: 10px;
+/* Hover 시 강조 */
+#attTable tbody tr:hover {
+    background-color: #e8f2fd;
+    transition: background-color 0.2s ease;
+}
+
+/* 특정 상태 강조 */
+#attTable .highlight {
+    background-color: #ffeaea;
+    color: #c62828;
+    font-weight: 600;
+}
+
+/* 입력 필드 스타일 */
+#attTable input[type="text"],
+#attTable input[type="time"],
+#attTable select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 13px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#attTable input[type="text"]:focus,
+#attTable input[type="time"]:focus,
+#attTable select:focus {
+    border-color: #1e88e5;
+    box-shadow: 0 0 4px rgba(30, 136, 229, 0.3);
+    outline: none;
+}
+
+/* 읽기 전용 필드 */
+#attTable input[readonly] {
+    background-color: #f4f6f8;
+    border: 1px solid #bbb;
+    color: #555;
+    font-weight: 500;
+    cursor: default;
+}
+
+/* 상태/신청자/예상시간 컬럼 강조 */
+#attTable .status,
+#attTable .applicant,
+#attTable .expectedHours {
+    font-weight: 600;
+    color: #333;
+}
+
+/* 내용이 많은 셀 (예: 사유 등) */
+#attTable .memo {
+    text-align: left;
+    white-space: pre-wrap;
+}
+
+/* 버튼이 포함된 행 정렬 */
+#attTable .btn-cell {
+    text-align: center;
+}
+
+/* 테이블 하단 요약 행 */
+#attTable tfoot td {
+    background-color: #f9f9f9;
+    font-weight: bold;
+    border-top: 2px solid #ccc;
+    text-align: center;
 }

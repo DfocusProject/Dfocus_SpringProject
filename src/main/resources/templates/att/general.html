@@ -7,46 +7,48 @@
     <link rel="stylesheet" href="/css/common.css" />
     <link rel="stylesheet" href="/css/att.css" />
 </head>
-
 <body>
-<div th:replace="~{ header.html::header}"></div>
 
+<div th:replace="~{header.html::header}"></div>
 <main>
-    <div th:replace="~{ sidebar.html::sidebar}"></div>
+    <div th:replace="~{sidebar.html::sidebar}"></div>
     <div class="container">
         <div class="header">
             <h1>일반 근태 신청</h1>
         </div>
 
-        <!-- 🔍 검색 폼 -->
+        <!-- 🔍 조회 폼 -->
         <form id="searchForm" class="search-box" action="/att/search" method="get">
             <label>근무유형
                 <select name="attType">
-                    <option value="OT">연장근로</option>
-                    <option value="HOLIDAY">휴일근로</option>
-                    <option value="EARLY">조퇴</option>
-                    <option value="GOOUT">외출</option>
-                    <option value="HALF">반차</option>
+                    <option value="연장" th:selected="${attType == '연장'}">연장근로</option>
+                    <option value="조출" th:selected="${attType == '조출'}">연장(조출)근로</option>
+                    <option value="휴일" th:selected="${attType == '휴일'}">휴일근로</option>
+                    <option value="조퇴" th:selected="${attType == '조퇴'}">조퇴</option>
+                    <option value="외출" th:selected="${attType == '외출'}">외출</option>
+                    <option value="반차" th:selected="${attType == '반차'}">반차</option>
                 </select>
             </label>
+
             <label>근무일
-                <input type="date" name="workDate" id="workDate">
+                <input type="date" name="workDate" id="workDate"
+                       th:value="${workDate != null} ? ${workDate} : ${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
             </label>
+
             <label for="empCode">사번</label>
             <input type="text" id="empCode" name="empCode"
-                   th:value="${role == 'USER' ? empCode : ''}"
-                   th:readonly="${role == 'USER'}" placeholder="사번 입력" />
+                   th:value="${role == 'USER'} ? ${empCode} : ''"
+                   th:readonly="${role == 'USER'}"
+                   placeholder="사번 입력" />
 
             <label for="deptName">부서</label>
             <input type="text" id="deptName" name="deptName"
                    th:value="${deptName}" readonly placeholder="부서명" />
 
-            <button type="submit" id="btnSearch">조회</button>
-
-            <span class="note">※ 근무일 선택 후 ‘조회’ 클릭</span>
+            <button type="button" id="btnSearch">조회</button>
+            <span class="note">※ 근무일 선택 후 '조회' 클릭</span>
         </form>
 
-        <!-- 버튼 영역 -->
         <div class="btn-area">
             <button class="btn btn-save" id="btnSave">저장</button>
             <button class="btn btn-delete" id="btnDelete">삭제</button>
@@ -54,7 +56,6 @@
             <button class="btn btn-cancel" id="btnRequestCancel">상신 취소</button>
         </div>
 
-        <!-- 근태 테이블 -->
         <table id="attTable">
             <thead>
             <tr>
@@ -83,24 +84,31 @@
                 <td class="position" th:text="${emp.position}"></td>
                 <td class="department" th:text="${emp.department}"></td>
                 <td class="plan" th:text="${emp.plan}"></td>
-                <td class="result" th:text="${emp.result}"></td>
+                <td class="result" th:text="${emp.realWorkRecord}"></td>
                 <td class="workType" th:text="${emp.workType}"></td>
                 <td>
                     <select class="reason">
                         <option value="">--선택--</option>
-                        <option value="업무지연">업무지연</option>
-                        <option value="프로젝트마감">프로젝트 마감</option>
-                        <option value="고객요청">고객 요청</option>
-                        <option value="기타">기타</option>
+                        <option value="업무지연" th:selected="${emp.reqReason == '업무지연'}">업무지연</option>
+                        <option value="프로젝트마감" th:selected="${emp.reqReason == '프로젝트마감'}">프로젝트 마감</option>
+                        <option value="고객요청" th:selected="${emp.reqReason == '고객요청'}">고객 요청</option>
+                        <option value="기타" th:selected="${emp.reqReason == '기타'}">기타</option>
                     </select>
                 </td>
-                <td><input type="text" class="reasonDetail"></td>
-                <td><input type="time" class="startTime"></td>
-                <td><input type="time" class="endTime"></td>
+                <td><input type="text" class="reasonDetail" th:value="${emp.reqReasonDetail}"></td>
+                <td><input type="time" class="startTime" th:value="${emp.startTime}"></td>
+                <td><input type="time" class="endTime" th:value="${emp.endTime}"></td>
                 <td class="expectedHours highlight"></td>
-                <td class="status"></td>
-                <td class="applicant"></td>
+                <td class="status" th:switch="${emp.reqStatus}">
+                    <span th:case="'SAVED'">저장</span>
+                    <span th:case="'SUBMITTED'">상신</span>
+                    <span th:case="'APPROVED'">승인</span>
+                    <span th:case="'REJECTED'">반려</span>
+                    <span th:case="*"></span>
+                </td>
+                <td class="applicant" th:text="${emp.applicant}"></td>
             </tr>
+
             <tr th:if="${#lists.isEmpty(empList)}">
                 <td colspan="15" style="text-align:center;">조회된 데이터가 없습니다.</td>
             </tr>
@@ -108,69 +116,44 @@
         </table>
     </div>
 </main>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = /*[[${error}]]*/ null;
+    if (errorMsg != null) {
+        alert(errorMsg);
+    }
+    /*]]>*/
+</script>
+<script th:src="@{/js/form.js}"></script>
 
 <script>
-    // 오늘 날짜 자동 입력
-    const dateInput = document.getElementById("workDate");
-    const today = new Date();
-    dateInput.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-    // 전체 체크
-    document.getElementById('checkAll').addEventListener('change', e => {
-        const checked = e.target.checked;
-        document.querySelectorAll('.rowCheck').forEach(cb => cb.checked = checked);
-    });
 
-    // 선택된 행 데이터 수집
-    function collectSelectedRows() {
-        return Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => {
-            const row = cb.closest('tr');
-            return {
-                empNo: row.querySelector('.empNo').innerText,
-                name: row.querySelector('.name').innerText,
-                position: row.querySelector('.position').innerText,
-                department: row.querySelector('.department').innerText,
-                workType: row.querySelector('.workType').innerText,
-                reason: row.querySelector('.reason').value,
-                reasonDetail: row.querySelector('.reasonDetail').value,
-                startTime: row.querySelector('.startTime').value,
-                endTime: row.querySelector('.endTime').value,
-                expectedHours: row.querySelector('.expectedHours').innerText,
-                status: row.querySelector('.status').innerText,
-                applicant: row.querySelector('.applicant').innerText
-            };
+    document.addEventListener('DOMContentLoaded', () => {
+        // 오늘 날짜 자동 입력
+        const dateInput = document.getElementById("workDate");
+        // const today = new Date();
+        // dateInput.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+        // 전체 체크박스 초기화
+        initCheckAll('#checkAll', '.rowCheck');
+
+        // 조회 버튼 (form GET)
+        document.getElementById('btnSearch').addEventListener('click', () => {
+            submitSearch('#searchForm');
         });
-    }
 
-    // 공통 POST 요청
-    async function postRequest(action, rows) {
-        console.log(`POST ${action}`, rows);
-        alert(`✅ ${action} 요청 완료`);
-    }
+        // 저장 버튼 (POST /att/save)
+        document.getElementById('btnSave').addEventListener('click', () => {
+            const workDate = document.querySelector('#workDate').value;
+            submitSave('/att/save', workDate);
+        });
 
-    // 버튼 이벤트
-    document.getElementById('btnSave').addEventListener('click', () => {
-        const rows = collectSelectedRows();
-        if (!rows.length) { alert('선택된 행이 없습니다'); return; }
-        postRequest('/att/save', rows);
-    });
-
-    document.getElementById('btnDelete').addEventListener('click', () => {
-        const rows = collectSelectedRows();
-        if (!rows.length) { alert('선택된 행이 없습니다'); return; }
-        postRequest('/att/delete', rows);
-    });
-
-    document.getElementById('btnRequest').addEventListener('click', () => {
-        const rows = collectSelectedRows();
-        if (!rows.length && !confirm('선택된 행이 없습니다. 전체 상신하시겠습니까?')) return;
-        postRequest('/att/request', rows);
-    });
-
-    document.getElementById('btnRequestCancel').addEventListener('click', () => {
-        const rows = collectSelectedRows();
-        if (!rows.length) { alert('선택된 행이 없습니다'); return; }
-        postRequest('/att/request-cancle', rows);
+        // 삭제 버튼 (POST /att/delete)
+        document.getElementById('btnDelete').addEventListener('click', () => {
+            const workDate = document.querySelector('#workDate').value;
+            submitDelete('/att/delete', workDate);
+        });
     });
 </script>
 
