@@ -134,7 +134,8 @@ public class AttController {
         return "redirect:/att/general";
     }
     @PostMapping("/delete")
-    public void String(@ModelAttribute AttendanceRequestDto request){
+    public String delete(@ModelAttribute AttendanceRequestDto request){
         attService.deleteAttendance(request.getWorkDate(), request.getAttList());
+        return "redirect:/att/general";
     }
 }

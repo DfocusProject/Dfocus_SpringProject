@@ -102,19 +102,19 @@ function submitDelete(actionUrl, workDate) {
     rows.forEach((row, idx) => {
         const empNoInput = document.createElement('input');
         empNoInput.type = 'hidden';
-        empNoInput.name = `deleteList[${idx}].empNo`;
+        empNoInput.name = `attList[${idx}].empNo`;
         empNoInput.value = row.empNo;
         form.appendChild(empNoInput);
 
         const typeInput = document.createElement('input');
         typeInput.type = 'hidden';
-        typeInput.name = `deleteList[${idx}].workType`;
+        typeInput.name = `attList[${idx}].workType`;
         typeInput.value = row.workType;
         form.appendChild(typeInput);
 
         const dateHidden = document.createElement('input');
         dateHidden.type = 'hidden';
-        dateHidden.name = `deleteList[${idx}].workDate`;
+        dateHidden.name = `attList[${idx}].workDate`;
         dateHidden.value = workDate;
         form.appendChild(dateHidden);
     });
