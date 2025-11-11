@@ -13,5 +13,5 @@ import java.util.List;
 public class AttendanceRequestDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate workDate;  // LocalDate로 변경
-    private List<AttendanceDto> attList;
+    private List<BaseAttEmpDto> attList;
 }

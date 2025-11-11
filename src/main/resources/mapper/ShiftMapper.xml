@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+    <mapper namespace="com.skuniv.dfocus_project.mapper.ShiftMapper">
+        <select id="selectShift" resultType="com.skuniv.dfocus_project.dto.Shift">
+        SELECT
+        shift_code AS shiftCode,
+        shift_name AS shiftName,
+        time_item_code AS timeItemCode,
+        memo,
+        use_yn AS useYn,
+        five_week_yn AS fiveWeekYn,
+        work_type_code AS workTypeCode,
+        work_day_type AS workDayType,
+        sort_seq AS sortSeq,
+
+        STUFF(work_on_time, 3, 0, ':') AS workOnTime,
+
+        STUFF(work_off_time, 3, 0, ':') AS workOffTime,
+        work_off_next_day AS workOffNextDay,
+
+        STUFF(break1_start_time, 3, 0, ':') AS break1StartTime,
+        break1_start_next_day AS break1StartNextDay,
+
+        STUFF(break1_end_time, 3, 0, ':') AS break1EndTime,
+        break1_end_next_day AS break1EndNextDay,
+
+        STUFF(over2_start_time, 3, 0, ':') AS over2StartTime,
+        over2_start_next_day AS over2StartNextDay,
+
+        STUFF(over2_end_time, 3, 0, ':') AS over2EndTime,
+        over2_end_next_day AS over2EndNextDay,
+
+        STUFF(over_start_time, 3, 0, ':') AS overStartTime,
+        over_start_next_day AS overStartNextDay,
+
+        STUFF(over_end_time, 3, 0, ':') AS overEndTime,
+        over_end_next_day AS overEndNextDay
+
+        FROM WEBSHIFTTYPE
+        WHERE shift_code = #{shiftCode}
+    </select>
+
+    <select id="selectWeeklyShiftCodes" resultType="map">
+        SELECT
+            work_date,
+            shift_code
+        FROM WEBEMPPLAN
+        WHERE emp_code = #{empCode}
+          AND work_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY work_date
+    </select>
+</mapper>

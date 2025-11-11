@@ -91,4 +91,9 @@
         SET work_pattern = #{patternCode}
         WHERE dept_code = #{deptCode}
     </update>
+    <select id="getLeaderByDeptCode" parameterType="string" resultType="string">
+        SELECT dept_leader
+        FROM WEBDEPTINFO
+        WHERE dept_code = #{deptCode}
+    </select>
 </mapper>

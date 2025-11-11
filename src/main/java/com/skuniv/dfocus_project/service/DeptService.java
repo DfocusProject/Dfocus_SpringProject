@@ -58,7 +58,6 @@ public class DeptService {
         return root;
     }
 
-
     public void createDepartment(Dept dept) {
         deptMapper.insertDept(dept);
     }

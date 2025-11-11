@@ -1,7 +1,7 @@
 package com.skuniv.dfocus_project.mapper;
 
 import com.skuniv.dfocus_project.domain.emp.Emp;
-import com.skuniv.dfocus_project.dto.AttEmpDto;
+import com.skuniv.dfocus_project.dto.AttEmpViewDto;
 import com.skuniv.dfocus_project.dto.EmpDto;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -26,5 +26,5 @@ public interface EmpMapper {
 
     void insertEmpPlan(LocalDate workDate, String empCode, String deptCode, String shiftCode, String patternName, String holidayYn);
 
-    List<AttEmpDto> findAttEmpList(String attType, LocalDate workDate, String empCode, String deptName);
+    List<AttEmpViewDto> findAttEmpList(String attType, LocalDate workDate, String empCode, String deptName);
 }

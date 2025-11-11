@@ -1,14 +1,13 @@
 package com.skuniv.dfocus_project.controller;
 
+import com.skuniv.dfocus_project.domain.Time.TimeRange;
 import com.skuniv.dfocus_project.domain.account.Account;
-import com.skuniv.dfocus_project.domain.dept.Dept;
 import com.skuniv.dfocus_project.dto.*;
 import com.skuniv.dfocus_project.service.AttService;
 import com.skuniv.dfocus_project.service.DeptService;
 import com.skuniv.dfocus_project.service.EmpService;
 import com.skuniv.dfocus_project.service.PatternService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.stereotype.Controller;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
@@ -17,9 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -55,6 +52,11 @@ public class AttController {
         return "att/general";
     }
 
+    @GetMapping("/etc")
+    public String etc(){
+        return "att/etc";
+    }
+
     @GetMapping("/search")
     public String search(@RequestParam String attType,
                          @RequestParam LocalDate workDate,
@@ -67,25 +69,26 @@ public class AttController {
         DeptDto deptDto = deptService.getDeptByEmpCode(loginAccount.getEmpCode());
         String deptName = deptDto.getDeptName();
         // 근태 대상자 리스트 조회 및 데이터 가공
-        List<AttEmpDto> empList = empService.getAttEmpList(attType, workDate, searchEmpCode, deptName);
-        for (AttEmpDto emp : empList) {
-            String code = emp.getEmpNo();
-            String realWorkRecord = attService.getRealWorkRecord(code, workDate);
-            String shiftCode = attService.getShiftCodeByShiftName(emp.getPlan());
-            Map<String, String> planTime = attService.getPlannedCommuteTime(shiftCode);
+        List<AttEmpViewDto> empList = empService.getAttEmpList(attType, workDate, searchEmpCode, deptName);
 
+        for (AttEmpViewDto emp : empList) {
+            // 실근무 기록 계산
+            String realWorkRecord = attService.getRealWorkRecord(emp.getEmpCode(), workDate);
             emp.setRealWorkRecord(realWorkRecord);
-            emp.setStartTime(planTime.get("start_time"));
-            emp.setEndTime(planTime.get("end_time"));
 
-            AttEmpDto savedAttendance = attService.getSavedAttendance(code, workDate, attType);
-            if (savedAttendance != null) {
-                emp.setReqReason(savedAttendance.getReqReason());
-                emp.setReqReasonDetail(savedAttendance.getReqReasonDetail());
-                emp.setReqStatus(savedAttendance.getReqStatus());
-                emp.setApplicant(savedAttendance.getApplicant());
+            double expectedWorkHours = attService.getWeeklyWorkHours(emp.getEmpCode(), workDate);
+            emp.setExpectedWorkHours(expectedWorkHours);
+
+            // 계획 근무시간 조회
+            if(emp.getRequestId() == null) {
+                TimeRange planTime = attService.getPlannedCommuteTime(emp.getEmpCode(), workDate);
+                emp.setPlannedStartTime(planTime.getStartTime());
+                emp.setPlannedEndTime(planTime.getEndTime());
             }
+            // 저장/상신된 근태 정보는 이미 LEFT JOIN으로 empList에 포함되어 있음
+            // 따라서 savedAttendance 조회는 필요 없음
         }
+
         // 검색 유지용 모델
         model.addAttribute("empCode", searchEmpCode);
         model.addAttribute("attType", attType);
@@ -126,16 +129,37 @@ public class AttController {
                                  RedirectAttributes redirectAttributes) {
 
         Account loginAccount = (Account) session.getAttribute("loginAccount");
-        String error = attService.saveAttendance(request.getWorkDate(), request.getAttList(), loginAccount.getEmpCode());
+        String message = attService.saveAttendance(request.getWorkDate(), request.getAttList(), loginAccount.getEmpCode());
+
+        if (message != null) {
+            redirectAttributes.addFlashAttribute("error", message);
+        }
+        return "redirect:/att/general";
+    }
+
+    @PostMapping("/request")
+    public String submitAttendance(@ModelAttribute AttendanceRequestDto request,
+                                   HttpSession session,
+                                   RedirectAttributes redirectAttributes) {
+        Account loginAccount = (Account) session.getAttribute("loginAccount");
+        String error = attService.requestAttendance(request.getWorkDate(), request.getAttList(), loginAccount.getEmpCode());
 
         if (error != null) {
             redirectAttributes.addFlashAttribute("error", error);
+            return "redirect:/att/general"; // 오류 있으면 다시 돌아가기
         }
+
+        redirectAttributes.addFlashAttribute("message", "상신이 완료되었습니다.");
         return "redirect:/att/general";
     }
     @PostMapping("/delete")
     public String delete(@ModelAttribute AttendanceRequestDto request){
-        attService.deleteAttendance(request.getWorkDate(), request.getAttList());
+        attService.deleteAttendance(request.getAttList());
+        return "redirect:/att/general";
+    }
+    @PostMapping("/requestCancel")
+    public String requestCancel(@ModelAttribute AttendanceRequestDto request){
+        attService.cancelAttendance(request.getAttList());
         return "redirect:/att/general";
     }
 }
