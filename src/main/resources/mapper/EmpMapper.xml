@@ -79,48 +79,55 @@
         VALUES
             (#{workDate}, #{empCode}, #{deptCode}, #{shiftCode}, NULL, #{patternName}, #{holidayYn});
     </insert>
-    <select id="findAttEmpList" resultType="com.skuniv.dfocus_project.dto.AttEmpDto">
+    <select id="findAttEmpList" resultType="com.skuniv.dfocus_project.dto.AttEmpViewDto">
         SELECT
-        P.EMP_CODE       AS empNo,
+        P.EMP_CODE       AS empCode,
         I.EMP_NAME       AS name,
         PI.POSITION_NAME AS position,
         D.DEPT_NAME      AS department,
-        S.SHIFT_NAME     AS [plan],  <!-- shift_name으로 변경 -->
-        #{attType}       AS workType
+        S.SHIFT_NAME     AS planShiftType,
+        CAST(STUFF(S.WORK_ON_TIME, 3, 0, ':') + ':00' AS TIME) AS plannedStartTime,
+        CAST(STUFF(S.WORK_OFF_TIME, 3, 0, ':') + ':00' AS TIME) AS plannedEndTime,
+        #{attType}       AS attType,
+        R.REQUEST_ID     AS requestId,
+        R.REQ_REASON     AS reason,
+        R.REQ_REASON_DETAIL AS reasonDetail,
+        R.REQ_STATUS     AS status,
+        R.APPLICANT      AS applicant,
+        G.START_TIME     AS startTime,
+        G.END_TIME       AS endTime,
+        G.HALF_TYPE      AS halfType
         FROM WEBEMPPLAN P
         INNER JOIN WEBEMPINFO I ON P.EMP_CODE = I.EMP_CODE
         INNER JOIN WEBDEPTINFO D ON P.DEPT_CODE = D.DEPT_CODE
         INNER JOIN WEBPOSITIONINFO PI ON I.POSITION_CODE = PI.POSITION_CODE
-        INNER JOIN WEBSHIFTTYPE S ON P.SHIFT_CODE = S.SHIFT_CODE  <!-- shift_name 조인 추가 -->
-        <where>
-            <choose>
-                <!-- 휴일근로일 때 -->
-                <when test="attType eq '휴일'">
-                    AND (P.HOLIDAY_YN = 'Y' AND I.status != 'OFF')
-                </when>
-                <!-- 일반 근무일 때 -->
-                <otherwise>
-                    AND P.HOLIDAY_YN = 'N'
-                    AND I.status != 'OFF'
-                </otherwise>
-            </choose>
-
-            AND P.WORK_DATE = #{workDate}
-
-            <if test="empCode != null and empCode != ''">
-                AND P.EMP_CODE = #{empCode}
-            </if>
-
-            <if test="deptName != null and deptName != ''">
-                AND D.DEPT_NAME = #{deptName}
-            </if>
-        </where>
-
+        INNER JOIN WEBSHIFTTYPE S ON P.SHIFT_CODE = S.SHIFT_CODE
+        LEFT JOIN WEBATTREQUEST R
+        ON R.EMP_CODE = P.EMP_CODE
+        AND R.REQUEST_DATE = P.WORK_DATE
+        AND R.ATTENDANCE_TYPE = #{attType}
+        AND R.REQ_STATUS IN ('SAVED', 'REQUESTED')
+        LEFT JOIN WEBATTREQUESTGENERAL G
+        ON G.REQUEST_ID = R.REQUEST_ID
+        WHERE 1=1
+        <choose>
+            <when test="attType eq '휴일'">
+                AND (P.HOLIDAY_YN = 'Y' AND I.STATUS != 'OFF')
+            </when>
+            <otherwise>
+                AND P.HOLIDAY_YN = 'N'
+                AND I.STATUS != 'OFF'
+            </otherwise>
+        </choose>
+        AND P.WORK_DATE = #{workDate}
+        <if test="empCode != null and empCode != ''">
+            AND P.EMP_CODE = #{empCode}
+        </if>
+        <if test="deptName != null and deptName != ''">
+            AND D.DEPT_NAME = #{deptName}
+        </if>
         ORDER BY PI.POSITION_NAME, P.EMP_CODE, I.EMP_NAME
     </select>
-
-
-
 </mapper>
 
 

@@ -19,6 +19,7 @@ public interface PatternMapper {
 
     void createPattern(String patternName, String description);
 
+    //name - > code
     String findShiftCodeByShiftName(String patternName);
 
     //List<String> selectDeptsByPattern(String patternName);

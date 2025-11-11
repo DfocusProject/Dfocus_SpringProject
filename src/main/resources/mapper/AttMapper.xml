@@ -5,7 +5,7 @@
 
 <mapper namespace="com.skuniv.dfocus_project.mapper.AttMapper">
     <!-- 실제 출퇴근 기록 시간 -->
-    <select id="getActualCommuteRecord" resultType="com.skuniv.dfocus_project.dto.CommuteRecordDto" parameterType="map">
+    <select id="getActualCommuteRecord" resultType="com.skuniv.dfocus_project.dto.TimeRecordDto" parameterType="map">
         SELECT
             start_time as startTime,
             end_time as endTime
@@ -86,47 +86,45 @@
           AND attendance_type = #{attType}
     </select>
 
-    <insert id="insertAttendanceRequest" parameterType="com.skuniv.dfocus_project.dto.AttendanceDto">
+    <insert id="insertAttendanceRequest"
+            parameterType="com.skuniv.dfocus_project.dto.BaseAttEmpDto"
+            useGeneratedKeys="true" keyProperty="dto.requestId">
+
         INSERT INTO WEBATTREQUEST (
             emp_code,
             req_reason,
             request_date,
             req_status,
             req_reason_detail,
-            [current_date],
             attendance_type,
             applicant
-        )
+            )
         VALUES (
-                   #{empNo, jdbcType=VARCHAR},
-                   #{reason, jdbcType=VARCHAR},
-                   #{workDate, jdbcType=DATE},
-                   #{status, jdbcType=VARCHAR},
-                   #{reasonDetail, jdbcType=VARCHAR},
-                   GETDATE(),
-                   #{workType, jdbcType=VARCHAR},
-                   #{applicant}
-               )
+            #{dto.empCode},
+            #{dto.reason},
+            #{selectedDate},
+            #{dto.status},
+            #{dto.reasonDetail},
+            #{dto.attType},
+            #{applicant}
+        )
     </insert>
 
-    <update id="updateAttendanceRequest" parameterType="com.skuniv.dfocus_project.dto.AttendanceDto">
+    <update id="updateAttendanceRequest" parameterType="com.skuniv.dfocus_project.dto.BaseAttEmpDto">
         UPDATE WEBATTREQUEST
         SET
-            req_reason = #{reason},
-            req_status = #{status},
-            req_reason_detail = #{reasonDetail},
-            [current_date] = GETDATE(),
+            req_reason = #{dto.reason},
+            req_status = #{dto.status},
+            req_reason_detail = #{dto.reasonDetail},
             applicant = #{applicant}
-        WHERE emp_code = #{empNo}
-          AND request_date = #{workDate, jdbcType=DATE}
-          AND attendance_type = #{workType}
+        WHERE request_id = #{dto.requestId}
     </update>
 
-    <select id="findAttendanceRecord" resultType="com.skuniv.dfocus_project.dto.AttEmpDto">
+    <select id="findAttendanceRecord" resultType="com.skuniv.dfocus_project.dto.AttEmpViewDto">
         SELECT
-            req_reason AS reqReason,
-            req_reason_detail AS reqReasonDetail,
-            req_status AS reqStatus,
+            req_reason AS reason,
+            req_reason_detail AS reasonDetail,
+            req_status AS status,
             applicant
         FROM WEBATTREQUEST
         WHERE emp_code = #{empCode}
@@ -135,9 +133,144 @@
     </select>
     <delete id="deleteAttendanceRecord" parameterType="map">
         DELETE FROM WEBATTREQUEST
+        WHERE request_id = #{requestId}
+    </delete>
+    <select id="findAttendanceRequestId" parameterType="map" resultType="long">
+        SELECT TOP 1 request_id
+        FROM WEBATTREQUEST
         WHERE emp_code = #{empNo}
-          AND request_date = #{workDate}
           AND attendance_type = #{workType}
-          AND req_status = 'SAVED'
+          AND request_date = #{workDate}
+    </select>
+
+    <!-- 결재선 레코드 삽입 -->
+    <insert id="insertApprovalRecord" parameterType="map">
+        INSERT INTO WEBAPPROVALLINE
+        (emp_request, emp_response, request_id, sequence_no, approval_status, approval_time)
+        VALUES
+            (#{emp_request}, #{emp_response}, #{requestId}, #{sequenceNo}, #{status}, #{approval_time})
+    </insert>
+    <update id="updateAttendanceStatus">
+        UPDATE WEBATTREQUEST
+        SET req_status = #{status}
+        WHERE request_id = #{requestId}
+    </update>
+
+    <select id="existRequestRecord" parameterType="long" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM WEBAPPROVALLINE
+        WHERE request_id = #{requestId}
+    </select>
+
+    <insert id="insertAttendanceRequestGeneral" parameterType="com.skuniv.dfocus_project.dto.BaseAttEmpDto">
+        INSERT INTO WEBATTREQUESTGENERAL (
+        request_id,
+        start_time,
+        end_time,
+        start_next_day,
+        end_next_day
+        )
+        VALUES (
+        #{requestId},
+        #{startTime, jdbcType=TIME},
+        #{endTime, jdbcType=TIME},
+        <choose>
+            <when test="startNextDay == true">1</when>
+            <otherwise>0</otherwise>
+        </choose>,
+        <choose>
+            <when test="endNextDay == true">1</when>
+            <otherwise>0</otherwise>
+        </choose>
+        )
+    </insert>
+
+
+    <update id="updateAttendanceRequestGeneral" parameterType="com.skuniv.dfocus_project.dto.BaseAttEmpDto">
+        UPDATE WEBATTREQUESTGENERAL
+        SET
+            start_time = #{startTime, jdbcType=TIME},
+            end_time = #{endTime, jdbcType=TIME},
+            start_next_day = #{startNextDay, jdbcType=INTEGER},
+            end_next_day = #{endNextDay, jdbcType=INTEGER}
+        WHERE request_id = #{requestId}
+    </update>
+
+
+    <!-- TimeRange ResultMap -->
+    <resultMap id="timeRangeMap" type="com.skuniv.dfocus_project.domain.Time.TimeRange">
+        <constructor>
+            <arg column="baseDate" javaType="java.time.LocalDate"/>
+            <arg column="startTime" javaType="java.time.LocalTime"/>
+            <arg column="startNextDay" javaType="boolean"/>
+            <arg column="endTime" javaType="java.time.LocalTime"/>
+            <arg column="endNextDay" javaType="boolean"/>
+        </constructor>
+    </resultMap>
+
+    <!-- 계획 출퇴근 시간 조회 - HHMM 형식 -->
+    <select id="getPlannedCommuteTime2" resultMap="timeRangeMap">
+        SELECT
+            es.work_date AS baseDate,
+            CAST(STUFF(s.work_on_time, 3, 0, ':') AS TIME) AS startTime,
+            CAST(0 AS BIT) AS startNextDay,
+            CAST(STUFF(s.work_off_time, 3, 0, ':') AS TIME) AS endTime,
+            CAST(s.work_off_next_day AS BIT) AS endNextDay
+        FROM WEBSHIFTTYPE s
+                 JOIN WEBEMPPLAN es ON s.shift_code = es.shift_code
+        WHERE es.emp_code = #{empCode}
+          AND es.work_date = #{workDate}
+    </select>
+
+    <!-- 실제 출퇴근 시간 조회 - TIME 타입 -->
+    <select id="getRealCommuteTime2" resultMap="timeRangeMap">
+        SELECT
+            a.work_date AS baseDate,
+            a.start_time AS startTime,
+            CAST(0 AS BIT) AS startNextDay,
+            a.end_time AS endTime,
+            CAST(a.end_next_day AS BIT) AS endNextDay
+        FROM WEBCOMMUTERECORD a
+        WHERE a.emp_code = #{empCode}
+          AND a.work_date = #{workDate}
+          AND a.start_time IS NOT NULL
+          AND a.end_time IS NOT NULL
+    </select>
+
+    <!-- 신청 근무 시간 조회 - HH:MM 형식 -->
+    <select id="getRequestWorkTime2" resultMap="timeRangeMap">
+        SELECT
+            r.request_date AS baseDate,
+            CAST(rg.start_time AS TIME) AS startTime,
+            CAST(rg.start_next_day AS BIT) AS startNextDay,
+            CAST(rg.end_time AS TIME) AS endTime,
+            CAST(rg.end_next_day AS BIT) AS endNextDay
+        FROM WEBATTREQUESTGENERAL rg
+                 JOIN WEBATTREQUEST r ON rg.request_id = r.request_id
+        WHERE r.request_date = #{workDate}
+          AND r.emp_code = #{empCode}
+          AND r.attendance_type = #{reqType}
+          AND r.req_status IN ('REQUESTED', 'APPROVED')
+    </select>
+
+
+    <!-- 계획 휴게 시간 조회 - HHMM 형식 -->
+    <select id="getPlannedRestTime2" resultMap="timeRangeMap">
+        SELECT
+            es.work_date AS baseDate,
+            CAST(STUFF(s.break1_start_time, 3, 0, ':') AS TIME) AS startTime,
+            CAST(s.break1_start_next_day AS BIT) AS startNextDay,
+            CAST(STUFF(s.break1_end_time, 3, 0, ':') AS TIME) AS endTime,
+            CAST(s.break1_end_next_day AS BIT) AS endNextDay
+        FROM WEBSHIFTTYPE s
+                 JOIN WEBEMPPLAN es ON s.shift_code = es.shift_code
+        WHERE es.emp_code = #{empCode}
+          AND es.work_date = #{workDate}
+          AND s.break1_start_time IS NOT NULL
+          AND s.break1_end_time IS NOT NULL
+    </select>
+    <delete id="deleteApprovalLine" parameterType="long">
+        DELETE FROM WEBAPPROVALLINE
+        WHERE request_id = #{requestId}
     </delete>
 </mapper>

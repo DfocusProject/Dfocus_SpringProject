@@ -24,4 +24,6 @@ public interface DeptMapper {
     void updateDeptLeader(String emp, String deptCode);
     //사원번호로 부서 찾기
     DeptDto getDeptByEmpCode(String empCode);
+    //부서코드로 리더 찾기
+    String getLeaderByDeptCode(String DeptCode);
 }
