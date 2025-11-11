@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
     <title>일반근태 신청</title>
@@ -17,10 +16,9 @@
             <h1>일반 근태 신청</h1>
         </div>
 
-        <!-- 🔍 조회 폼 -->
         <form id="searchForm" class="search-box" action="/att/search" method="get">
             <label>근무유형
-                <select name="attType">
+                <select id="attType" name="attType">
                     <option value="연장" th:selected="${attType == '연장'}">연장근로</option>
                     <option value="조출" th:selected="${attType == '조출'}">연장(조출)근로</option>
                     <option value="휴일" th:selected="${attType == '휴일'}">휴일근로</option>
@@ -77,29 +75,50 @@
             </tr>
             </thead>
             <tbody id="tableBody">
-            <tr th:each="emp : ${empList}">
-                <td><input type="checkbox" class="rowCheck" th:value="${emp.empNo}"></td>
-                <td class="empNo" th:text="${emp.empNo}"></td>
+            <tr th:each="emp : ${empList}"
+                th:data-half-type="${emp.halfType}"
+                th:data-start-time="${emp.startTime}"
+                th:data-end-time="${emp.endTime}"
+                th:data-plan-start="${emp.plannedStartTime}"
+                th:data-plan-end="${emp.plannedEndTime}"
+                th:data-req-start="${emp.startTime}"
+                th:data-req-end="${emp.endTime}"
+            >
+                <td>
+                    <input type="checkbox" class="rowCheck" th:value="${emp.empCode}">
+                    <input type="hidden" class="requestId" th:value="${emp.requestId}">
+                </td>
+                <td class="empCode" th:text="${emp.empCode}"></td>
                 <td class="name" th:text="${emp.name}"></td>
                 <td class="position" th:text="${emp.position}"></td>
                 <td class="department" th:text="${emp.department}"></td>
-                <td class="plan" th:text="${emp.plan}"></td>
+                <td class="planShiftType" th:text="${emp.planShiftType}"></td>
                 <td class="result" th:text="${emp.realWorkRecord}"></td>
-                <td class="workType" th:text="${emp.workType}"></td>
+                <td class="attType" th:text="${emp.attType}"></td>
                 <td>
-                    <select class="reason">
+                    <select class="reason" required>
                         <option value="">--선택--</option>
-                        <option value="업무지연" th:selected="${emp.reqReason == '업무지연'}">업무지연</option>
-                        <option value="프로젝트마감" th:selected="${emp.reqReason == '프로젝트마감'}">프로젝트 마감</option>
-                        <option value="고객요청" th:selected="${emp.reqReason == '고객요청'}">고객 요청</option>
-                        <option value="기타" th:selected="${emp.reqReason == '기타'}">기타</option>
+                        <option value="업무지연" th:selected="${emp.reason == '업무지연'}">업무지연</option>
+                        <option value="프로젝트마감" th:selected="${emp.reason == '프로젝트마감'}">프로젝트 마감</option>
+                        <option value="고객요청" th:selected="${emp.reason == '고객요청'}">고객 요청</option>
+                        <option value="기타" th:selected="${emp.reason == '기타'}">기타</option>
                     </select>
                 </td>
-                <td><input type="text" class="reasonDetail" th:value="${emp.reqReasonDetail}"></td>
-                <td><input type="time" class="startTime" th:value="${emp.startTime}"></td>
-                <td><input type="time" class="endTime" th:value="${emp.endTime}"></td>
-                <td class="expectedHours highlight"></td>
-                <td class="status" th:switch="${emp.reqStatus}">
+                <td><input type="text" class="reasonDetail" th:value="${emp.reasonDetail}" required></td>
+
+                <td>
+                    <label><input type="checkbox" class="startNextDay"> 익일</label>
+                    <input type="time" class="startTime" name="startTime">
+                </td>
+                <td>
+                    <label><input type="checkbox" class="endNextDay"> 익일</label>
+                    <input type="time" class="endTime" name="endTime">
+                </td>
+
+                <td class="expectedHours highlight">
+                    <span th:text="${emp.expectedWorkHours}"></span>
+                </td>
+                <td class="status" th:switch="${emp.status}">
                     <span th:case="'SAVED'">저장</span>
                     <span th:case="'SUBMITTED'">상신</span>
                     <span th:case="'APPROVED'">승인</span>
@@ -125,40 +144,14 @@
     /*]]>*/
 </script>
 <script th:src="@{/js/form.js}"></script>
-
+<script th:src="@{/js/att.js}"></script>
+<script th:src="@{/js/script.js}"></script>
 <script>
-
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // 오늘 날짜 자동 입력
-        const dateInput = document.getElementById("workDate");
-        // const today = new Date();
-        // dateInput.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
-        // 전체 체크박스 초기화
-        initCheckAll('#checkAll', '.rowCheck');
-
-        // 조회 버튼 (form GET)
-        document.getElementById('btnSearch').addEventListener('click', () => {
-            submitSearch('#searchForm');
-        });
-
-        // 저장 버튼 (POST /att/save)
-        document.getElementById('btnSave').addEventListener('click', () => {
-            const workDate = document.querySelector('#workDate').value;
-            submitSave('/att/save', workDate);
-        });
-
-        // 삭제 버튼 (POST /att/delete)
-        document.getElementById('btnDelete').addEventListener('click', () => {
-            const workDate = document.querySelector('#workDate').value;
-            submitDelete('/att/delete', workDate);
-        });
-        // 상신 버튼 (POST /att/request)
-        document.getElementById('btnRequest').addEventListener('click', () => {
-            const workDate = document.querySelector('#workDate').value;
-            submitDelete('/att/request', workDate);
-        });
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchBtn = document.getElementById("btnSearch");
+        if (window.location.pathname.includes("/att/general") && searchBtn) {
+            searchBtn.click();
+        }
     });
 </script>
 
