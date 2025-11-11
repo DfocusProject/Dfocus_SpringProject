@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>기타근태신청</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/att.css}">
+</head>
+<body>
+
+<div th:replace="~{header.html::header}"></div>
+<main>
+    <div th:replace="~{sidebar.html::sidebar}"></div>
+    <section class="container">
+        <div class="header">
+            <h1>기타 근태 신청</h1>
+        </div>
+
+        <!-- 🔹 1. 선택조건 입력 영역 -->
+        <form id="searchForm" th:action="@{/etc/search}" method="get" class="search-box">
+            <label class="required">근무일
+                <input type="date" name="workDate" required>
+            </label>
+
+            <label>사번
+                <input type="text" name="empCode" placeholder="사번 입력">
+            </label>
+
+            <label>근무계획
+                <select name="planType">
+                    <option value="">전체</option>
+                    <option value="주간">주간</option>
+                    <option value="야간">야간</option>
+                </select>
+            </label>
+
+            <label class="required">부서
+                <select name="dept" required>
+                    <option value="">내 부서</option>
+                    <option value="인사팀">인사팀</option>
+                    <option value="총무팀">총무팀</option>
+                </select>
+            </label>
+
+            <button type="submit" class="btn btn-request">조회</button>
+        </form>
+
+        <!-- 🔹 2. 필수입력 영역 -->
+        <form id="applyForm" th:action="@{/etc/apply}" method="post" class="search-box">
+            <label class="required">변경근무
+                <select name="changeType" required>
+                    <option value="">선택</option>
+                    <option value="연장근무">연장근무</option>
+                    <option value="조기출근">조기출근</option>
+                    <option value="특근">특근</option>
+                </select>
+            </label>
+
+            <label class="required">기간
+                <input type="date" name="startDate" required> ~
+                <input type="date" name="endDate" required>
+            </label>
+
+            <label class="required">사유
+                <input type="text" name="reason" placeholder="사유를 입력하세요" required>
+            </label>
+
+            <label class="required">신청시각
+                <select name="applyTime" required>
+                    <option value="">선택</option>
+                    <option value="오전">오전</option>
+                    <option value="오후">오후</option>
+                </select>
+            </label>
+
+            <button type="submit" class="btn btn-save">적용</button>
+        </form>
+
+        <div class="btn-area">
+            <button class="btn btn-save" id="btnSave">저장</button>
+            <button class="btn btn-delete" id="btnDelete">삭제</button>
+            <button class="btn btn-request" id="btnRequest">상신</button>
+            <button class="btn btn-cancel" id="btnRequestCancel">상신 취소</button>
+        </div>
+
+        <!-- 🔹 3. 조회결과 테이블 -->
+        <table id="attTable">
+            <thead>
+            <tr>
+                <th>사번</th>
+                <th>이름</th>
+                <th>부서</th>
+                <th>근무일</th>
+                <th>근무계획</th>
+                <th>변경근무</th>
+                <th>기간</th>
+                <th>사유</th>
+                <th>신청시각</th>
+                <th>상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="emp : ${empList}">
+                <td th:text="${emp.empCode}"></td>
+                <td th:text="${emp.empName}"></td>
+                <td th:text="${emp.dept}"></td>
+                <td th:text="${emp.attDate}"></td>
+                <td th:text="${emp.planType}"></td>
+                <td th:text="${emp.changeType}"></td>
+                <td th:text="${emp.period}"></td>
+                <td th:text="${emp.reason}"></td>
+                <td th:text="${emp.applyTime}"></td>
+                <td th:text="${emp.status}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+<script th:src="@{/js/form.js}"></script>
+<script th:src="@{/js/att.js}"></script>
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>
