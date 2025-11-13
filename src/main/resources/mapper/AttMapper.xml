@@ -273,4 +273,19 @@
         DELETE FROM WEBAPPROVALLINE
         WHERE request_id = #{requestId}
     </delete>
+
+    <select id="getAllRequestWorkTimeForDate" resultType="map">
+        SELECT
+            r.attendance_type,
+            CAST(rg.start_time AS TIME) AS startTime,
+            CAST(rg.start_next_day AS BIT) AS startNextDay,
+            CAST(rg.end_time AS TIME) AS endTime,
+            CAST(rg.end_next_day AS BIT) AS endNextDay
+        FROM WEBATTREQUESTGENERAL rg
+                 JOIN WEBATTREQUEST r ON rg.request_id = r.request_id
+        WHERE r.request_date = #{workDate}
+          AND r.emp_code = #{empCode}
+          AND r.attendance_type IN ('휴일', '연장', '조출', '전반차', '후반차', '조퇴')
+          AND r.req_status IN ('REQUESTED', 'APPROVED')
+    </select>
 </mapper>

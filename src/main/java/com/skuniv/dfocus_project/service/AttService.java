@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.time.LocalDateTime.now;
 
@@ -260,62 +257,109 @@ public class AttService {
 
         return finalMessage.toString();
     }
-
+//    public TimeRange getExpectedWorkTime(String empCode, LocalDate workDate) {
+//        TimeRange plannedCommuteTime = attMapper.getPlannedCommuteTime2(workDate, empCode);
+//
+//        if (plannedCommuteTime == null) {
+//            return null;
+//        }
+//
+//        LocalDateTime finalStart = plannedCommuteTime.getStartDateTime();
+//        LocalDateTime finalEnd = plannedCommuteTime.getEndDateTime();
+//
+//        List<String> reqTypes = List.of("휴일", "연장", "조출", "전반차", "후반차", "조퇴");
+//
+//        for (String type : reqTypes) {
+//            TimeRange requestWorkTime = attMapper.getRequestWorkTime2(workDate, empCode, type);
+//            if (requestWorkTime != null) {
+//                switch (type) {
+//                    case "휴일":
+//                        // 휴일이면 출근/퇴근 둘 다 바꾸기
+//                        finalStart = requestWorkTime.getStartDateTime();
+//                        finalEnd = requestWorkTime.getEndDateTime();
+//                        break;
+//
+//                    case "연장":
+//                        // 연장은 퇴근시간만 바꾸기
+//                        finalEnd = requestWorkTime.getEndDateTime();
+//                        break;
+//
+//                    case "조출":
+//                        // 조출은 출근시간만 바꾸기
+//                        finalStart = requestWorkTime.getStartDateTime();
+//                        break;
+//
+//                    case "전반차":
+//                        // 전반차는 퇴근시간만 바꾸기
+//                        finalEnd = requestWorkTime.getEndDateTime();
+//                        break;
+//
+//                    case "후반차":
+//                        // 후반차는 출근시간만 바꾸기
+//                        finalStart = requestWorkTime.getStartDateTime();
+//                        break;
+//
+//                    case "조퇴":
+//                        // 조퇴는 퇴근시간만 바꾸기
+//                        finalEnd = requestWorkTime.getEndDateTime();
+//                        break;
+//
+//                    default:
+//                        break;
+//                }
+//            }
+//        }
+//        return getTimeRange(workDate, finalStart, finalEnd);
+//    }
     public TimeRange getExpectedWorkTime(String empCode, LocalDate workDate) {
         TimeRange plannedCommuteTime = attMapper.getPlannedCommuteTime2(workDate, empCode);
-
         if (plannedCommuteTime == null) {
             return null;
         }
-
         LocalDateTime finalStart = plannedCommuteTime.getStartDateTime();
         LocalDateTime finalEnd = plannedCommuteTime.getEndDateTime();
 
-        List<String> reqTypes = List.of("휴일", "연장", "조출", "전반차", "후반차", "조퇴");
+        List<Map<String, Object>> allRequests = attMapper.getAllRequestWorkTimeForDate(workDate, empCode);
+        Map<String, TimeRange> requestMap = new HashMap<>();
 
+        for (Map<String, Object> req : allRequests) {
+            String type = (String) req.get("attendance_type");
+            LocalTime startTime = (LocalTime) req.get("startTime");
+            Boolean startNextDay = (Boolean) req.get("startNextDay");
+            LocalTime endTime = (LocalTime) req.get("endTime");
+            Boolean endNextDay = (Boolean) req.get("endNextDay");
+
+            requestMap.put(type, new TimeRange(workDate, startTime, startNextDay, endTime, endNextDay));
+        }
+
+        List<String> reqTypes = List.of("휴일", "연장", "조출", "전반차", "후반차", "조퇴");
         for (String type : reqTypes) {
-            TimeRange requestWorkTime = attMapper.getRequestWorkTime2(workDate, empCode, type);
+            TimeRange requestWorkTime = requestMap.get(type);
             if (requestWorkTime != null) {
                 switch (type) {
                     case "휴일":
-                        // 휴일이면 출근/퇴근 둘 다 바꾸기
+                        // 출근/퇴근 둘 다 변경
                         finalStart = requestWorkTime.getStartDateTime();
-                        finalEnd = requestWorkTime.getEndDateTime();
-                        break;
-
-                    case "연장":
-                        // 연장은 퇴근시간만 바꾸기
                         finalEnd = requestWorkTime.getEndDateTime();
                         break;
 
                     case "조출":
-                        // 조출은 출근시간만 바꾸기
-                        finalStart = requestWorkTime.getStartDateTime();
-                        break;
-
-                    case "전반차":
-                        // 전반차는 퇴근시간만 바꾸기
-                        finalEnd = requestWorkTime.getEndDateTime();
-                        break;
-
                     case "후반차":
-                        // 후반차는 출근시간만 바꾸기
+                        // 출근시간만 변경
                         finalStart = requestWorkTime.getStartDateTime();
                         break;
 
+                    case "연장":
+                    case "전반차":
                     case "조퇴":
-                        // 조퇴는 퇴근시간만 바꾸기
+                        // 퇴근시간만 변경
                         finalEnd = requestWorkTime.getEndDateTime();
-                        break;
-
-                    default:
                         break;
                 }
             }
         }
         return getTimeRange(workDate, finalStart, finalEnd);
     }
-
     private TimeRange getTimeRange(LocalDate workDate, LocalDateTime finalStart, LocalDateTime finalEnd) {
         LocalTime startTime = finalStart.toLocalTime();
         boolean startNextDay = !finalStart.toLocalDate().isEqual(workDate);
