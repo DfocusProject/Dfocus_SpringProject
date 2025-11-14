@@ -94,6 +94,10 @@
         R.REQ_REASON_DETAIL AS reasonDetail,
         R.REQ_STATUS     AS status,
         R.APPLICANT      AS applicant,
+        G.START_NEXT_DAY AS startNextDay,
+        G.END_NEXT_DAY AS endNextDay,
+        S.WORK_ON_NEXT_DAY AS plannedStartNextDay,
+        S.WORK_OFF_NEXT_DAY AS plannedEndNextDay,
         G.START_TIME     AS startTime,
         G.END_TIME       AS endTime,
         G.HALF_TYPE      AS halfType

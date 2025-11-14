@@ -167,6 +167,7 @@
         request_id,
         start_time,
         end_time,
+        half_type,
         start_next_day,
         end_next_day
         )
@@ -174,6 +175,7 @@
         #{requestId},
         #{startTime, jdbcType=TIME},
         #{endTime, jdbcType=TIME},
+        #{halfType},
         <choose>
             <when test="startNextDay == true">1</when>
             <otherwise>0</otherwise>
@@ -273,4 +275,54 @@
         DELETE FROM WEBAPPROVALLINE
         WHERE request_id = #{requestId}
     </delete>
+
+    <select id="getAllRequestWorkTimeForDate" resultType="map">
+        SELECT
+            r.attendance_type,
+            CAST(rg.start_time AS TIME) AS startTime,
+            CAST(rg.start_next_day AS BIT) AS startNextDay,
+            CAST(rg.end_time AS TIME) AS endTime,
+            CAST(rg.end_next_day AS BIT) AS endNextDay
+        FROM WEBATTREQUESTGENERAL rg
+                 JOIN WEBATTREQUEST r ON rg.request_id = r.request_id
+        WHERE r.request_date = #{workDate}
+          AND r.emp_code = #{empCode}
+          AND r.attendance_type IN ('휴일', '연장', '조출', '전반차', '후반차', '조퇴')
+          AND r.req_status IN ('REQUESTED', 'APPROVED')
+    </select>
+    <select id="getAllowedTimeRange" resultMap="timeRangeMap" parameterType="map">
+        SELECT
+            es.work_date AS baseDate,
+            CAST(
+                    CASE
+                        WHEN #{attType} = '연장' THEN STUFF(s.over_start_time, 3, 0, ':')
+                        WHEN #{attType} = '조출' THEN STUFF(s.over2_start_time, 3, 0, ':')
+                        END AS TIME
+            ) AS startTime,
+            CAST(
+                    CASE
+                        WHEN #{attType} = '연장' THEN s.over_start_next_day
+                        WHEN #{attType} = '조출' THEN s.over2_start_next_day
+                        ELSE 0
+                        END AS BIT
+            ) AS startNextDay,
+            CAST(
+                    CASE
+                        WHEN #{attType} = '연장' THEN STUFF(s.over_end_time, 3, 0, ':')
+                        WHEN #{attType} = '조출' THEN STUFF(s.over2_end_time, 3, 0, ':')
+                        END AS TIME
+            ) AS endTime,
+            CAST(
+                    CASE
+                        WHEN #{attType} = '연장' THEN s.over_end_next_day
+                        WHEN #{attType} = '조출' THEN s.over2_end_next_day
+                        ELSE 0
+                        END AS BIT
+            ) AS endNextDay
+        FROM WEBSHIFTTYPE s
+                 JOIN WEBEMPPLAN es ON s.shift_code = es.shift_code
+        WHERE es.emp_code = #{empCode}
+          AND es.work_date = #{workDate}
+    </select>
+
 </mapper>

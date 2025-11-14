@@ -43,5 +43,8 @@ public class TimeRange {
 
         return !start.isAfter(oEnd) && !end.isBefore(oStart);
     }
-
+    public boolean contains(TimeRange other) {
+        return !other.getStartDateTime().isBefore(this.getStartDateTime()) &&
+                !other.getEndDateTime().isAfter(this.getEndDateTime());
+    }
 }

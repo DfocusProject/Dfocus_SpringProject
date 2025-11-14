@@ -10,6 +10,7 @@ import org.springframework.cglib.core.Local;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
 
 public interface AttMapper {
@@ -62,4 +63,11 @@ public interface AttMapper {
     TimeRange getPlannedRestTime2(LocalDate workDate, String empCode);
 
     void deleteApprovalLine(Long requestId);
+
+    List<Map<String, Object>> getAllRequestWorkTimeForDate(
+            @Param("workDate") LocalDate workDate,
+            @Param("empCode") String empCode
+    );
+
+    TimeRange getAllowedTimeRange(String empCode, LocalDate workDate, String attType);
 }
