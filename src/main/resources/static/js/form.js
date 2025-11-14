@@ -1,8 +1,3 @@
-/**
- * 📦 form.js - 근태 공통 처리 스크립트
- * 버튼 이벤트 등록 / 폼 전송 / 체크박스 관리
- */
-
 // 📌전체 체크박스 제어
 function initCheckAll(masterSelector, itemSelector) {
     const master = document.querySelector(masterSelector);
@@ -45,14 +40,15 @@ function submitSearch(formSelector) {
 
 // 📋저장/상신 요청 (POST form)
 function submitApply(actionUrl, workDate) {
+
     const rows = collectSelectedRows();
     if (rows.length === 0) {
         alert('선택된 행이 없습니다.');
         return;
     }
 
-    // ✅ 필수값 검증 추가
     for (const row of rows) {
+        // 사유 검증
         if (!row.reason) {
             alert('사유를 선택해주세요.');
             return;
@@ -62,23 +58,41 @@ function submitApply(actionUrl, workDate) {
             return;
         }
 
-        // // 🔸 근무유형별로 필수 항목 다르게 체크
-        // if (row.attType === '반차') {
-        //     if (!row.halfType) {
-        //         alert('반차 구분을 선택해주세요.');
-        //         return;
-        //     }
-        // } else {
-        //     if (!row.startTime) {
-        //         alert('시작시간을 입력해주세요.');
-        //         return;
-        //     }
-        //     if (!row.endTime && row.attType !== '조퇴') {
-        //         // 조퇴는 종료시간 없음
-        //         alert('종료시간을 입력해주세요.');
-        //         return;
-        //     }
-        // }
+        if (row.attType !== '반차' && row.attType !== '조퇴') {
+
+            if (!row.startTime || !row.endTime) {
+                alert('시작시간과 종료시간을 입력해주세요.');
+                return;
+            }
+            // 시간을 분 단위로 변환
+            const [startHour, startMin] = row.startTime.split(':').map(Number);
+            const [endHour, endMin] = row.endTime.split(':').map(Number);
+
+
+            let startTotalMin = startHour * 60 + startMin;
+            let endTotalMin = endHour * 60 + endMin;
+
+
+            // 익일 체크 시 +24시간(1440분)
+            console.log('startNextDay:', row.startNextDay, 'endNextDay:', row.endNextDay);
+            if (row.startNextDay) startTotalMin += 1440;
+            if (row.endNextDay) endTotalMin += 1440;
+
+            // 근무시간 계산
+            const diffMin = endTotalMin - startTotalMin;
+
+            // 종료시간이 시작시간 이전인지 체크
+            if (diffMin <= 0) {
+                alert('종료시간은 시작시간 이후여야 합니다.');
+                return;
+            }
+
+            // 30분 단위 체크
+            if (diffMin % 30 !== 0) {
+                alert('근무시간은 30분 단위로 입력해주세요.');
+                return;
+            }
+        }
     }
 
     // ✅ actionUrl에 따라 다른 confirm 메시지
@@ -130,6 +144,7 @@ function submitApply(actionUrl, workDate) {
 
 // 🗑️삭제/상신취소 요청 (POST form)
 function submitCancel(actionUrl, workDate) {
+
     const rows = collectSelectedRows();
     if (rows.length === 0) {
         alert('삭제할 행을 선택하세요.');

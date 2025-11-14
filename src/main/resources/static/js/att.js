@@ -20,7 +20,13 @@ function handleWorkTypeChange(selectedType) {
     rows.forEach(row => {
         const startInput = row.querySelector('.startTime');
         const endInput = row.querySelector('.endTime');
+        const startNext = row.querySelector('.startNextDay');
+        const endNext = row.querySelector('.endNextDay');
         if (!startInput || !endInput) return;
+        const startNextChecked = startNext?.checked;
+        const endNextChecked = endNext?.checked;
+        if (startNext && row.dataset.startNext === 'true') startNext.checked = true;
+        if (endNext && row.dataset.endNext === 'true') endNext.checked = true;
 
         startInput.disabled = false;
         endInput.disabled = false;
@@ -35,6 +41,10 @@ function handleWorkTypeChange(selectedType) {
         const endTd = row.querySelector(`td:nth-child(${endColIndex})`);
         if (startTd) startTd.style.display = '';
         if (endTd) endTd.style.display = '';
+
+        // 익일 체크 상태 복원
+        if (startNext) startNext.checked = startNextChecked;
+        if (endNext) endNext.checked = endNextChecked;
     });
 
     if (halfHeader) halfHeader.remove();
@@ -170,9 +180,8 @@ function handleWorkTypeChange(selectedType) {
                 endInput.disabled = false;
             });
             break;
-
     }
-
+    // 익일 표시/숨김 처리
     handleNextDayCheckboxes(selectedType, rows);
 }
 
@@ -182,12 +191,65 @@ function handleNextDayCheckboxes(selectedType, rows) {
         const startNext = row.querySelector('.startNextDay');
         const endNext = row.querySelector('.endNextDay');
 
-        if (['연장','조출','휴일','외출'].includes(selectedType)) {
-            if (startNext) startNext.closest('label').style.display = '';
-            if (endNext) endNext.closest('label').style.display = '';
-        } else {
-            if (startNext) { startNext.closest('label').style.display = 'none'; startNext.checked = false; }
-            if (endNext) { endNext.closest('label').style.display = 'none'; endNext.checked = false; }
+        switch (selectedType) {
+            case '연장':
+            case '조출':
+            case '외출':
+                if (startNext) startNext.closest('label').style.display = '';
+                if (endNext) endNext.closest('label').style.display = '';
+                break;
+
+            case '휴일':
+                // ✅ 휴일근로일 때는 시작 익일 숨기고 종료 익일만 표시
+                if (startNext) {
+                    startNext.closest('label').style.display = 'none';
+                    startNext.checked = false;
+                }
+                if (endNext) endNext.closest('label').style.display = '';
+                break;
+
+            default:
+                // 나머지는 전부 숨김
+                if (startNext) {
+                    startNext.closest('label').style.display = 'none';
+                    startNext.checked = false;
+                }
+                if (endNext) {
+                    endNext.closest('label').style.display = 'none';
+                    endNext.checked = false;
+                }
+                break;
+        }
+    });
+}
+
+
+// 🔹 form 전송 전에 체크박스 상태를 hidden input으로 추가
+function attachNextDayValues(form) {
+    // 이전에 만든 hidden input 제거
+    form.querySelectorAll('.auto-nextday').forEach(el => el.remove());
+
+    // 각 행을 순회
+    document.querySelectorAll('#attTable tbody tr').forEach((row, index) => {
+        const startChk = row.querySelector('.startNextDay');
+        const endChk = row.querySelector('.endNextDay');
+
+        if (startChk) {
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = startChk.name; // 그대로 "startNextDay"
+            hidden.value = startChk.checked ? 'true' : 'false';
+            hidden.classList.add('auto-nextday');
+            form.appendChild(hidden);
+        }
+
+        if (endChk) {
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = endChk.name; // 그대로 "endNextDay"
+            hidden.value = endChk.checked ? 'true' : 'false';
+            hidden.classList.add('auto-nextday');
+            form.appendChild(hidden);
         }
     });
 }
