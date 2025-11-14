@@ -81,20 +81,24 @@ public class AttService {
                 LocalDateTime end = planTime.getEndDateTime();
 
                 if ("morningOff".equals(dto.getHalfType())) {
-                    // 오전반차 → 근무 후반부만 남음
-                    start = start.plusHours(4);
+                    // 오전반차 → 근무 후반부만
+                    start = start.plusHours(4);   // 시작시간을 오후로 이동
+                    dto.setHalfType("전반차");
+                    System.out.println("start = " + start);
                 } else if ("afternoonOff".equals(dto.getHalfType())) {
-                    // 오후반차 → 근무 전반부만 남음
-                    end = start.plusHours(4);
+                    // 오후반차 → 근무 전반부만
+                    end = start.plusHours(4);     // 종료시간을 오전으로 이동
+                    dto.setHalfType("후반차");
                 }
 
                 dto.setStartTime(start.toLocalTime());
                 dto.setEndTime(end.toLocalTime());
+                System.out.println("end = " + end);
                 dto.setStartNextDay(!start.toLocalDate().equals(workDate));
                 dto.setEndNextDay(!end.toLocalDate().equals(workDate));
-
             }
-                try {
+
+            try {
                     boolean isUpdate = dto.getRequestId() != null;
                     System.out.println("isUpdate = " + isUpdate);
 
@@ -153,6 +157,16 @@ public class AttService {
         String attType = dto.getAttType();
         String planShiftType = attMapper.getPlannedShift(empCode, workDate);
         String realWorkRecord = getRealWorkRecord(empCode, workDate);
+        TimeRange requestTime = new TimeRange(workDate, dto.getStartTime(), dto.getStartNextDay(), dto.getEndTime(), dto.getEndNextDay());
+        if ("연장".equals(attType) || "조출".equals(attType)) {
+            // 연장/조출에 해당하는 경우에만 허용 시간 범위 조회
+            TimeRange allowedTimeRange = attMapper.getAllowedTimeRange(empCode, workDate, attType);
+
+            if (!allowedTimeRange.contains(requestTime)) {
+                return attType + " 신청 시간이 허용 범위를 초과했습니다.";
+            }
+        }
+
         if (realWorkRecord.equals("결근")) {
             return "사번(" + empCode + "): 결근 상태";
         }
@@ -257,60 +271,7 @@ public class AttService {
 
         return finalMessage.toString();
     }
-//    public TimeRange getExpectedWorkTime(String empCode, LocalDate workDate) {
-//        TimeRange plannedCommuteTime = attMapper.getPlannedCommuteTime2(workDate, empCode);
-//
-//        if (plannedCommuteTime == null) {
-//            return null;
-//        }
-//
-//        LocalDateTime finalStart = plannedCommuteTime.getStartDateTime();
-//        LocalDateTime finalEnd = plannedCommuteTime.getEndDateTime();
-//
-//        List<String> reqTypes = List.of("휴일", "연장", "조출", "전반차", "후반차", "조퇴");
-//
-//        for (String type : reqTypes) {
-//            TimeRange requestWorkTime = attMapper.getRequestWorkTime2(workDate, empCode, type);
-//            if (requestWorkTime != null) {
-//                switch (type) {
-//                    case "휴일":
-//                        // 휴일이면 출근/퇴근 둘 다 바꾸기
-//                        finalStart = requestWorkTime.getStartDateTime();
-//                        finalEnd = requestWorkTime.getEndDateTime();
-//                        break;
-//
-//                    case "연장":
-//                        // 연장은 퇴근시간만 바꾸기
-//                        finalEnd = requestWorkTime.getEndDateTime();
-//                        break;
-//
-//                    case "조출":
-//                        // 조출은 출근시간만 바꾸기
-//                        finalStart = requestWorkTime.getStartDateTime();
-//                        break;
-//
-//                    case "전반차":
-//                        // 전반차는 퇴근시간만 바꾸기
-//                        finalEnd = requestWorkTime.getEndDateTime();
-//                        break;
-//
-//                    case "후반차":
-//                        // 후반차는 출근시간만 바꾸기
-//                        finalStart = requestWorkTime.getStartDateTime();
-//                        break;
-//
-//                    case "조퇴":
-//                        // 조퇴는 퇴근시간만 바꾸기
-//                        finalEnd = requestWorkTime.getEndDateTime();
-//                        break;
-//
-//                    default:
-//                        break;
-//                }
-//            }
-//        }
-//        return getTimeRange(workDate, finalStart, finalEnd);
-//    }
+
     public TimeRange getExpectedWorkTime(String empCode, LocalDate workDate) {
         TimeRange plannedCommuteTime = attMapper.getPlannedCommuteTime2(workDate, empCode);
         if (plannedCommuteTime == null) {
@@ -324,13 +285,15 @@ public class AttService {
 
         for (Map<String, Object> req : allRequests) {
             String type = (String) req.get("attendance_type");
-            LocalTime startTime = (LocalTime) req.get("startTime");
+
+            LocalTime startTime = ((java.sql.Time) req.get("startTime")).toLocalTime();
             Boolean startNextDay = (Boolean) req.get("startNextDay");
-            LocalTime endTime = (LocalTime) req.get("endTime");
+            LocalTime endTime = ((java.sql.Time) req.get("endTime")).toLocalTime();
             Boolean endNextDay = (Boolean) req.get("endNextDay");
 
             requestMap.put(type, new TimeRange(workDate, startTime, startNextDay, endTime, endNextDay));
         }
+
 
         List<String> reqTypes = List.of("휴일", "연장", "조출", "전반차", "후반차", "조퇴");
         for (String type : reqTypes) {
@@ -351,9 +314,11 @@ public class AttService {
 
                     case "연장":
                     case "전반차":
-                    case "조퇴":
                         // 퇴근시간만 변경
                         finalEnd = requestWorkTime.getEndDateTime();
+                        break;
+                    case "조퇴":
+                        finalEnd = requestWorkTime.getStartDateTime();
                         break;
                 }
             }

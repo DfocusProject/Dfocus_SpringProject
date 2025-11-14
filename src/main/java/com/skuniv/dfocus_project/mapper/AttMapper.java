@@ -68,4 +68,6 @@ public interface AttMapper {
             @Param("workDate") LocalDate workDate,
             @Param("empCode") String empCode
     );
+
+    TimeRange getAllowedTimeRange(String empCode, LocalDate workDate, String attType);
 }

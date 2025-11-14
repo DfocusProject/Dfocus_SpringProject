@@ -58,11 +58,14 @@ public class AttController {
     }
 
     @GetMapping("/search")
-    public String search(@RequestParam String attType,
-                         @RequestParam LocalDate workDate,
+    public String search(@RequestParam(required = false) String attType,
+                         @RequestParam(required = false) LocalDate workDate,
                          @RequestParam(required = false) String empCode,
                          Model model,
                          HttpSession session) {
+
+        if(attType == null) attType = "연장"; // 기본 근태유형
+        if(workDate == null) workDate = LocalDate.now();
 
         Account loginAccount = (Account) session.getAttribute("loginAccount");
         String searchEmpCode = "USER".equals(loginAccount.getRole().name()) ? loginAccount.getEmpCode() : empCode;
@@ -134,7 +137,9 @@ public class AttController {
         if (message != null) {
             redirectAttributes.addFlashAttribute("error", message);
         }
-        return "redirect:/att/general";
+        redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+        redirectAttributes.addAttribute("workDate", request.getWorkDate());
+        return "redirect:/att/search";
     }
 
     @PostMapping("/request")
@@ -150,6 +155,9 @@ public class AttController {
         }
 
         redirectAttributes.addFlashAttribute("message", "상신이 완료되었습니다.");
+
+        redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+        redirectAttributes.addAttribute("workDate", request.getWorkDate());
         return "redirect:/att/general";
     }
     @PostMapping("/delete")
