@@ -1,5 +1,6 @@
 package com.skuniv.dfocus_project.controller;
 
+import com.skuniv.dfocus_project.CustomUserDetails;
 import com.skuniv.dfocus_project.domain.Time.TimeRange;
 import com.skuniv.dfocus_project.domain.account.Account;
 import com.skuniv.dfocus_project.dto.*;
@@ -8,6 +9,8 @@ import com.skuniv.dfocus_project.service.DeptService;
 import com.skuniv.dfocus_project.service.EmpService;
 import com.skuniv.dfocus_project.service.PatternService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
@@ -29,26 +32,7 @@ public class AttController {
     private final PatternService patternService;
 
     @GetMapping("/general")
-    public String getUserInfo(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // 로그인 계정 확인
-        Account loginAccount = (Account) session.getAttribute("loginAccount");
-        if (loginAccount == null) {
-            redirectAttributes.addFlashAttribute("error", "로그인이 필요합니다.");
-            return "redirect:/";
-        }
-
-        // 부서 정보 조회
-        DeptDto deptDto = deptService.getDeptByEmpCode(loginAccount.getEmpCode());
-        if (deptDto == null) {
-            redirectAttributes.addFlashAttribute("error", "부서 정보가 없어 근태 신청이 불가합니다.");
-            return "redirect:/home";
-        }
-
-        // 모델에 기본 정보 담기 (검색 유지 및 뷰용)
-        model.addAttribute("empCode", loginAccount.getEmpCode());
-        model.addAttribute("deptName", deptDto.getDeptName());
-        model.addAttribute("role", loginAccount.getRole().name());
-
+    public String getUserInfo() {
         return "att/general";
     }
 
@@ -58,60 +42,62 @@ public class AttController {
     }
 
     @GetMapping("/search")
-    public String search(@RequestParam(required = false) String attType,
-                         @RequestParam(required = false) LocalDate workDate,
-                         @RequestParam(required = false) String empCode,
-                         Model model,
-                         HttpSession session) {
+    public String search(
+            @RequestParam(required = false) String attType,
+            @RequestParam(required = false) LocalDate workDate,
+            @RequestParam(required = false) String empCode,
+            Model model,
+            Authentication authentication
+    ) {
 
-        if(attType == null) attType = "연장"; // 기본 근태유형
-        if(workDate == null) workDate = LocalDate.now();
+        if (attType == null) attType = "연장";
+        if (workDate == null) workDate = LocalDate.now();
 
-        Account loginAccount = (Account) session.getAttribute("loginAccount");
-        String searchEmpCode = "USER".equals(loginAccount.getRole().name()) ? loginAccount.getEmpCode() : empCode;
-        DeptDto deptDto = deptService.getDeptByEmpCode(loginAccount.getEmpCode());
-        String deptName = deptDto.getDeptName();
-        // 근태 대상자 리스트 조회 및 데이터 가공
+        // 로그인 사용자 정보
+        CustomUserDetails loginUser = (CustomUserDetails) authentication.getPrincipal();
+        String loginRole = loginUser.getRole();   // ROLE_USER, ROLE_ADMIN 등
+        String deptName = loginUser.getDeptName();
+
+        String searchEmpCode;
+        if ("LEADER".equals(loginRole)) {
+            searchEmpCode = empCode != null ? empCode : ""; // LEADER는 선택적으로 사번 조회 가능
+        } else {
+            searchEmpCode = loginUser.getUsername(); // USER는 자기 사번만
+        }
+
+        // 근태 대상자 조회
         List<AttEmpViewDto> empList = empService.getAttEmpList(attType, workDate, searchEmpCode, deptName);
 
+        // 추가 데이터 처리
         for (AttEmpViewDto emp : empList) {
-            // 실근무 기록 계산
+
             String realWorkRecord = attService.getRealWorkRecord(emp.getEmpCode(), workDate);
             emp.setRealWorkRecord(realWorkRecord);
 
             double expectedWorkHours = attService.getWeeklyWorkHours(emp.getEmpCode(), workDate);
             emp.setExpectedWorkHours(expectedWorkHours);
 
-            // 계획 근무시간 조회
-            if(emp.getRequestId() == null) {
+            if (emp.getRequestId() == null) {
                 TimeRange planTime = attService.getPlannedCommuteTime(emp.getEmpCode(), workDate);
                 emp.setPlannedStartTime(planTime.getStartTime());
                 emp.setPlannedEndTime(planTime.getEndTime());
             }
-            // 저장/상신된 근태 정보는 이미 LEFT JOIN으로 empList에 포함되어 있음
-            // 따라서 savedAttendance 조회는 필요 없음
         }
 
-        // 검색 유지용 모델
-        model.addAttribute("empCode", searchEmpCode);
+        // 검색 유지용만 전달
         model.addAttribute("attType", attType);
         model.addAttribute("workDate", workDate);
-        model.addAttribute("deptName", deptName);
-        model.addAttribute("role", loginAccount.getRole().name());
         model.addAttribute("empList", empList);
 
         return "att/general";
     }
 
-
     @PostMapping("/{type}") // type = "on" 또는 "off"
     public String recordCommute(
             @PathVariable String type,
-            HttpSession session
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-
-        Account loginAccount = (Account) session.getAttribute("loginAccount");
-        String empCode = loginAccount.getEmpCode();
+        String empCode = userDetails.getUsername(); // 로그인 사용자 empCode
         LocalTime now = LocalTime.now();
         LocalDate today = LocalDate.now();
 
@@ -126,13 +112,16 @@ public class AttController {
         return "redirect:/home";
     }
 
+
     @PostMapping("/save")
     public String saveAttendance(@ModelAttribute AttendanceRequestDto request,
-                                 HttpSession session,
-                                 RedirectAttributes redirectAttributes) {
+                                 RedirectAttributes redirectAttributes,
+                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        Account loginAccount = (Account) session.getAttribute("loginAccount");
-        String message = attService.saveAttendance(request.getWorkDate(), request.getAttList(), loginAccount.getEmpCode());
+        // 세션 대신 @AuthenticationPrincipal로 로그인 사용자 정보 가져오기
+        String empCode = userDetails.getUsername(); // getUsername() -> empCode
+
+        String message = attService.saveAttendance(request.getWorkDate(), request.getAttList(), empCode);
 
         if (message != null) {
             redirectAttributes.addFlashAttribute("error", message);
@@ -142,12 +131,17 @@ public class AttController {
         return "redirect:/att/search";
     }
 
+
     @PostMapping("/request")
-    public String submitAttendance(@ModelAttribute AttendanceRequestDto request,
-                                   HttpSession session,
-                                   RedirectAttributes redirectAttributes) {
-        Account loginAccount = (Account) session.getAttribute("loginAccount");
-        String error = attService.requestAttendance(request.getWorkDate(), request.getAttList(), loginAccount.getEmpCode());
+    public String submitAttendance(
+            @ModelAttribute AttendanceRequestDto request,
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        // 세션 대신 로그인 사용자 정보에서 empCode 가져오기
+        String empCode = userDetails.getUsername(); // getUsername()이 empCode 반환
+
+        String error = attService.requestAttendance(request.getWorkDate(), request.getAttList(), empCode);
 
         if (error != null) {
             redirectAttributes.addFlashAttribute("error", error);
@@ -160,6 +154,7 @@ public class AttController {
         redirectAttributes.addAttribute("workDate", request.getWorkDate());
         return "redirect:/att/general";
     }
+
     @PostMapping("/delete")
     public String delete(@ModelAttribute AttendanceRequestDto request){
         attService.deleteAttendance(request.getAttList());

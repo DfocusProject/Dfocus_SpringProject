@@ -13,7 +13,7 @@
         <img src="/images/logo_login.png" alt="GGM 로고" class="logo" />
         <h1>ESS시스템</h1>
         <form action="/login" method="post">
-            <input type="text" name="empCode" placeholder="ID" required />
+            <input type="text" name="username" placeholder="ID" required />
             <input type="password" name="password" placeholder="Password" required />
             <button type="submit">Login</button>
         </form>
@@ -22,11 +22,8 @@
     <p class="info">본 시스템은 <span>Chrome</span> 브라우저와 <span>1920×1080</span> 해상도에 최적화되어 있습니다.</p>
     <p class="copyright">Copyright © 2020 Gwangju Global Motors Co., Ltd. All Rights Reserved.</p>
 </div>
-<script>
-    const error = document.getElementById("error-message").innerText;
-    if (error) {
-        alert(error);
-    }
+<script th:if="${param.error}">
+    alert('사번 또는 비밀번호가 일치하지 않습니다.');
 </script>
 </body>
 </html>
