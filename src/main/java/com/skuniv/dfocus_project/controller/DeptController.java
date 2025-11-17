@@ -29,11 +29,9 @@ public class DeptController {
         return "redirect:/dept/main";
     }
     @GetMapping("/main")
-    public String departmentTree(Model model, HttpSession session) {
-            Account loginAccount = (Account) session.getAttribute("loginAccount");
+    public String departmentTree(Model model) {
             Dept rootDepartment = deptService.getDepartmentTree();
             model.addAttribute("rootDepartment", rootDepartment);
-            model.addAttribute("role", loginAccount.getRole());
             return "dept/main";
     }
 

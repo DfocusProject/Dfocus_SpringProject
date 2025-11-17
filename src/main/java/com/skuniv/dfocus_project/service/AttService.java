@@ -305,17 +305,14 @@ public class AttService {
                         finalStart = requestWorkTime.getStartDateTime();
                         finalEnd = requestWorkTime.getEndDateTime();
                         break;
-
-                    case "조출":
+                    case "연장":
                     case "후반차":
+                        finalEnd = requestWorkTime.getEndDateTime();
+                        break;
+                    case "조출":
+                    case "전반차":
                         // 출근시간만 변경
                         finalStart = requestWorkTime.getStartDateTime();
-                        break;
-
-                    case "연장":
-                    case "전반차":
-                        // 퇴근시간만 변경
-                        finalEnd = requestWorkTime.getEndDateTime();
                         break;
                     case "조퇴":
                         finalEnd = requestWorkTime.getStartDateTime();

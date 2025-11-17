@@ -1,12 +1,18 @@
-<div th:fragment="sidebar">
+<div th:fragment="sidebar"
+     xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
     <div id="sideBar" class="sidebar">
-        <a th:href="@{/dept/main}" th:if="${session.loginAccount.role.toString() == 'ADMIN'}">부서 관리</a>
-        <a th:href="@{/pattern/main}" th:if="${session.loginAccount.role.toString() == 'ADMIN'}">근태 패턴</a>
+        <!-- ADMIN 권한 전용 메뉴 -->
+        <a th:href="@{/dept/main}" sec:authorize="hasRole('ADMIN')">부서 관리</a>
+        <a th:href="@{/pattern/main}" sec:authorize="hasRole('ADMIN')">근태 패턴</a>
+
+        <!-- 모든 사용자 공통 메뉴 -->
         <button class="dropdown-btn">근태신청 및 내역</button>
         <div class="dropdown-container">
             <a th:href="@{/att/general}">일반근태 신청</a>
             <a th:href="@{/att/etc}">기타근태 신청</a>
         </div>
+
+        <!-- 추가 권한 필요 없는 메뉴 -->
         <a href="#">일근태 승인</a>
     </div>
 </div>
