@@ -1,4 +1,5 @@
-<div th:fragment="header">
+<div th:fragment="header"
+     xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
     <header class="top-header">
         <div class="header-left">
             <h2>
@@ -7,8 +8,19 @@
                 </a>
             </h2>
         </div>
-        <div class="header-right">
-            <span class="user-info" th:text="'사원번호: ' + ${session.loginAccount.empCode}">000님</span>
+        <div class="header-right" th:if="${#authentication != null}">
+            <span>
+                사원번호: <span th:text="${#authentication.principal.username}"></span>,
+                이름: <span th:text="${#authentication.principal.empName}"></span>,
+            </span>
+            <!-- 로그아웃 버튼 -->
+            <form th:action="@{/logout}" method="post" style="display:inline">
+                <button type="submit">로그아웃</button>
+            </form>
+        </div>
+        <!-- 로그인 상태가 아닌 경우 -->
+        <div class="header-right" th:if="${#authentication == null}">
+            <a th:href="@{/login}">로그인</a>
         </div>
     </header>
 </div>

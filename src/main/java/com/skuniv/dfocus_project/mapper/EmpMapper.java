@@ -10,6 +10,8 @@ import java.util.List;
 
 @Mapper
 public interface EmpMapper {
+    Emp findByEmpCode(String empCode);
+
     List<Emp> findByDepartmentId(String deptCode);
 
     void deleteEmpFromDept(List<String> empCodes);

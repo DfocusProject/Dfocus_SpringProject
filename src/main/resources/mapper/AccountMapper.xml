@@ -17,5 +17,15 @@
         FROM WEBACCOUNT
         WHERE emp_code = #{empCode}
     </select>
-
+    <select id="findAll" resultMap="accountResultMap">
+        SELECT emp_code,
+               password,
+               role
+        FROM WEBACCOUNT
+    </select>
+    <update id="updatePassword">
+        UPDATE WEBACCOUNT
+        SET password = #{password}
+        WHERE emp_code = #{empCode}
+    </update>
 </mapper>

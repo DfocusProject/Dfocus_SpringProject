@@ -4,6 +4,37 @@
 
 <mapper namespace="com.skuniv.dfocus_project.mapper.EmpMapper">
 
+    <resultMap id="empResultMap" type="com.skuniv.dfocus_project.domain.emp.Emp">
+        <result column="emp_code" property="empCode"/>
+        <result column="emp_name" property="empName"/>
+        <result column="social_num" property="socialNum"/>
+        <result column="gender" property="gender"/>
+        <result column="enter_date" property="enterDate"/>
+        <result column="position_code" property="positionCode"/>
+        <result column="position_date" property="positionDate"/>
+        <result column="duty_code" property="dutyCode"/>
+        <result column="duty_date" property="dutyDate"/>
+        <result column="dept_code" property="deptCode"/>
+        <result column="work_pattern_code" property="workPatternCode"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <select id="findByEmpCode" resultMap="empResultMap">
+        SELECT emp_code,
+               emp_name,
+               social_num,
+               gender,
+               enter_date,
+               position_code,
+               position_date,
+               duty_code,
+               duty_date,
+               dept_code,
+               work_pattern_code,
+               status
+        FROM WEBEMPINFO
+        WHERE emp_code = #{empCode}
+    </select>
     <select id="findByDepartmentId" parameterType="String" resultType="com.skuniv.dfocus_project.domain.emp.Emp">
         SELECT
             emp_code as empCode,
