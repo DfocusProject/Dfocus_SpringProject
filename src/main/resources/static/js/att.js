@@ -194,7 +194,6 @@ function handleNextDayCheckboxes(selectedType, rows) {
         switch (selectedType) {
             case '연장':
             case '조출':
-            case '외출':
                 if (startNext) startNext.closest('label').style.display = '';
                 if (endNext) endNext.closest('label').style.display = '';
                 break;

@@ -9,25 +9,29 @@
 <body>
 
 <div th:replace="~{header.html::header}"></div>
+
 <main>
     <div th:replace="~{sidebar.html::sidebar}"></div>
+
     <section class="container">
+
         <div class="header">
             <h1>기타 근태 신청</h1>
         </div>
 
-        <!-- 🔹 1. 선택조건 입력 영역 -->
+        <!-- 🔷 1. 조회 조건 -->
         <form id="searchForm" th:action="@{/etc/search}" method="get" class="search-box">
+
             <label class="required">근무일
-                <input type="date" name="workDate" required>
+                <input type="date" name="workDate" id="workDate" required>
             </label>
 
             <label>사번
-                <input type="text" name="empCode" placeholder="사번 입력">
+                <input type="text" name="empCode" id="empCode" placeholder="사번 입력">
             </label>
 
             <label>근무계획
-                <select name="planType">
+                <select name="planType" id="planType">
                     <option value="">전체</option>
                     <option value="주간">주간</option>
                     <option value="야간">야간</option>
@@ -35,20 +39,22 @@
             </label>
 
             <label class="required">부서
-                <select name="dept" required>
+                <select name="dept" id="dept" required>
                     <option value="">내 부서</option>
                     <option value="인사팀">인사팀</option>
                     <option value="총무팀">총무팀</option>
                 </select>
             </label>
 
-            <button type="submit" class="btn btn-request">조회</button>
+            <button type="submit" class="btn btn-request" id="btnSearch">조회</button>
+            <span class="note">※ 근무일 선택 후 '조회' 클릭</span>
         </form>
 
-        <!-- 🔹 2. 필수입력 영역 -->
+        <!-- 🔷 2. 필수 입력항목 -->
         <form id="applyForm" th:action="@{/etc/apply}" method="post" class="search-box">
+
             <label class="required">변경근무
-                <select name="changeType" required>
+                <select name="changeType" id="changeType" required>
                     <option value="">선택</option>
                     <option value="연장근무">연장근무</option>
                     <option value="조기출근">조기출근</option>
@@ -57,16 +63,16 @@
             </label>
 
             <label class="required">기간
-                <input type="date" name="startDate" required> ~
-                <input type="date" name="endDate" required>
+                <input type="date" name="startDate" id="startDate" required> ~
+                <input type="date" name="endDate" id="endDate" required>
             </label>
 
             <label class="required">사유
-                <input type="text" name="reason" placeholder="사유를 입력하세요" required>
+                <input type="text" name="reason" id="reason" placeholder="사유를 입력하세요" required>
             </label>
 
             <label class="required">신청시각
-                <select name="applyTime" required>
+                <select name="applyTime" id="applyTime" required>
                     <option value="">선택</option>
                     <option value="오전">오전</option>
                     <option value="오후">오후</option>
@@ -76,6 +82,7 @@
             <button type="submit" class="btn btn-save">적용</button>
         </form>
 
+        <!-- 🔷 3. 버튼 영역 -->
         <div class="btn-area">
             <button class="btn btn-save" id="btnSave">저장</button>
             <button class="btn btn-delete" id="btnDelete">삭제</button>
@@ -83,41 +90,115 @@
             <button class="btn btn-cancel" id="btnRequestCancel">상신 취소</button>
         </div>
 
-        <!-- 🔹 3. 조회결과 테이블 -->
+        <!-- 🔷 4. 조회 결과 목록 -->
         <table id="attTable">
             <thead>
             <tr>
                 <th>사번</th>
-                <th>이름</th>
+                <th>성명</th>
+                <th>직위</th>
                 <th>부서</th>
-                <th>근무일</th>
-                <th>근무계획</th>
+                <th>실적</th>
                 <th>변경근무</th>
-                <th>기간</th>
+                <th>시작일</th>
+                <th>종료일</th>
+                <th>연차잔여</th>
                 <th>사유</th>
                 <th>신청시각</th>
                 <th>상태</th>
+                <th>신청자</th>
             </tr>
+
             </thead>
+
             <tbody>
             <tr th:each="emp : ${empList}">
+
                 <td th:text="${emp.empCode}"></td>
                 <td th:text="${emp.empName}"></td>
+                <td th:text="${emp.position}"></td>
                 <td th:text="${emp.dept}"></td>
-                <td th:text="${emp.attDate}"></td>
-                <td th:text="${emp.planType}"></td>
-                <td th:text="${emp.changeType}"></td>
-                <td th:text="${emp.period}"></td>
-                <td th:text="${emp.reason}"></td>
-                <td th:text="${emp.applyTime}"></td>
+                <td th:text="${emp.realWorkRecord}"></td>
+
+                <!-- 🔹 변경근무 (필수) -->
+                <td>
+                    <select class="changeType" required>
+                        <option value="">선택</option>
+                        <option value="연장근무" th:selected="${emp.changeType == '연장근무'}">연장근무</option>
+                        <option value="조기출근" th:selected="${emp.changeType == '조기출근'}">조기출근</option>
+                        <option value="특근"     th:selected="${emp.changeType == '특근'}">특근</option>
+                    </select>
+                </td>
+
+                <!-- 🔹 시작일 (필수) -->
+                <td>
+                    <input type="date" class="startDate" th:value="${emp.startDate}" required>
+                </td>
+
+                <!-- 🔹 종료일 (필수) -->
+                <td>
+                    <input type="date" class="endDate" th:value="${emp.endDate}" required>
+                </td>
+
+                <td th:text="${emp.restAnnual}"></td>
+
+                <!-- 🔹 사유 (필수) -->
+                <td>
+                    <input type="text" class="reason" th:value="${emp.reason}" required>
+                </td>
+
+                <!-- 🔹 신청시각 (필수) -->
+                <td>
+                    <select class="applyTime" required>
+                        <option value="">선택</option>
+                        <option value="오전" th:selected="${emp.applyTime == '오전'}">오전</option>
+                        <option value="오후" th:selected="${emp.applyTime == '오후'}">오후</option>
+                    </select>
+                </td>
+
                 <td th:text="${emp.status}"></td>
+                <td th:text="${emp.applicant}"></td>
+
             </tr>
             </tbody>
+
         </table>
+
     </section>
 </main>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = /*[[${error}]]*/ null;
+    if (errorMsg != null) {
+        alert(errorMsg);
+    }
+    /*]]>*/
+</script>
 <script th:src="@{/js/form.js}"></script>
 <script th:src="@{/js/att.js}"></script>
 <script th:src="@{/js/script.js}"></script>
+<script>
+    document.getElementById("btnSave").addEventListener("click", validateRows);
+    document.getElementById("btnRequest").addEventListener("click", validateRows);
+
+    function validateRows(evt) {
+        const rows = document.querySelectorAll("#attTable tbody tr");
+
+        for (const row of rows) {
+            const changeType = row.querySelector(".changeType").value;
+            const startDate  = row.querySelector(".startDate").value;
+            const endDate    = row.querySelector(".endDate").value;
+            const reason     = row.querySelector(".reason").value;
+            const applyTime  = row.querySelector(".applyTime").value;
+
+            if (!changeType || !startDate || !endDate || !reason || !applyTime) {
+                alert("필수값을 모두 입력해야 합니다.");
+                evt.preventDefault();
+                return false;
+            }
+        }
+    }
+</script>
+
 </body>
 </html>
