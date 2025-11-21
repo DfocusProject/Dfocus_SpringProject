@@ -1,5 +1,6 @@
 package com.skuniv.dfocus_project.mapper;
 
+import com.skuniv.dfocus_project.dto.BaseAttEmpDto;
 import com.skuniv.dfocus_project.dto.Shift;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,4 +15,6 @@ public interface ShiftMapper {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    void updateShiftPlan(BaseAttEmpDto dto);
 }

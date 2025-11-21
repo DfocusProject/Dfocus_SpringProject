@@ -1,18 +1,13 @@
-package com.skuniv.dfocus_project.controller;
+package com.skuniv.dfocus_project.controller.att.request;
 
 import com.skuniv.dfocus_project.CustomUserDetails;
-import com.skuniv.dfocus_project.domain.Time.TimeRange;
-import com.skuniv.dfocus_project.domain.account.Account;
 import com.skuniv.dfocus_project.dto.*;
 import com.skuniv.dfocus_project.service.AttService;
-import com.skuniv.dfocus_project.service.DeptService;
 import com.skuniv.dfocus_project.service.EmpService;
-import com.skuniv.dfocus_project.service.PatternService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -23,22 +18,15 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
-@RequestMapping("/att")
+@RequestMapping("/att/general")
 public class AttController {
 
-    private final DeptService deptService;
     private final EmpService empService;
     private final AttService attService;
-    private final PatternService patternService;
 
-    @GetMapping("/general")
-    public String getUserInfo() {
+    @GetMapping("/main")
+    public String mainPage(Model model) {
         return "att/general";
-    }
-
-    @GetMapping("/etc")
-    public String etc(){
-        return "att/etc";
     }
 
     @GetMapping("/search")
@@ -50,47 +38,29 @@ public class AttController {
             Authentication authentication
     ) {
 
-        if (attType == null) attType = "연장";
         if (workDate == null) workDate = LocalDate.now();
 
-        // 로그인 사용자 정보
         CustomUserDetails loginUser = (CustomUserDetails) authentication.getPrincipal();
-        String loginRole = loginUser.getRole();   // ROLE_USER, ROLE_ADMIN 등
+        String loginRole = loginUser.getRole();
         String deptName = loginUser.getDeptName();
 
         String searchEmpCode;
         if ("LEADER".equals(loginRole)) {
-            searchEmpCode = empCode != null ? empCode : ""; // LEADER는 선택적으로 사번 조회 가능
+            searchEmpCode = empCode != null ? empCode : "";
         } else {
-            searchEmpCode = loginUser.getUsername(); // USER는 자기 사번만
+            searchEmpCode = loginUser.getUsername();
         }
 
-        // 근태 대상자 조회
-        List<AttEmpViewDto> empList = empService.getAttEmpList(attType, workDate, searchEmpCode, deptName);
+        // 근태 대상자 조회 + 휴일 로직 처리
+        List<AttEmpViewDto> empList = attService.getAttEmpListWithHolidayCheck(attType, workDate, searchEmpCode, deptName);
 
-        // 추가 데이터 처리
-        for (AttEmpViewDto emp : empList) {
-
-            String realWorkRecord = attService.getRealWorkRecord(emp.getEmpCode(), workDate);
-            emp.setRealWorkRecord(realWorkRecord);
-
-            double expectedWorkHours = attService.getWeeklyWorkHours(emp.getEmpCode(), workDate);
-            emp.setExpectedWorkHours(expectedWorkHours);
-
-            if (emp.getRequestId() == null) {
-                TimeRange planTime = attService.getPlannedCommuteTime(emp.getEmpCode(), workDate);
-                emp.setPlannedStartTime(planTime.getStartTime());
-                emp.setPlannedEndTime(planTime.getEndTime());
-            }
-        }
-
-        // 검색 유지용만 전달
         model.addAttribute("attType", attType);
         model.addAttribute("workDate", workDate);
         model.addAttribute("empList", empList);
 
         return "att/general";
     }
+
 
     @PostMapping("/{type}") // type = "on" 또는 "off"
     public String recordCommute(
@@ -128,7 +98,7 @@ public class AttController {
         }
         redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
         redirectAttributes.addAttribute("workDate", request.getWorkDate());
-        return "redirect:/att/search";
+        return "redirect:/att/general/search";
     }
 
 
@@ -145,24 +115,31 @@ public class AttController {
 
         if (error != null) {
             redirectAttributes.addFlashAttribute("error", error);
-            return "redirect:/att/general"; // 오류 있으면 다시 돌아가기
+            redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+            redirectAttributes.addAttribute("workDate", request.getWorkDate());
+            return "redirect:/att/general/search"; // 오류 있으면 다시 돌아가기
         }
 
         redirectAttributes.addFlashAttribute("message", "상신이 완료되었습니다.");
 
         redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
         redirectAttributes.addAttribute("workDate", request.getWorkDate());
-        return "redirect:/att/general";
+        return "redirect:/att/general/main";
     }
 
     @PostMapping("/delete")
-    public String delete(@ModelAttribute AttendanceRequestDto request){
+    public String delete(@ModelAttribute AttendanceRequestDto request, RedirectAttributes redirectAttributes){
         attService.deleteAttendance(request.getAttList());
-        return "redirect:/att/general";
+        redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+        redirectAttributes.addAttribute("workDate", request.getWorkDate());
+        return "redirect:/att/general/main";
     }
     @PostMapping("/requestCancel")
-    public String requestCancel(@ModelAttribute AttendanceRequestDto request){
+    public String requestCancel(@ModelAttribute AttendanceRequestDto request, RedirectAttributes redirectAttributes){
         attService.cancelAttendance(request.getAttList());
-        return "redirect:/att/general";
+        redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+        redirectAttributes.addAttribute("workDate", request.getWorkDate());
+        return "redirect:/att/general/main";
     }
+
 }

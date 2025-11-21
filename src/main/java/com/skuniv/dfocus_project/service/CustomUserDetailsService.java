@@ -2,7 +2,6 @@ package com.skuniv.dfocus_project.service;
 
 import com.skuniv.dfocus_project.CustomUserDetails;
 import com.skuniv.dfocus_project.domain.account.Account;
-import com.skuniv.dfocus_project.domain.dept.Dept;
 import com.skuniv.dfocus_project.domain.emp.Emp;
 import com.skuniv.dfocus_project.dto.DeptDto;
 import com.skuniv.dfocus_project.mapper.AccountMapper;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -110,6 +110,23 @@
         VALUES
             (#{workDate}, #{empCode}, #{deptCode}, #{shiftCode}, NULL, #{patternName}, #{holidayYn});
     </insert>
+    <update id="updateEmpPlan" parameterType="map">
+        UPDATE WEBEMPPLAN
+        SET dept_code = #{deptCode},
+            shift_code = #{shiftCode},
+            work_pattern_code = #{patternName},
+            holiday_yn = #{holidayYn}
+        WHERE work_date = #{workDate}
+          AND emp_code = #{empCode}
+    </update>
+
+    <!-- 존재 여부 확인 -->
+    <select id="existsEmpPlan" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM WEBEMPPLAN
+        WHERE work_date = #{workDate}
+          AND emp_code = #{empCode}
+    </select>
     <select id="findAttEmpList" resultType="com.skuniv.dfocus_project.dto.AttEmpViewDto">
         SELECT
         P.EMP_CODE       AS empCode,
@@ -141,19 +158,12 @@
         ON R.EMP_CODE = P.EMP_CODE
         AND R.REQUEST_DATE = P.WORK_DATE
         AND R.ATTENDANCE_TYPE = #{attType}
-        AND R.REQ_STATUS IN ('SAVED', 'REQUESTED')
+        AND R.REQ_STATUS IN ('SAVED', 'REQUESTED', 'APPROVED')
         LEFT JOIN WEBATTREQUESTGENERAL G
         ON G.REQUEST_ID = R.REQUEST_ID
         WHERE 1=1
-        <choose>
-            <when test="attType eq '휴일'">
-                AND (P.HOLIDAY_YN = 'Y' AND I.STATUS != 'OFF')
-            </when>
-            <otherwise>
-                AND P.HOLIDAY_YN = 'N'
-                AND I.STATUS != 'OFF'
-            </otherwise>
-        </choose>
+        AND I.STATUS != 'OFF'
+        AND P.SHIFT_CODE NOT IN ('64', '65')
         AND P.WORK_DATE = #{workDate}
         <if test="empCode != null and empCode != ''">
             AND P.EMP_CODE = #{empCode}
@@ -163,6 +173,49 @@
         </if>
         ORDER BY PI.POSITION_NAME, P.EMP_CODE, I.EMP_NAME
     </select>
+    <select id="findEtcAttEmpList" resultType="com.skuniv.dfocus_project.dto.AttEmpViewDto">
+        SELECT
+        P.EMP_CODE       AS empCode,
+        I.EMP_NAME       AS name,
+        PI.POSITION_NAME AS position,
+        D.DEPT_NAME      AS department,
+        S.SHIFT_NAME     AS planType,
+        P.WORK_DATE      AS startDate,
+        A.BALANCE_DAY    AS balanceDay,
+        RS.NEW_SHIFT_CODE AS newShiftType,
+        RS.END_DATE       AS endDate,
+        R.REQ_REASON AS reason,
+        RS.IS_TODAY_REQUEST AS isTodayRequest,
+        R.REQ_STATUS        AS status,
+        R.APPLICANT         AS applicant,
+        R.REQUEST_ID        AS requestId
+        FROM WEBEMPPLAN P
+        INNER JOIN WEBANNUALDETAIL A ON P.EMP_CODE = A.EMP_CODE
+        INNER JOIN WEBEMPINFO I ON P.EMP_CODE = I.EMP_CODE
+        INNER JOIN WEBDEPTINFO D ON P.DEPT_CODE = D.DEPT_CODE
+        INNER JOIN WEBPOSITIONINFO PI ON I.POSITION_CODE = PI.POSITION_CODE
+        INNER JOIN WEBSHIFTTYPE S ON P.SHIFT_CODE = S.SHIFT_CODE
+        LEFT JOIN WEBATTREQUEST R
+        ON R.EMP_CODE = P.EMP_CODE
+        AND R.REQUEST_DATE = P.WORK_DATE
+        AND R.ATTENDANCE_TYPE = '기타'
+        AND R.REQ_STATUS IN ('SAVED', 'REQUESTED')
+        LEFT JOIN WEBATTREQUESTSPECIAL RS
+        ON RS.REQUEST_ID = R.REQUEST_ID
+        WHERE P.WORK_DATE = #{workDate}
+        AND D.DEPT_NAME = #{deptName}
+        AND I.STATUS != 'OFF'
+        AND P.SHIFT_CODE NOT IN ('64', '65')
+        AND P.HOLIDAY_YN = 'N'
+        <if test="searchEmpCode != null and searchEmpCode != ''">
+            AND P.EMP_CODE = #{searchEmpCode}
+        </if>
+        <if test="planType != null and planType != ''">
+            AND P.shift_code = #{planType}
+        </if>
+        ORDER BY PI.POSITION_NAME, P.EMP_CODE, I.EMP_NAME
+    </select>
+
 </mapper>
 
 

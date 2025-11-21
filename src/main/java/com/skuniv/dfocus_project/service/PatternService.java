@@ -42,8 +42,12 @@ public class PatternService {
                     holidayYn = "Y";
                 }
                 DeptDto dept = deptMapper.getDeptByEmpCode(empCode);
-                empMapper.insertEmpPlan(workDate, empCode, dept.getDeptCode(), shiftCode, form.getPatternName(), holidayYn);
-            }
+                boolean exists = empMapper.existsEmpPlan(workDate, empCode);
+                if (exists) {
+                    empMapper.updateEmpPlan(workDate, empCode, dept.getDeptCode(), shiftCode, form.getPatternName(), holidayYn);
+                } else {
+                    empMapper.insertEmpPlan(workDate, empCode, dept.getDeptCode(), shiftCode, form.getPatternName(), holidayYn);
+                }            }
         });
     }
 

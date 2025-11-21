@@ -16,10 +16,10 @@
 
         <!-- 출퇴근 버튼 추가 -->
         <div class="attendance-buttons" style="margin-top: 20px;">
-            <form th:action="@{/att/on}" method="post" style="display:inline;">
+            <form th:action="@{/att/general/on}" method="post" style="display:inline;">
                 <button type="submit">출근</button>
             </form>
-            <form th:action="@{/att/off}" method="post" style="display:inline; margin-left:10px;">
+            <form th:action="@{/att/general/off}" method="post" style="display:inline; margin-left:10px;">
                 <button type="submit">퇴근</button>
             </form>
         </div>

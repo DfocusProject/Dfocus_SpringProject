@@ -29,4 +29,10 @@ public interface EmpMapper {
     void insertEmpPlan(LocalDate workDate, String empCode, String deptCode, String shiftCode, String patternName, String holidayYn);
 
     List<AttEmpViewDto> findAttEmpList(String attType, LocalDate workDate, String empCode, String deptName);
+
+    List<AttEmpViewDto> findEtcAttEmpList(String planType, LocalDate workDate, String searchEmpCode, String deptName);
+
+    boolean existsEmpPlan(LocalDate workDate, String empCode);
+
+    void updateEmpPlan(LocalDate workDate, String empCode, String deptCode, String shiftCode, String patternName, String holidayYn);
 }
