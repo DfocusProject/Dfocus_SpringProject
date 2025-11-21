@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/css/common.css" />
     <link rel="stylesheet" href="/css/att.css" />
 </head>
-<body>
+<body data-page="general">
 
 <div th:replace="~{header.html::header}"></div>
 <main>
@@ -44,7 +44,7 @@
             <input type="text" id="deptName" name="deptName"
                    th:value="${#authentication.principal.deptName}" readonly placeholder="부서명" />
 
-            <button type="button" id="btnSearch">조회</button>
+            <button type="button" id="btnSearchGeneral">조회</button>
             <span class="note">※ 근무일 선택 후 '조회' 클릭</span>
         </form>
 
@@ -171,7 +171,7 @@
 <script th:src="@{/js/script.js}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const searchBtn = document.getElementById("btnSearch");
+        const searchBtn = document.getElementById("btnSearchGeneral");
         if (window.location.pathname.includes("/att/general") && searchBtn) {
             searchBtn.click();
         }

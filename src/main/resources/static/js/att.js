@@ -194,6 +194,7 @@ function handleNextDayCheckboxes(selectedType, rows) {
         switch (selectedType) {
             case '연장':
             case '조출':
+            case '외출':
                 if (startNext) startNext.closest('label').style.display = '';
                 if (endNext) endNext.closest('label').style.display = '';
                 break;
@@ -260,15 +261,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const attType = document.querySelector('#searchForm select[name="attType"]');
     const workDateInput = document.querySelector('#workDate');
 
-    document.getElementById('btnSearch')?.addEventListener('click', () => {
+    document.getElementById('btnSearchGeneral')?.addEventListener('click', () => {
         submitSearch('#searchForm');
         if (attType?.value) handleWorkTypeChange(attType.value);
     });
 
-    document.getElementById('btnSave')?.addEventListener('click', () => submitApply('/att/save', workDateInput.value));
-    document.getElementById('btnDelete')?.addEventListener('click', () => submitCancel('/att/delete', workDateInput.value));
-    document.getElementById('btnRequest')?.addEventListener('click', () => submitApply('/att/request', workDateInput.value));
-    document.getElementById('btnRequestCancel')?.addEventListener('click', () => submitCancel('/att/requestCancel', workDateInput.value));
+    document.getElementById('btnSave')?.addEventListener('click', () => submitApply('save', workDateInput.value));
+    document.getElementById('btnDelete')?.addEventListener('click', () => submitCancel('delete', workDateInput.value));
+    document.getElementById('btnRequest')?.addEventListener('click', () => submitApply('request', workDateInput.value));
+    document.getElementById('btnRequestCancel')?.addEventListener('click', () => submitCancel('requestCancel', workDateInput.value));
 
     // 페이지 로드 후, 테이블 데이터가 있으면 선택된 근무유형 적용
     const hasTableData = document.querySelector('#attTable tbody tr');
