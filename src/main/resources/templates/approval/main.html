@@ -1,0 +1,215 @@
+<!-- templates/approval/main.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>부서원 일근태 승인</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/emp_att.css}">
+</head>
+
+<body>
+<div th:replace="~{header.html::header}"></div>
+<main>
+    <div th:replace="~{sidebar.html::sidebar}"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>부서원 일근태 승인</h1>
+        </div>
+
+        <div class="att-layout">
+
+            <!-- ================= LEFT AREA ================= -->
+            <div class="left">
+
+                <!-- 검색 영역 -->
+                <div class="search-box">
+                    <form th:action="@{/approval/search}" method="get">
+
+                        <div class="search-row">
+                            <label>대상일자
+                                <input type="date" name="startDate" required>
+                                <span>~</span>
+                                <input type="date" name="endDate" required>
+                            </label>
+
+                            <label>사번
+                                <input type="text" name="empCode" placeholder="사번 입력"/>
+                            </label>
+                            <button type="submit" class="btnSearchEmpAtt">조회</button>
+                        </div>
+
+                        <div class="search-row">
+                            <label>근태유형
+                                <select name="reqType">
+                                    <option value="">전체</option>
+                                    <option value="OT">연장</option>
+                                    <option value="HT">휴일</option>
+                                    <option value="ET">기타</option>
+                                    <option value="LT">조퇴/외출/반차</option>
+                                </select>
+                            </label>
+
+                            <label>신청근태
+                                <select name="reqDetailType">
+                                    <option value="">전체</option>
+                                    <option value="05">주간</option>
+                                    <option value="05-A">현장실습</option>
+                                    <option value="06">연차</option>
+                                    <option value="10">출장</option>
+                                    <option value="31">4전</option>
+                                    <option value="32">4후</option>
+                                    <option value="33">4야</option>
+                                    <option value="45">3전</option>
+                                    <option value="46">3후</option>
+                                    <option value="61">휴직</option>
+                                    <option value="64">육아휴직</option>
+                                    <option value="62">사외교육</option>
+                                </select>
+                            </label>
+
+                            <label>부서</label>
+                            <input type="text" name="department"
+                                   th:value="${#authentication.principal.deptCode}"
+                                   readonly placeholder="부서명"/>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 탭 -->
+                <div class="list-tabs">
+                    <div class="tab-header">
+                        <div class="tab-buttons">
+                            <button class="tab-btn active" data-tab="tab1">결재할 문서</button>
+                            <button class="tab-btn" data-tab="tab2">승인된 문서</button>
+                            <button class="tab-btn" data-tab="tab3">반려된 문서</button>
+                        </div>
+                        <div class="bulk-buttons">
+                            <button class="btn bulk-approval">일괄승인</button>
+                            <button class="btn bulk-rejection">일괄반려</button>
+                        </div>
+                    </div>
+
+                    <div class="tab-contents">
+
+                        <!-- TAB1 -->
+                        <div class="list tab-content active" id="tab1">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="checkAll1"></th>
+                                    <th>결재번호</th>
+                                    <th>신청사번</th>
+                                    <th>상신자</th>
+                                    <th>대상자부서</th>
+                                    <th>신청근태</th>
+                                    <th>대상자</th>
+                                    <th>대상일</th>
+                                </tr>
+                                </thead>
+                                <tbody th:each="doc : ${pendingDocsList}">
+                                <tr class="doc-row">
+                                    <td>
+                                        <input type="checkbox" class="rowCheck">
+                                        <input type="hidden" class="requestId" th:value="${doc.requestId}">
+                                    </td>
+                                    <td th:text="${doc.requestId}"></td>
+                                    <td th:text="${doc.reqEmpCode}"></td>
+                                    <td th:text="${doc.reqEmpName}"></td>
+                                    <td th:text="${doc.department}"></td>
+                                    <td th:text="${doc.reqDetailType}"></td>
+                                    <td th:text="${doc.resEmpName}"></td>
+                                    <td th:text="${doc.reqDate}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- TAB2 -->
+                        <div class="list tab-content" id="tab2">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="checkAll2"></th>
+                                    <th>결재번호</th>
+                                    <th>신청사번</th>
+                                    <th>상신자</th>
+                                    <th>대상자부서</th>
+                                    <th>신청근태</th>
+                                    <th>대상자</th>
+                                    <th>대상일</th>
+                                </tr>
+                                </thead>
+                                <tbody th:each="doc : ${approvedDocsList}">
+                                <tr class="doc-row">
+                                    <td>
+                                        <input type="checkbox" class="rowCheck">
+                                        <input type="hidden" class="requestId" th:value="${doc.requestId}">
+                                    </td>
+                                    <td th:text="${doc.requestId}"></td>
+                                    <td th:text="${doc.reqEmpCode}"></td>
+                                    <td th:text="${doc.reqEmpName}"></td>
+                                    <td th:text="${doc.department}"></td>
+                                    <td th:text="${doc.reqDetailType}"></td>
+                                    <td th:text="${doc.resEmpName}"></td>
+                                    <td th:text="${doc.reqDate}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- TAB3 -->
+                        <div class="list tab-content" id="tab3">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="checkAll3"></th>
+                                    <th>결재번호</th>
+                                    <th>신청사번</th>
+                                    <th>상신자</th>
+                                    <th>대상자부서</th>
+                                    <th>신청근태</th>
+                                    <th>대상자</th>
+                                    <th>대상일</th>
+                                </tr>
+                                </thead>
+                                <tbody th:each="doc : ${rejectedDocsList}">
+                                <tr class="doc-row">
+                                    <td>
+                                        <input type="checkbox" class="rowCheck">
+                                        <input type="hidden" class="requestId" th:value="${doc.requestId}">
+                                    </td>
+                                    <td th:text="${doc.requestId}"></td>
+                                    <td th:text="${doc.reqEmpCode}"></td>
+                                    <td th:text="${doc.reqEmpName}"></td>
+                                    <td th:text="${doc.department}"></td>
+                                    <td th:text="${doc.reqDetailType}"></td>
+                                    <td th:text="${doc.resEmpName}"></td>
+                                    <td th:text="${doc.reqDate}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div> <!-- tab-contents -->
+                </div> <!-- list-tabs -->
+
+            </div> <!-- left -->
+
+            <!-- ================= RIGHT AREA ================= -->
+            <div class="right">
+                <div id="detail-area" class="panel">
+                    <div class="empty-msg">문서를 선택하면 상세내용이 표시됩니다.</div>
+                </div>
+            </div>
+
+        </div> <!-- att-layout -->
+    </div>
+</main>
+
+<script th:src="@{/js/approval.js}"></script>
+
+</body>
+</html>

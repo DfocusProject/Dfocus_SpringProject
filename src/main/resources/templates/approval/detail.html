@@ -1,0 +1,86 @@
+<!-- templates/approval/detail.html -->
+<div th:fragment="detailFragment">
+
+    <div class="pan-header">
+        일근태 신청 상세
+<!--        <span>신청번호: <span th:text="${empInfo.requestId}"></span></span>-->
+    </div>
+
+    <div class="body">
+
+        <!-- 기본 정보 -->
+        <table class="detail-table">
+            <tbody>
+            <tr>
+                <th>신청자</th>
+                <td th:text="${empInfo.reqEmpCode + ' / ' + empInfo.reqEmpName}"></td>
+                <th>부서명</th>
+                <td th:text="${empInfo.department}"></td>
+                <th>신청일</th>
+                <td th:text="${empInfo.reqDate}"></td>
+            </tr>
+            <tr>
+                <th>대상자</th>
+                <td th:text="${empInfo.resEmpCode + ' / ' + empInfo.resEmpName}"></td>
+                <th>부서명</th>
+                <td th:text="${empInfo.department}"></td>
+                <th>계획근무</th>
+                <td th:text="${empInfo.planType}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+<!--        &lt;!&ndash; 근태기 정보 &ndash;&gt;-->
+<!--        <div class="panel">-->
+<!--            <div class="title">근태기 정보</div>-->
+<!--            <table class="detail-table">-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th>날짜</th>-->
+<!--                    <th>출근시간</th>-->
+<!--                    <th>퇴근시간</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody th:each="info : ${detail.attMachineInfo}">-->
+<!--                <tr>-->
+<!--                    <td th:text="${info.date}"></td>-->
+<!--                    <td th:text="${info.startTime}"></td>-->
+<!--                    <td th:text="${info.endTime}"></td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; 결재 정보 &ndash;&gt;-->
+<!--        <div class="panel">-->
+<!--            <div class="title">결재 정보</div>-->
+<!--            <table class="detail-table">-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th>순번</th>-->
+<!--                    <th>구분</th>-->
+<!--                    <th>부서</th>-->
+<!--                    <th>직책</th>-->
+<!--                    <th>이름</th>-->
+<!--                    <th>사번</th>-->
+<!--                    <th>결과</th>-->
+<!--                    <th>결재완료일</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody th:each="apv : ${detail.approvalLines}">-->
+<!--                <tr>-->
+<!--                    <td th:text="${apv.sequenceNo}"></td>-->
+<!--                    <td th:text="${apv.type}"></td>-->
+<!--                    <td th:text="${apv.department}"></td>-->
+<!--                    <td th:text="${apv.duty}"></td>-->
+<!--                    <td th:text="${apv.name}"></td>-->
+<!--                    <td th:text="${apv.empCode}"></td>-->
+<!--                    <td th:text="${apv.result}"></td>-->
+<!--                    <td th:text="${apv.date}"></td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
+        </div>
+
+    </div>
+</div>

@@ -2,6 +2,7 @@ package com.skuniv.dfocus_project.mapper;
 
 import com.skuniv.dfocus_project.dto.approval.ApprovalSearchDto;
 import com.skuniv.dfocus_project.dto.approval.DocumentDto;
+import com.skuniv.dfocus_project.dto.approval.EmpInfoDto;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -10,4 +11,6 @@ import java.util.List;
 public interface ApprovalMapper {
     //문서리스트 가져오기
     List<DocumentDto> getDocumentList(ApprovalSearchDto approvalSearchDto, String LoginEmpCode);
+
+    EmpInfoDto getDetailEmpInfo(int requestId, String loginEmpCode);
 }
