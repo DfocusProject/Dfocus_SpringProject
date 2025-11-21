@@ -17,7 +17,7 @@
         </div>
 
         <!-- 검색 폼 -->
-        <form id="searchForm" class="search-box" action="/att/search" method="get">
+        <form id="searchForm" class="search-box" action="/att/general/search" method="get">
             <label>근무유형
                 <select id="attType" name="attType">
                     <option value="연장" th:selected="${attType == '연장'}">연장근로</option>
@@ -172,7 +172,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const searchBtn = document.getElementById("btnSearchGeneral");
-        if (window.location.pathname.includes("/att/general") && searchBtn) {
+        if (window.location.pathname.includes("/att/general/main") && searchBtn) {
             searchBtn.click();
         }
     });

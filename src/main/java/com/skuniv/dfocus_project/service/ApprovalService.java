@@ -1,8 +1,7 @@
 package com.skuniv.dfocus_project.service;
 
-import com.skuniv.dfocus_project.dto.approval.ApprovalDocsResponse;
-import com.skuniv.dfocus_project.dto.approval.ApprovalSearchDto;
-import com.skuniv.dfocus_project.dto.approval.DocumentDto;
+import com.skuniv.dfocus_project.controller.att.approval.ApprovalDetailDto;
+import com.skuniv.dfocus_project.dto.approval.*;
 import com.skuniv.dfocus_project.mapper.ApprovalMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,4 +28,17 @@ public class ApprovalService {
 
         return response;
     }
+
+    public EmpInfoDto getEmpInfo(int requestId, String loginEmpCode) {
+        return approvalMapper.getDetailEmpInfo(requestId, loginEmpCode);
+    }
+
+//    public ReqInfoDto getReqInfoDto(int requestId) {
+//    }
+//
+//    public CommuteInfoDto getCommuteInfoDto(int requestId) {
+//    }
+//
+//    public ApprovalInfoDto getApprovalInfoDto(int requestId) {
+//    }
 }

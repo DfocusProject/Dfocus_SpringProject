@@ -4,7 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.skuniv.dfocus_project.mapper.ApprovalMapper">
 
-    <select id="getDocumentList" resultType="com.example.dto.DocumentDto" parameterType="map">
+    <select id="getDocumentList"
+            resultType="com.skuniv.dfocus_project.dto.approval.DocumentDto"
+            parameterType="map">
+
         SELECT
         a.request_id AS requestId,
         r.emp_code AS reqEmpCode,
@@ -12,36 +15,71 @@
         e2.emp_name AS resEmpName,
         e1.dept_code AS department,
         r.attendance_type AS reqDetailType,
-        r.req_date AS reqDate,
-        a.approval_status AS status   <!-- 상태 추가 -->
+        r.request_date AS reqDate,
+        a.approval_status AS status
         FROM WEBAPPROVALLINE a
-        INNER JOIN WEBATTREQUEST r
-        ON a.request_id = r.request_id
-        LEFT JOIN WEBATTREQUESTSPECIAL s
-        ON r.new_shift_code = s.new_shift_code
-        INNER JOIN WEBEMPINFO e1
-        ON r.emp_code = e1.emp_code
-        INNER JOIN WEBEMPINFO e2
-        ON a.emp_response = e2.emp_code
-        WHERE a.emp_response = #{loginEmp}
-        AND r.req_date BETWEEN #{startDate} AND #{endDate}
-        AND e1.dept_code = #{department}
+        INNER JOIN WEBATTREQUEST r ON a.request_id = r.request_id
+        LEFT JOIN WEBATTREQUESTSPECIAL s ON r.request_id = s.request_id
+        INNER JOIN WEBEMPINFO e1 ON r.emp_code = e1.emp_code
+        INNER JOIN WEBEMPINFO e2 ON a.emp_response = e2.emp_code
+        WHERE a.emp_response = #{LoginEmpCode}
+        AND r.request_date BETWEEN #{approvalSearchDto.startDate}
+        AND #{approvalSearchDto.endDate}
+        AND e1.dept_code = #{approvalSearchDto.department}
 
-        <if test="reqType != null and reqType != ''">
-            AND (
-            (reqType = 'OT' AND r.attendance_type IN ('연장','조출')) OR
-            (reqType = 'HT' AND r.attendance_type = '휴일') OR
-            (reqType = 'ET' AND r.attendance_type IN ('기타','연차')) OR
-            (reqType = 'LT' AND r.attendance_type IN ('조퇴','외출','반차'))
-            )
+        <if test="approvalSearchDto.reqType != null and approvalSearchDto.reqType != ''">
+            <choose>
+                <when test="approvalSearchDto.reqType == 'OT'">
+                    AND r.attendance_type IN ('연장','조출')
+                </when>
+
+                <when test="approvalSearchDto.reqType == 'HT'">
+                    AND r.attendance_type = '휴일'
+                </when>
+
+                <when test="approvalSearchDto.reqType == 'ET'">
+                    AND r.attendance_type IN ('기타','연차')
+                </when>
+
+                <when test="approvalSearchDto.reqType == 'LT'">
+                    AND r.attendance_type IN ('조퇴','외출','반차')
+                </when>
+            </choose>
         </if>
 
-        <if test="reqDetailType != null and reqDetailType != ''">
-            AND s.new_shift_code = #{reqDetailType}
+
+        <if test="approvalSearchDto.reqDetailType != null and approvalSearchDto.reqDetailType != ''">
+            AND s.new_shift_code = #{approvalSearchDto.reqDetailType}
         </if>
 
         ORDER BY a.request_id
     </select>
+
+    <select id="getDetailEmpInfo" resultType="com.skuniv.dfocus_project.dto.approval.EmpInfoDto" parameterType="map">
+        SELECT
+            a.emp_request AS reqEmpCode,
+            e.emp_name AS reqEmpName,
+            CONVERT(varchar, r.created_at, 23) AS reqDate,  -- yyyy-mm-dd 형식
+            p.shift_code AS planType,
+            e.dept_code AS department,
+            a.emp_response AS resEmpCode,                 -- 결재자 사번
+            er.emp_name AS resEmpName                     -- 결재자 이름
+        FROM WEBAPPROVALLINE a
+                 INNER JOIN WEBATTREQUEST r
+                            ON r.request_id = a.request_id
+                 INNER JOIN WEBEMPINFO e
+                            ON a.emp_request = e.emp_code
+                 LEFT JOIN WEBEMPPLAN p
+                           ON a.emp_request = p.emp_code
+                               AND p.work_date = r.request_date  -- 날짜 조건
+                 INNER JOIN WEBEMPINFO er                 -- 결재자 정보 join
+                            ON a.emp_response = er.emp_code
+        WHERE a.request_id = #{requestId}
+          AND a.emp_response = #{loginEmpCode}
+          AND a.approval_status = 'PENDING';
+
+    </select>
+
 
 
 </mapper>
