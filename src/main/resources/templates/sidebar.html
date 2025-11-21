@@ -6,13 +6,15 @@
         <a th:href="@{/pattern/main}" sec:authorize="hasRole('ADMIN')">근태 패턴</a>
 
         <!-- 모든 사용자 공통 메뉴 -->
-        <button class="dropdown-btn">근태신청 및 내역</button>
+        <button class="dropdown-btn">근태신청 및 변경</button>
         <div class="dropdown-container">
-            <a th:href="@{/att/general}">일반근태 신청</a>
-            <a th:href="@{/att/etc}">기타근태 신청</a>
+            <a th:href="@{/att/general/main}">일반근태 신청</a>
+            <a th:href="@{/att/etc/main}">기타근태 신청</a>
         </div>
 
         <!-- 추가 권한 필요 없는 메뉴 -->
-        <a href="#">일근태 승인</a>
+        <a th:href="@{/}" sec:authorize="hasRole('LEADER')">일근태 승인</a>
+        <a href="#">근태 신청 내역</a>
+        <a href="#">부서 근태 조회</a>
     </div>
 </div>

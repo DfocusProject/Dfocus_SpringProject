@@ -82,9 +82,20 @@
         SELECT COUNT(*)
         FROM WEBATTREQUEST
         WHERE emp_code = #{empCode}
-          AND request_date = #{selectedDate}
-          AND attendance_type = #{attType}
+        AND request_date = #{selectedDate}
+        AND attendance_type = #{attType}
+        AND req_status = 'REQUESTED'
     </select>
+    <!-- 승인 상태 여부 -->
+    <select id="isApproved" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM WEBATTREQUEST
+        WHERE emp_code = #{empCode}
+          AND request_date = #{workDate}
+          AND attendance_type = #{conflictType}
+          AND req_status = 'APPROVED'
+    </select>
+
 
     <insert id="insertAttendanceRequest"
             parameterType="com.skuniv.dfocus_project.dto.BaseAttEmpDto"
@@ -114,7 +125,6 @@
         UPDATE WEBATTREQUEST
         SET
             req_reason = #{dto.reason},
-            req_status = #{dto.status},
             req_reason_detail = #{dto.reasonDetail},
             applicant = #{applicant}
         WHERE request_id = #{dto.requestId}
@@ -194,7 +204,8 @@
             start_time = #{startTime, jdbcType=TIME},
             end_time = #{endTime, jdbcType=TIME},
             start_next_day = #{startNextDay, jdbcType=INTEGER},
-            end_next_day = #{endNextDay, jdbcType=INTEGER}
+            end_next_day = #{endNextDay, jdbcType=INTEGER},
+            half_type = #{halfType, jdbcType=VARCHAR}  <!-- 여기 추가 -->
         WHERE request_id = #{requestId}
     </update>
 
@@ -279,6 +290,7 @@
     <select id="getAllRequestWorkTimeForDate" resultType="map">
         SELECT
             r.attendance_type,
+            rg.half_type,
             CAST(rg.start_time AS TIME) AS startTime,
             CAST(rg.start_next_day AS BIT) AS startNextDay,
             CAST(rg.end_time AS TIME) AS endTime,
@@ -287,9 +299,10 @@
                  JOIN WEBATTREQUEST r ON rg.request_id = r.request_id
         WHERE r.request_date = #{workDate}
           AND r.emp_code = #{empCode}
-          AND r.attendance_type IN ('휴일', '연장', '조출', '전반차', '후반차', '조퇴')
+          AND r.attendance_type IN ('휴일', '연장', '조출', '반차', '조퇴')
           AND r.req_status IN ('REQUESTED', 'APPROVED')
     </select>
+
     <select id="getAllowedTimeRange" resultMap="timeRangeMap" parameterType="map">
         SELECT
             es.work_date AS baseDate,
@@ -323,6 +336,134 @@
                  JOIN WEBEMPPLAN es ON s.shift_code = es.shift_code
         WHERE es.emp_code = #{empCode}
           AND es.work_date = #{workDate}
+    </select>
+    <insert id="insertEtcAttendance">
+        INSERT INTO WEBATTREQUESTSPECIAL (
+            request_id,
+            origin_shift_code,
+            new_shift_code,
+            start_date,
+            end_date,
+            is_today_request
+        )
+        VALUES (
+                   #{requestId},
+                   #{planType},
+                   #{newShiftType},
+                   #{startDate},
+                   #{endDate},
+                   #{isTodayRequest}
+               )
+    </insert>
+    <update id="updateEtcAttendance">
+        UPDATE WEBATTREQUESTSPECIAL
+        SET
+            origin_shift_code = #{planType},
+            new_shift_code = #{newShiftType},       -- 변경될 근무코드
+            start_date = #{startDate},
+            end_date = #{endDate},
+            is_today_request = #{isTodayRequest}
+        WHERE request_id = #{requestId}
+    </update>
+    <select id="getAttendanceRequestsByDate" resultType="com.skuniv.dfocus_project.dto.BaseAttEmpDto">
+        SELECT
+        r.request_id AS requestId,
+        r.emp_code AS empCode,
+        r.attendance_type AS attType,
+        g.start_time AS startTime,
+        g.start_next_day AS startNextDay,
+        g.end_time AS endTime,
+        g.end_next_day AS endNextDay
+        FROM webattrequest r
+        INNER JOIN webattrequestgeneral g ON r.request_id = g.request_id
+        WHERE r.emp_code = #{empCode}
+        AND r.request_date = #{workDate}
+        AND r.attendance_type IN
+        <foreach collection="types" item="type" open="(" separator="," close=")">
+            #{type}
+        </foreach>
+        AND r.req_status IN ('requested', 'approved')
+    </select>
+    <select id="existsHalfDayRequest" resultType="int">
+        SELECT COUNT(*)
+        FROM WEBATTREQUEST r
+                 INNER JOIN WEBATTREQUESTGENERAL g
+                            ON r.request_id = g.request_id
+        WHERE r.emp_code = #{empCode}
+          AND r.request_date = #{workDate, jdbcType=DATE}
+          AND r.attendance_type = '반차'
+          AND g.half_type = #{halfType}
+          AND r.req_status IN ('REQUESTED','APPROVED')
+    </select>
+
+
+    <select id="isHoliday" resultType="boolean" parameterType="map">
+        SELECT CASE WHEN COUNT(1) > 0 THEN 1 ELSE 0 END
+        FROM WEBEMPPLAN P
+                 INNER JOIN WEBEMPINFO I ON P.EMP_CODE = I.EMP_CODE
+        WHERE P.EMP_CODE = #{empCode}
+          AND P.WORK_DATE = #{workDate}
+          AND P.HOLIDAY_YN = 'Y'
+    </select>
+    <select id="hasHolidayWorkOver8Hours" resultType="boolean" parameterType="map">
+        SELECT CASE
+                   WHEN ISNULL(SUM(DATEDIFF(HOUR,
+                           CASE
+                               WHEN G.START_NEXT_DAY = 1
+                                   THEN DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', G.START_TIME), DATEADD(DAY,1,R.REQUEST_DATE))
+                               ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', G.START_TIME), CAST(R.REQUEST_DATE AS DATETIME))
+                               END,
+                           CASE
+                               WHEN G.END_NEXT_DAY = 1
+                                   THEN DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', G.END_TIME), DATEADD(DAY,1,R.REQUEST_DATE))
+                               ELSE DATEADD(SECOND, DATEDIFF(SECOND, '00:00:00', G.END_TIME), CAST(R.REQUEST_DATE AS DATETIME))
+                               END
+                                   )),0) >= 8 THEN 1 ELSE 0
+                   END AS hasOver8Hours
+        FROM WEBATTREQUEST R
+                 INNER JOIN WEBATTREQUESTGENERAL G ON R.REQUEST_ID = G.REQUEST_ID
+        WHERE R.EMP_CODE = #{empCode}
+          AND R.ATTENDANCE_TYPE = '휴일'
+          AND R.REQUEST_DATE = #{workDate}
+          AND R.REQ_STATUS IN ('SAVED','REQUESTED', 'APPROVED')
+    </select>
+    <select id="alreadyRequested" resultType="boolean" parameterType="long">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM WEBATTREQUEST
+        WHERE request_id = #{requestId}
+          AND req_status = 'REQUESTED'
+    </select>
+
+    <update id="updateShiftPlan">
+        UPDATE WEBEMPPLAN
+        SET
+            shift_code = #{dto.newShiftType},
+            origin_shift_code = #{dto.planType}
+        WHERE
+            emp_code = #{dto.empCode}
+          AND work_date = #{selectedDate}
+    </update>
+    <select id="existsAttendance" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM WEBATTREQUEST
+        WHERE EMP_CODE = #{empCode}
+          AND REQUEST_DATE = #{selectedDate}
+          AND ATTENDANCE_TYPE = #{attType}
+          AND REQ_STATUS IN ('APPROVED', 'REQUESTED')
+    </select>
+    <select id="findExistingEtcRequests" resultType="com.skuniv.dfocus_project.dto.ExistingEtcRequestDto">
+        SELECT
+        RS.START_DATE AS startDate,
+        RS.END_DATE AS endDate,
+        R.ATTENDANCE_TYPE AS etcType
+        FROM WEBATTREQUEST R
+        JOIN WEBATTREQUESTSPECIAL RS
+        ON RS.REQUEST_ID = R.REQUEST_ID
+        WHERE R.EMP_CODE = #{empCode}
+        AND R.ATTENDANCE_TYPE IN ('기타', '연차')
+        AND R.REQ_STATUS IN ('REQUESTED', 'APPROVED')
+        AND CONVERT(DATE, RS.START_DATE) &lt;= CONVERT(DATE, #{end})
+        AND CONVERT(DATE, RS.END_DATE) &gt;= CONVERT(DATE, #{start})
     </select>
 
 </mapper>

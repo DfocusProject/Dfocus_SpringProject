@@ -3,6 +3,7 @@ package com.skuniv.dfocus_project.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Setter
@@ -24,4 +25,11 @@ public class BaseAttEmpDto {
     private LocalTime plannedEndTime;
     private String attType;
     private String halfType;
+    //etc
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private String planType;
+    private String newShiftType;
+    private Boolean isTodayRequest;
+    private Double balanceDay;
 }
