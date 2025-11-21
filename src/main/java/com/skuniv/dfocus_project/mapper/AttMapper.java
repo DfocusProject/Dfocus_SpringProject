@@ -1,11 +1,10 @@
 package com.skuniv.dfocus_project.mapper;
 
 import com.skuniv.dfocus_project.domain.Time.TimeRange;
-import com.skuniv.dfocus_project.dto.AttEmpViewDto;
 import com.skuniv.dfocus_project.dto.BaseAttEmpDto;
+import com.skuniv.dfocus_project.dto.ExistingEtcRequestDto;
 import com.skuniv.dfocus_project.dto.TimeRecordDto;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,4 +69,28 @@ public interface AttMapper {
     );
 
     TimeRange getAllowedTimeRange(String empCode, LocalDate workDate, String attType);
+
+
+    void updateEtcAttendance(BaseAttEmpDto dto);
+
+    void insertEtcAttendance(BaseAttEmpDto dto);
+
+    boolean isApproved(String empCode, LocalDate workDate, String conflictType);
+
+    List<BaseAttEmpDto> getAttendanceRequestsByDate(
+            @Param("empCode") String empCode,
+            @Param("workDate") LocalDate workDate,
+            @Param("types") List<String> types
+    );
+
+
+    int existsHalfDayRequest(String empCode, LocalDate workDate, String halfType);
+
+    boolean isHoliday(String empCode, LocalDate workDate);
+
+    boolean hasHolidayWorkOver8Hours(String empCode, LocalDate workDate);
+
+    boolean alreadyRequested(Long requestId);
+
+    List<ExistingEtcRequestDto> findExistingEtcRequests(String empCode, LocalDate start, LocalDate end);
 }

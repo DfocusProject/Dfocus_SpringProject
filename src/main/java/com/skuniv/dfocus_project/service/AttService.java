@@ -4,13 +4,12 @@ import com.skuniv.dfocus_project.domain.Time.TimeRange;
 import com.skuniv.dfocus_project.dto.*;
 import com.skuniv.dfocus_project.mapper.AttMapper;
 import com.skuniv.dfocus_project.mapper.DeptMapper;
-import com.skuniv.dfocus_project.mapper.PatternMapper;
 import com.skuniv.dfocus_project.mapper.ShiftMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
@@ -20,37 +19,36 @@ import static java.time.LocalDateTime.now;
 @RequiredArgsConstructor
 public class AttService {
 
+    private final AttendanceValidateService attendanceValidateService;
     private final AttMapper attMapper;
-    private final PatternMapper patternMapper;
     private final DeptMapper deptMapper;
+    private final EmpService empService;
     private final ShiftMapper shiftMapper;
 
-    // 실적 조회
     public String getRealWorkRecord(String empCode, LocalDate workDate) {
-        //현재 시각
-        LocalDateTime now = now();
-        //계획 근태
-        String plannedShift = attMapper.getPlannedShift(empCode, workDate);
-        System.out.println("plannedShift : " + plannedShift);
-        //계획 근태의 출근 시간 조회
-        Map<String, String> result = attMapper.getPlannedCommuteTime(plannedShift);
 
-        String startTimeStr = result.get("start_time");  // DB에서 가져온 값
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        LocalTime startTime = LocalTime.parse(startTimeStr, formatter);
-
-        LocalDateTime plannedStartDateTime = LocalDateTime.of(workDate, startTime);
-        String plannedShiftName = attMapper.getShiftName(plannedShift);
-        //실제 출근 기록
+        // 1. 실제 출근 기록 조회
         TimeRecordDto actualCommuteRecord = attMapper.getActualCommuteRecord(empCode, workDate);
 
-        if (now.isBefore(plannedStartDateTime)) {
-            return "-";
-        } else if (actualCommuteRecord != null) {
-            return plannedShiftName; // 또는 "정상 출근"
-        } else return "결근";
+        // 2. 출근기록이 없으면 무조건 결근
+        if (actualCommuteRecord == null) {
+            return "결근";
+        }
+
+        // 3. 출근기록이 있는 경우 → 휴일근로 8시간 이상 신청 여부 확인
+        boolean hasHolidayWorkOver8h = attMapper.hasHolidayWorkOver8Hours(empCode, workDate);
+
+        if (hasHolidayWorkOver8h) {
+            return "휴일근로";
+        }
+
+        // 4. 둘 다 아니면 plannedShiftName 반환
+        String plannedShift = attMapper.getPlannedShift(empCode, workDate);
+        String plannedShiftName = attMapper.getShiftName(plannedShift);
+
+        return plannedShiftName;
     }
+
 
     public void recordOnCommute(String empCode, LocalDate today, LocalTime now) {
         attMapper.addRecordOnCommute(empCode, today, now);
@@ -60,145 +58,77 @@ public class AttService {
         attMapper.addRecordOffCommute(empCode, today, now);
     }
 
+    @Transactional
     public String saveAttendance(LocalDate workDate, List<BaseAttEmpDto> attList, String loginEmpCode) {
-        StringBuilder warningMessages = new StringBuilder(); // 저장은 되지만 유의해야 할 사항
-        StringBuilder fatalErrors = new StringBuilder(); // 저장 불가 (ex. 상신 후 수정 불가)
-        StringBuilder resultMessages = new StringBuilder(); // 저장/수정 결과 메시지
+        StringBuilder message = new StringBuilder();
 
         for (BaseAttEmpDto dto : attList) {
-            System.out.println("dto.getRequestId(): " + dto.getRequestId());
-            if ("상신".equals(dto.getStatus())) {
-                fatalErrors.append("사번(").append(dto.getEmpCode())
-                        .append(") : 이미 상신처리 되어, 수정이 불가합니다.\n");
-                continue; // 저장 안 함
-            }
+            String empCode = dto.getEmpCode();
 
-            String validationError = validateConflicts(dto, workDate);
-            dto.setStatus("SAVED");
+            // 상신 체크
+            if (attMapper.alreadyRequested(dto.getRequestId())) {
+                message.append(empCode).append(": 이미 상신되어 수정 불가\n");
+                continue;  // 이건 저장 안 함
+            }
+            if("조퇴".equals(dto.getAttType())) {
+                TimeRange t = attMapper.getPlannedCommuteTime2(workDate, dto.getEmpCode());
+                dto.setEndNextDay(false);
+                dto.setEndTime(t.getEndTime());
+            }
+            // 반차 시간 계산
             if ("반차".equals(dto.getAttType())) {
-                TimeRange planTime = attMapper.getPlannedCommuteTime2(workDate, dto.getEmpCode());
-                LocalDateTime start = planTime.getStartDateTime();
-                LocalDateTime end = planTime.getEndDateTime();
-
-                if ("morningOff".equals(dto.getHalfType())) {
-                    // 오전반차 → 근무 후반부만
-                    start = start.plusHours(4);   // 시작시간을 오후로 이동
-                    dto.setHalfType("전반차");
-                    System.out.println("start = " + start);
-                } else if ("afternoonOff".equals(dto.getHalfType())) {
-                    // 오후반차 → 근무 전반부만
-                    end = start.plusHours(4);     // 종료시간을 오전으로 이동
-                    dto.setHalfType("후반차");
-                }
-
-                dto.setStartTime(start.toLocalTime());
-                dto.setEndTime(end.toLocalTime());
-                System.out.println("end = " + end);
-                dto.setStartNextDay(!start.toLocalDate().equals(workDate));
-                dto.setEndNextDay(!end.toLocalDate().equals(workDate));
+                calculateHalfDayTime(dto, workDate);
             }
 
+            // 검증 (경고만)
+            String validateError = attendanceValidateService.validate(
+                    dto, workDate, getRealWorkRecord(empCode, workDate), getExpectedWorkTime(empCode, workDate)
+            );
+            if (validateError != null) {
+                message.append(empCode).append(": ").append(validateError).append("\n");
+            }
+
+            // 저장 (에러 있어도 진행)
             try {
-                    boolean isUpdate = dto.getRequestId() != null;
-                    System.out.println("isUpdate = " + isUpdate);
+                boolean isUpdate = dto.getRequestId() != null;
 
-                    if (isUpdate) {
-                        attMapper.updateAttendanceRequest(dto, loginEmpCode, workDate);
-                        attMapper.updateAttendanceRequestGeneral(dto);
-                        resultMessages.append("사번(").append(dto.getEmpCode())
-                                .append(") : 근태 신청 수정 완료\n");
-                    } else {
-                        attMapper.insertAttendanceRequest(dto, loginEmpCode, workDate);
-                        attMapper.insertAttendanceRequestGeneral(dto);
-                        resultMessages.append("사번(").append(dto.getEmpCode())
-                                .append(") : 근태 신청 저장 완료\n");
-                    }
-
-                    if (validationError != null) {
-                        warningMessages
-                                .append(validationError)
-                                .append("\n");
-                    }
-
-                } catch (Exception e) {
-                    warningMessages.append(dto.getEmpCode())
-                            .append(" : 저장 중 오류 발생 (")
-                            .append(e.getMessage())
-                            .append(")\n");
-                    System.out.println("e = " + e);
+                if (isUpdate) {
+                    attMapper.updateAttendanceRequest(dto, loginEmpCode, workDate);
+                    attMapper.updateAttendanceRequestGeneral(dto);
+                } else {
+                    dto.setStatus("SAVED");
+                    attMapper.insertAttendanceRequest(dto, loginEmpCode, workDate);
+                    attMapper.insertAttendanceRequestGeneral(dto);
                 }
-            }
-            StringBuilder finalMessage = new StringBuilder("===처리 결과===\n\n");
-            if (fatalErrors.length() > 0) {
-                finalMessage.append(fatalErrors).append("\n");
-            }
-
-            if (resultMessages.length() > 0) {
-                finalMessage.append(resultMessages).append("\n");
-            }
-
-
-            if (warningMessages.length() > 0) {
-                finalMessage.append("유의 사항:\n").append(warningMessages);
-            }
-
-            if (fatalErrors.length() == 0 && warningMessages.length() == 0) {
-                return "모든 항목이 성공적으로 저장되었습니다.";
-            }
-
-        return finalMessage.toString();
-        }
-
-
-    // 검증 로직 분리
-    private String validateConflicts(BaseAttEmpDto dto, LocalDate workDate) {
-
-        String empCode = dto.getEmpCode();
-        String attType = dto.getAttType();
-        String planShiftType = attMapper.getPlannedShift(empCode, workDate);
-        String realWorkRecord = getRealWorkRecord(empCode, workDate);
-        TimeRange requestTime = new TimeRange(workDate, dto.getStartTime(), dto.getStartNextDay(), dto.getEndTime(), dto.getEndNextDay());
-        if ("연장".equals(attType) || "조출".equals(attType)) {
-            // 연장/조출에 해당하는 경우에만 허용 시간 범위 조회
-            TimeRange allowedTimeRange = attMapper.getAllowedTimeRange(empCode, workDate, attType);
-
-            if (!allowedTimeRange.contains(requestTime)) {
-                return attType + " 신청 시간이 허용 범위를 초과했습니다.";
+            } catch (Exception e) {
+                message.append(empCode).append(": 저장 실패 - ").append(e.getMessage()).append("\n");
             }
         }
 
-        if (realWorkRecord.equals("결근")) {
-            return "사번(" + empCode + "): 결근 상태";
-        }
-        // 휴일 근무 시간 검증
-        if (("연장".equals(attType) && "휴일".equals(planShiftType)) || ("조출".equals(attType) && "휴일".equals(planShiftType))) {
-            LocalTime startTime = dto.getStartTime();
-            LocalTime endTime = dto.getEndTime();
+        return message.length() > 0 ? message.toString() : "저장 완료";
+    }
 
-            long hoursWorked = Duration.between(startTime, endTime).toHours();
-            if (hoursWorked < 8) {
-                return "휴일 근무 8시간 미만 신청 시 연장 근무 신청이 불가합니다.";
-            }
-        }
-        // 검증 규칙 매핑
-        Map<String, List<String>> conflictRules = Map.of(
-                "연장", List.of("연차", "반차", "조퇴", "휴가"),
-                "조출", List.of("연차", "휴가"),
-                "조퇴", List.of("연차", "휴가"),
-                "외출", List.of("연차", "휴가"),
-                "반차", List.of("연차", "휴가")
-        );
+    private void calculateHalfDayTime(BaseAttEmpDto dto, LocalDate workDate) {
+        TimeRange planTime = attMapper.getPlannedCommuteTime2(workDate, dto.getEmpCode());
+        LocalDateTime start = planTime.getStartDateTime();
+        LocalDateTime end = planTime.getEndDateTime();
 
-        List<String> conflicts = conflictRules.get(attType);
-        if (conflicts != null) {
-            for (String conflictType : conflicts) {
-                if (attMapper.existsAttendanceRequest(empCode, workDate, conflictType) != 0) {
-                    return "이미 " + conflictType + " 신청 내역이 존재합니다.";
-                }
-            }
+        if ("morningOff".equals(dto.getHalfType())) {
+            System.out.println("들어왔어?");
+            // 오전반차 → 오후만 근무
+            end = start.plusHours(4);
+            dto.setHalfType("전반차");
+            System.out.println("dto.getHalfType() = " + dto.getHalfType());
+        } else if ("afternoonOff".equals(dto.getHalfType())) {
+            // 오후반차 → 오전만 근무
+            start = start.plusHours(4);
+            dto.setHalfType("후반차");
         }
 
-        return null; // 문제 없음
+        dto.setStartTime(start.toLocalTime());
+        dto.setEndTime(end.toLocalTime());
+        dto.setStartNextDay(!start.toLocalDate().equals(workDate));
+        dto.setEndNextDay(!end.toLocalDate().equals(workDate));
     }
 
     public TimeRange getPlannedCommuteTime(String empCode, LocalDate workDate) {
@@ -207,72 +137,79 @@ public class AttService {
 
     public void deleteAttendance(List<BaseAttEmpDto> attList) {
         for (BaseAttEmpDto dto : attList) {
-            if(dto.getRequestId() != null) {
+            if (dto.getRequestId() != null) {
                 attMapper.deleteAttendanceRecord(dto);
             }
         }
     }
 
+    @Transactional
     public String requestAttendance(LocalDate workDate, List<BaseAttEmpDto> attList, String loginEmpCode) {
-        // 1. 저장만 수행 (메시지는 반환하지 않음)
+        StringBuilder successMessages = new StringBuilder();
+        StringBuilder errorMessages = new StringBuilder();
+
+        // 1. 먼저 저장
         saveAttendance(workDate, attList, loginEmpCode);
 
-        // 2. 상신 검증 및 결과 메시지
-        StringBuilder requestMessages = new StringBuilder();
-        StringBuilder fatalErrors = new StringBuilder();
-
         for (BaseAttEmpDto dto : attList) {
-            // validation 체크
-            String validationError = validateConflicts(dto, workDate);
-            if (validationError != null) {
-                fatalErrors.append(dto.getEmpCode())
-                        .append(" : 상신 불가 - ")
-                        .append(validationError)
-                        .append("\n");
-                continue;
+            String empCode = dto.getEmpCode();
+
+            // 2. 검증 - 에러 있으면 상신 안 함
+            String validateError = attendanceValidateService.validate(
+                    dto, workDate, getRealWorkRecord(empCode, workDate),
+                    getExpectedWorkTime(empCode, workDate));
+            if (validateError != null) {
+                errorMessages.append(empCode).append(": 상신 불가 - ").append(validateError).append("\n");
+                continue;  // 상신 안 함
             }
 
-            // 이미 상신된 경우
-            Long requestId = attMapper.findAttendanceRequestId(dto.getEmpCode(), dto.getAttType(), workDate);
+            // 3. 이미 상신되었는지 체크
+            Long requestId = attMapper.findAttendanceRequestId(empCode, dto.getAttType(), workDate);
             if (attMapper.existRequestRecord(requestId)) {
-                fatalErrors.append(dto.getEmpCode())
-                        .append(" : 이미 상신되었습니다.\n");
+                errorMessages.append(empCode).append(": 이미 상신됨\n");
                 continue;
             }
+            attMapper.updateAttendanceStatus("REQUEST", requestId);
+            // 4. 결재선 생성
+            try {
+                DeptDto dept = deptMapper.getDeptByEmpCode(empCode);
+                String leader = deptMapper.getLeaderByDeptCode(dept.getDeptCode());
 
-            // 결재선 생성
-            DeptDto dept = deptMapper.getDeptByEmpCode(dto.getEmpCode());
-            String leader = deptMapper.getLeaderByDeptCode(dept.getDeptCode());
+                // 본인 결재선
+                attMapper.insertApprovalRecord(empCode, empCode, requestId, 1, "REQUESTED", now());
 
-            // 본인 결재선
-            attMapper.insertApprovalRecord(dto.getEmpCode(), dto.getEmpCode(), requestId, 1, "REQUESTED", now());
+                // 리더 결재선
+                if (loginEmpCode.equals(leader)) {
+                    // 본인이 리더면 자동 승인
+                    attMapper.insertApprovalRecord(empCode, leader, requestId, 2, "APPROVED", now());
+                    attMapper.updateAttendanceStatus("APPROVED", requestId);
+                } else {
+                    // 리더 승인 대기
+                    attMapper.insertApprovalRecord(empCode, leader, requestId, 2, "PENDING", null);
+                    attMapper.updateAttendanceStatus("REQUESTED", requestId);
+                }
 
-            // 리더 결재선
-            if (loginEmpCode.equals(leader)) {
-                attMapper.insertApprovalRecord(dto.getEmpCode(), leader, requestId, 2, "APPROVED", now());
-                attMapper.updateAttendanceStatus("APPROVED", requestId);
-            } else {
-                attMapper.insertApprovalRecord(dto.getEmpCode(), leader, requestId, 2, "PENDING", null);
-                attMapper.updateAttendanceStatus("REQUESTED", requestId);
+                successMessages.append(empCode).append(": 상신 완료\n");
+
+            } catch (Exception e) {
+                errorMessages.append(empCode).append(": 상신 실패 - ").append(e.getMessage()).append("\n");
             }
-
-            requestMessages.append(dto.getEmpCode())
-                    .append(" : 상신 완료\n");
         }
 
-        // 3. 최종 메시지 조합
-        StringBuilder finalMessage = new StringBuilder();
-        if (requestMessages.length() > 0) {
-            finalMessage.append("상신 결과:\n").append(requestMessages).append("\n");
+        // 5. 결과 메시지
+        StringBuilder result = new StringBuilder();
+        if (successMessages.length() > 0) {
+            result.append("=== 상신 완료 ===\n").append(successMessages).append("\n");
         }
-        if (fatalErrors.length() > 0) {
-            finalMessage.append("상신 불가 내역:\n").append(fatalErrors).append("\n");
+        if (errorMessages.length() > 0) {
+            result.append("=== 상신 불가 ===\n").append(errorMessages);
         }
 
-        return finalMessage.toString();
+        return result.length() > 0 ? result.toString() : "처리 완료";
     }
 
     public TimeRange getExpectedWorkTime(String empCode, LocalDate workDate) {
+        // 1. 기본 계획 근무시간 조회
         TimeRange plannedCommuteTime = attMapper.getPlannedCommuteTime2(workDate, empCode);
         if (plannedCommuteTime == null) {
             return null;
@@ -280,48 +217,61 @@ public class AttService {
         LocalDateTime finalStart = plannedCommuteTime.getStartDateTime();
         LocalDateTime finalEnd = plannedCommuteTime.getEndDateTime();
 
+        // 2. 해당 날짜 모든 근태 신청 조회
         List<Map<String, Object>> allRequests = attMapper.getAllRequestWorkTimeForDate(workDate, empCode);
-        Map<String, TimeRange> requestMap = new HashMap<>();
 
+        // 3. 요청 타입별 TimeRange 맵핑
+        Map<String, TimeRange> requestMap = new HashMap<>();
         for (Map<String, Object> req : allRequests) {
             String type = (String) req.get("attendance_type");
+            String halfType = (String) req.get("half_type"); // 전반차 / 후반차
 
             LocalTime startTime = ((java.sql.Time) req.get("startTime")).toLocalTime();
             Boolean startNextDay = (Boolean) req.get("startNextDay");
             LocalTime endTime = ((java.sql.Time) req.get("endTime")).toLocalTime();
             Boolean endNextDay = (Boolean) req.get("endNextDay");
 
-            requestMap.put(type, new TimeRange(workDate, startTime, startNextDay, endTime, endNextDay));
+            // key 결정: 반차는 half_type 사용, 나머지는 attendance_type
+            String key = "반차".equals(type) ? halfType : type;
+
+            requestMap.put(key, new TimeRange(workDate, startTime, startNextDay, endTime, endNextDay));
         }
 
-
+        // 4. 요청 타입별로 계획 근무시간 반영
         List<String> reqTypes = List.of("휴일", "연장", "조출", "전반차", "후반차", "조퇴");
         for (String type : reqTypes) {
             TimeRange requestWorkTime = requestMap.get(type);
             if (requestWorkTime != null) {
                 switch (type) {
                     case "휴일":
-                        // 출근/퇴근 둘 다 변경
+                        // 출근/퇴근 모두 변경
                         finalStart = requestWorkTime.getStartDateTime();
                         finalEnd = requestWorkTime.getEndDateTime();
                         break;
                     case "연장":
-                    case "후반차":
                         finalEnd = requestWorkTime.getEndDateTime();
                         break;
                     case "조출":
-                    case "전반차":
-                        // 출근시간만 변경
-                        finalStart = requestWorkTime.getStartDateTime();
-                        break;
                     case "조퇴":
-                        finalEnd = requestWorkTime.getStartDateTime();
+                        finalEnd = requestWorkTime.getStartDateTime(); // 퇴근 조정
+                        break;
+                    case "전반차":
+                        System.out.println("전반차 들어옴");
+                        finalStart = requestWorkTime.getEndDateTime();// 출근만 조정
+                        System.out.println("requestWorkTime.getStartDateTime() = " + requestWorkTime.getEndDateTime());
+                        System.out.println("finalStart = " + finalStart);
+                        break;
+                    case "후반차":
+                        finalEnd = requestWorkTime.getEndDateTime(); // 퇴근만 조정
                         break;
                 }
             }
         }
+
+        // 5. 최종 TimeRange 생성 후 반환
         return getTimeRange(workDate, finalStart, finalEnd);
     }
+
     private TimeRange getTimeRange(LocalDate workDate, LocalDateTime finalStart, LocalDateTime finalEnd) {
         LocalTime startTime = finalStart.toLocalTime();
         boolean startNextDay = !finalStart.toLocalDate().isEqual(workDate);
@@ -492,5 +442,213 @@ public class AttService {
             attMapper.deleteApprovalLine(dto.getRequestId());
             attMapper.updateAttendanceStatus("SAVED", dto.getRequestId());
         }
+    }
+    private String validateEtcAttendance(BaseAttEmpDto dto) {
+
+        StringBuilder errors = new StringBuilder();
+
+        LocalDate start = dto.getStartDate();
+        LocalDate end = dto.getEndDate();
+
+        // 2. 기존 신청 목록 조회
+        List<ExistingEtcRequestDto> existingRequests =
+                attMapper.findExistingEtcRequests(dto.getEmpCode(), start, end);
+
+        // 3. 날짜별 체크
+        for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+
+            String originShiftCode = attMapper.getPlannedShift(dto.getEmpCode(), date);
+
+            // 기존 근무 동일
+            if (originShiftCode.equals(dto.getNewShiftType())) {
+                errors.append(dto.getEmpCode())
+                        .append(" 직원은 ").append(date).append(" 기존 근무와 동일합니다.\n");
+            }
+
+            // 기존 신청 중복
+            for (ExistingEtcRequestDto existing : existingRequests) {
+                if (!date.isBefore(existing.getStartDate()) && !date.isAfter(existing.getEndDate())) {
+                    errors.append(dto.getEmpCode())
+                            .append(" 직원은 ").append(date)
+                            .append(" 이미 ").append(existing.getEtcType())
+                            .append(" 신청이 되어 있습니다 (")
+                            .append(existing.getStartDate()).append("~")
+                            .append(existing.getEndDate()).append(")\n");
+                }
+            }
+
+            // 연차 + 반차 중복
+            if ("06".equals(dto.getNewShiftType())) {
+                int halfDayExists =
+                        attMapper.existsAttendanceRequest(dto.getEmpCode(), date, "반차");
+
+                if (halfDayExists > 0) {
+                    errors.append(dto.getEmpCode())
+                            .append(" 직원은 ").append(date)
+                            .append(" 이미 반차가 신청되어 있어 연차를 신청할 수 없습니다.\n");
+                }
+            }
+        }
+
+        return errors.toString();
+    }
+
+    @Transactional
+    public String saveEtcAttendance(LocalDate selectedDate,
+                                    List<BaseAttEmpDto> attList,
+                                    String loginEmpCode) {
+
+        StringBuilder errorBuilder = new StringBuilder();
+
+        for (BaseAttEmpDto dto : attList) {
+            try {
+                if (dto.getRequestId() != null && attMapper.alreadyRequested(dto.getRequestId())) {
+                    errorBuilder.append("이미 상신되어 수정 불가합니다");
+                    continue;
+                }
+                // 🔍 검증 - String 단일 메시지 반환
+                String validationMsg = validateEtcAttendance(dto);
+
+                if (!validationMsg.isEmpty()) {
+                    errorBuilder.append(validationMsg).append("\n");
+                }
+
+                // ✔ 저장은 검증 에러가 있어도 계속 진행
+                LocalDate start = dto.getStartDate();
+
+                dto.setPlanType(attMapper.getPlannedShift(dto.getEmpCode(), start));
+                dto.setStatus("SAVED");
+                dto.setAttType("06".equals(dto.getNewShiftType()) ? "연차" : "기타");
+
+                if (dto.getRequestId() == null) {
+                    attMapper.insertAttendanceRequest(dto, loginEmpCode, start);
+                    attMapper.insertEtcAttendance(dto);
+                } else {
+                    attMapper.updateAttendanceRequest(dto, loginEmpCode, start);
+                    attMapper.updateEtcAttendance(dto);
+                }
+
+            } catch (Exception e) {
+                errorBuilder.append(dto.getEmpCode())
+                        .append(" 직원 저장 중 오류: ")
+                        .append(e.getMessage())
+                        .append("\n");
+            }
+        }
+
+        return errorBuilder.toString().trim(); // 컨트롤러로 반환
+    }
+    @Transactional
+    public String requestEtcAttendance(LocalDate workDate, List<BaseAttEmpDto> attList, String empCode) {
+
+        // 1. 저장 수행 및 오류 체크
+        saveEtcAttendance(workDate, attList, empCode);
+
+        StringBuilder errorMessages = new StringBuilder();
+
+        for (BaseAttEmpDto dto : attList) {
+
+            Long requestId = attMapper.findAttendanceRequestId(dto.getEmpCode(), dto.getAttType(), workDate);
+            if (requestId != null && attMapper.existRequestRecord(requestId)) {
+                errorMessages.append("이미 상신되어 재상신이 불가합니다");
+                continue;
+            }
+            String validateMsg = validateEtcAttendance(dto);
+
+            if (!validateMsg.isEmpty()) {
+                errorMessages.append(validateEtcAttendance(dto)).append("\n");
+                continue;
+            }
+
+            DeptDto dept = deptMapper.getDeptByEmpCode(dto.getEmpCode());
+            String leader = deptMapper.getLeaderByDeptCode(dept.getDeptCode());
+            //상태 변경
+            attMapper.updateAttendanceStatus("APPROVED", dto.getRequestId());
+            // 본인 결재선
+            attMapper.insertApprovalRecord(dto.getEmpCode(), dto.getEmpCode(), dto.getRequestId(), 1, "REQUESTED", now());
+
+            // 리더 결재선
+            if (empCode.equals(leader)) {
+                attMapper.insertApprovalRecord(dto.getEmpCode(), leader, dto.getRequestId(), 2, "APPROVED", now());
+                attMapper.updateAttendanceStatus("APPROVED", dto.getRequestId());
+            } else {
+                attMapper.insertApprovalRecord(dto.getEmpCode(), leader, dto.getRequestId(), 2, "PENDING", null);
+                attMapper.updateAttendanceStatus("REQUESTED", dto.getRequestId());
+            }
+        }
+        return errorMessages.length() > 0 ? errorMessages.toString() : "처리 완료";
+    }
+
+    public List<AttEmpViewDto> getAttEmpListWithHolidayCheck(String attType, LocalDate workDate, String empCode, String deptName) {
+
+        List<AttEmpViewDto> empList = empService.getAttEmpList(attType, workDate, empCode, deptName);
+        Iterator<AttEmpViewDto> iterator = empList.iterator();
+
+        while (iterator.hasNext()) {
+            AttEmpViewDto emp = iterator.next();
+
+            boolean isHoliday = attMapper.isHoliday(emp.getEmpCode(), workDate);
+            boolean isExtendedOrEarly = "연장".equals(attType) || "조출".equals(attType);
+
+            // -----------------------------------------
+            // A. 날짜 기준 휴일 필터링
+            // -----------------------------------------
+            if (isHoliday) {
+
+                if ("휴일".equals(attType)) {
+                    // OK
+                } else if (isExtendedOrEarly) {
+                    boolean hasOver8 = attMapper.hasHolidayWorkOver8Hours(emp.getEmpCode(), workDate);
+                    if (!hasOver8) {
+                        iterator.remove();
+                        continue;
+                    }
+                } else {
+                    iterator.remove();
+                    continue;
+                }
+            } else {
+                if ("휴일".equals(attType)) {
+                    iterator.remove();
+                    continue;
+                }
+            }
+
+            // -----------------------------------------
+            // B. 실적 (출근기록 판단) 1회만
+            // -----------------------------------------
+            String realType = getRealWorkRecord(emp.getEmpCode(), workDate);
+            emp.setRealWorkRecord(realType);
+
+            // -----------------------------------------
+            // C. planned 시간 세팅
+            // -----------------------------------------
+            if (emp.getRequestId() == null) {
+
+                // (1) 기본 planned 근무시간
+                TimeRange planTime = getPlannedCommuteTime(emp.getEmpCode(), workDate);
+                if (planTime != null) {
+                    emp.setPlannedStartTime(planTime.getStartTime());
+                    emp.setPlannedEndTime(planTime.getEndTime());
+                }
+
+                // (2) 그날 휴일근로 8시간 이상 신청 → 신청시간 덮어쓰기
+                boolean hasHolidayOver8 = attMapper.hasHolidayWorkOver8Hours(emp.getEmpCode(), workDate);
+                if (hasHolidayOver8) {
+                    TimeRange holidayTime = attMapper.getRequestWorkTime2(workDate, emp.getEmpCode(), "휴일");
+                    if (holidayTime != null) {
+                        emp.setPlannedStartTime(holidayTime.getStartTime());
+                        emp.setPlannedEndTime(holidayTime.getEndTime());
+                    }
+                }
+            }
+
+            // -----------------------------------------
+            // D. 예상 근무시간
+            // -----------------------------------------
+            emp.setExpectedWorkHours(getWeeklyWorkHours(emp.getEmpCode(), workDate));
+        }
+
+        return empList;
     }
 }

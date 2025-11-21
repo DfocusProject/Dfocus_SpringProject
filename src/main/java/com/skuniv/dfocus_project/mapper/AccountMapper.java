@@ -11,4 +11,6 @@ public interface AccountMapper {
     List<Account> findAll();
 
     void updatePassword(Account acc);
+
+    void updateRole(String empCode, String role);
 }

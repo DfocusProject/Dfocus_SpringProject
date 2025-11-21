@@ -28,4 +28,10 @@
         SET password = #{password}
         WHERE emp_code = #{empCode}
     </update>
+    <update id="updateRole">
+        UPDATE webaccount
+        SET role = #{role}
+        WHERE emp_code = #{empCode}
+    </update>
+
 </mapper>
