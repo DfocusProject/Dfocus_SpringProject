@@ -1,0 +1,327 @@
+/*******************************************
+ * 📌 emp_att.css — 근태 승인 화면 전용 스타일
+ * - common.css 기반 확장
+ *******************************************/
+
+/* 📌 left / right 영역을 감싸는 전용 래퍼를 flex로 처리 */
+.att-layout {
+    display: flex;
+    height: calc(100% - 60px); /* 필요시 조절 */
+}
+
+/* 📌 left / right 비율 */
+.left {
+    flex: 1;
+    border-right: 1px solid #ddd;
+    min-width: 0;  /* 유동축소 허용 */
+}
+
+.right {
+    flex: 1;
+    border-left: 1px solid #ddd;
+    min-width: 0;
+    background: #fff;
+    padding: 12px;
+}
+
+.left .attAprlList {
+    overflow-x: hidden;
+    white-space: normal;
+}
+
+table td:empty::after {
+    content: "\00a0"; /* non-breaking space */
+}
+
+table td {
+    padding: 8px 12px;
+    min-height: 24px;
+}
+/*******************************************
+ * 🔍 검색 Toolbar
+ *******************************************/
+.search-box {
+    display: block;
+    border: 2px solid #1e88e5;
+    background-color: #fff;
+    padding: 10px;
+    margin: 10px 20px;
+}
+
+.search-box label {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.search-box input,
+.search-box select {
+    padding: 4px 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.search-box button {
+    background-color: #1e88e5;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;    /* row 안에서는 줄 바뀌어도 OK */
+    margin-bottom: 10px;
+}
+
+.search-row label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btnSearchEmpAtt {
+    height: 30px;
+}
+
+/*******************************************
+ * tab
+ *******************************************/
+.list-tabs{
+    background-color: #fff;
+    margin: 10px 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.tab-header {
+    display: flex;
+    justify-content: space-between; /* 왼쪽은 탭 버튼, 오른쪽은 일괄 버튼 */
+    align-items: center; /* 세로 중앙 정렬 */
+    gap: 10px; /* 버튼 간 간격 */
+}
+
+.tab-buttons {
+    display: flex;
+    cursor: pointer;
+    border-radius: 3px;
+    margin: 10px 0;
+}
+
+.tab-btn {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background: #8b8b8b;
+    color: black;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.tab-btn.active {
+    background: #ffffff;
+    color: black;
+    border-color: #ffffff;
+}
+
+.tab-content {
+    display: none; /* 기본 숨김 */
+}
+
+.tab-content.active {
+    display: block; /* 선택된 탭만 보임 */
+}
+/*******************************************
+ * 일괄 승인/반려 버튼
+ *******************************************/
+.bulk-buttons{
+    flex-wrap: nowrap;
+}
+
+/*******************************************
+ * 📄 리스트 테이블 (좌측)
+ *******************************************/
+.attAprlList table {
+    width: 100%;
+    margin: 0;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.attAprlList thead th {
+    background: #f4f6f8;
+    padding: 10px 8px;
+    border-bottom: 2px solid #ccc;
+    font-weight: 600;
+    text-align: center;
+}
+
+.attAprlList tbody td {
+    text-align: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.attAprlList tbody tr:hover {
+    background-color: #e8f2fd;
+    transition: 0.2s;
+}
+
+.attAprlList tbody tr.selected {
+    background-color: #dbeeff;
+    font-weight: 600;
+}
+/*******************************************
+ * 📦 패널 공통 (우측 상세)
+ *******************************************/
+.right .panel {
+    background: #fff;
+    border-radius: 3px;
+    margin-bottom: 12px;
+}
+
+.panel .title {
+    padding: 10px;
+    background: #f4f6f8;
+    border: 1px solid #ddd;
+    font-weight: 600;
+}
+
+.panel .pan-header {
+    margin-bottom: 10px;
+    font-weight: 600;
+    align-items: center;
+}
+
+.panel .pan-header span {
+    float: right;
+    color: #777;
+    margin-left: 10px;
+    font-size: 10px;
+    font-weight:bold;
+}
+
+.pan {
+    border: 1px solid #ccc;
+}
+
+/*******************************************
+ * 📐 상세 — Row/Col
+ *******************************************/
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.col {
+    flex: 1;
+}
+
+.col .label {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 3px;
+}
+
+.col .value {
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+/*******************************************
+ * 📄 상세 테이블
+ *******************************************/
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+    table-layout: fixed;
+    text-align: center;
+}
+
+.detail-table th,
+.detail-table td {
+    text-align: center;   /* 가운데 정렬 */
+}
+
+.detail-table .label {
+    background: #f4f6f8;
+    font-weight: 600;
+}
+
+.detail-table tr:nth-child(even) { /* zebra 끄기 */
+    background: none !important;
+}
+
+.detail-table1 th {
+    width: 140px;   /* 원하는 너비 */
+    white-space: nowrap;
+}
+
+/*******************************************
+ * ✏ 반려 사유 입력
+ *******************************************/
+.pan input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+.reason-action {
+    display: flex;            /* 한 줄로 나열 */
+    align-items: center;      /* 수직 가운데 정렬 */
+    gap: 10px;                /* 요소 사이 간격 */
+    margin-bottom: 10px;
+}
+
+.rejection-reason {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 10px;
+}
+
+.rejection-reason label {
+    white-space: nowrap;
+}
+
+.rejection-reason input {
+    flex: 1;
+}
+
+/*******************************************
+ * ✔ 승인 / 반려 버튼 스타일
+ *******************************************/
+.actions {
+    text-align: right;
+}
+
+.btn {
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+.btn.approval {
+    background-color: #4caf50;
+}
+
+.btn.rejection {
+    background-color: #f44336;
+}
+/*******************************************
+ * ⬇ 하단 footer
+ *******************************************/
+.footer {
+    padding: 10px 20px;
+    color: #666;
+    font-size: 13px;
+}

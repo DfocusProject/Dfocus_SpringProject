@@ -1,3 +1,5 @@
+const pageType = document.body.dataset.page;
+
 // 📌전체 체크박스 제어
 function initCheckAll(masterSelector, itemSelector) {
     const master = document.querySelector(masterSelector);
@@ -23,7 +25,15 @@ function collectSelectedRows() {
             startNextDay: row.querySelector('.startNextDay')?.checked || false,
             endNextDay: row.querySelector('.endNextDay')?.checked || false,
             requestId: row.querySelector('.requestId')?.value || '',
-            halfType: row.querySelector('.halfType')?.value || ''  // 반차 select
+            halfType: row.querySelector('.halfType')?.value || '', // 반차 select
+
+            //ETC PAGE FIELDS
+            planType: row.querySelector('.planType')?.innerText?.trim() || "",
+            newShiftType: row.querySelector('.newShiftType')?.value || "",
+            startDate: row.querySelector('.startDate')?.value || "",
+            endDate: row.querySelector('.endDate')?.value || "",
+            isTodayRequest: row.querySelector('.isTodayRequest')?.value || "",
+            balanceDay: row.querySelector('.balanceDay')?.innerText || ''
         };
     });
 }
@@ -48,48 +58,76 @@ function submitApply(actionUrl, workDate) {
     }
 
     for (const row of rows) {
-        // 사유 검증
-        if (!row.reason) {
-            alert('사유를 선택해주세요.');
-            return;
-        }
-        if (!row.reasonDetail || row.reasonDetail.trim() === '') {
-            alert('사유내용을 입력해주세요.');
-            return;
-        }
 
-        if (row.attType !== '반차' && row.attType !== '조퇴') {
-
-            if (!row.startTime || !row.endTime) {
-                alert('시작시간과 종료시간을 입력해주세요.');
+        if (pageType === "general") {
+            // 사유 검증
+            if (!row.reason) {
+                alert('사유를 선택해주세요.');
                 return;
             }
-            // 시간을 분 단위로 변환
-            const [startHour, startMin] = row.startTime.split(':').map(Number);
-            const [endHour, endMin] = row.endTime.split(':').map(Number);
+            if (!row.reasonDetail || row.reasonDetail.trim() === '') {
+                alert('사유내용을 입력해주세요.');
+                return;
+            }
+            if (row.attType !== '반차' && row.attType !== '조퇴') {
+
+                if (!row.startTime || !row.endTime) {
+                    alert('시작시간과 종료시간을 입력해주세요.');
+                    return;
+                }
+                // 시간을 분 단위로 변환
+                const [startHour, startMin] = row.startTime.split(':').map(Number);
+                const [endHour, endMin] = row.endTime.split(':').map(Number);
 
 
-            let startTotalMin = startHour * 60 + startMin;
-            let endTotalMin = endHour * 60 + endMin;
+                let startTotalMin = startHour * 60 + startMin;
+                let endTotalMin = endHour * 60 + endMin;
 
 
-            // 익일 체크 시 +24시간(1440분)
-            console.log('startNextDay:', row.startNextDay, 'endNextDay:', row.endNextDay);
-            if (row.startNextDay) startTotalMin += 1440;
-            if (row.endNextDay) endTotalMin += 1440;
+                // 익일 체크 시 +24시간(1440분)
+                console.log('startNextDay:', row.startNextDay, 'endNextDay:', row.endNextDay);
+                if (row.startNextDay) startTotalMin += 1440;
+                if (row.endNextDay) endTotalMin += 1440;
 
-            // 근무시간 계산
-            const diffMin = endTotalMin - startTotalMin;
+                // 근무시간 계산
+                const diffMin = endTotalMin - startTotalMin;
 
-            // 종료시간이 시작시간 이전인지 체크
-            if (diffMin <= 0) {
-                alert('종료시간은 시작시간 이후여야 합니다.');
+                // 종료시간이 시작시간 이전인지 체크
+                if (diffMin <= 0) {
+                    alert('종료시간은 시작시간 이후여야 합니다.');
+                    return;
+                }
+
+                // 30분 단위 체크
+                if (diffMin % 30 !== 0) {
+                    alert('근무시간은 30분 단위로 입력해주세요.');
+                    return;
+                }
+            }
+
+        }
+
+        // etc 페이지 전용 검증
+        if (pageType === "etc") {
+
+            if (!row.newShiftType) {
+                alert("변경근무를 선택하세요.");
                 return;
             }
 
-            // 30분 단위 체크
-            if (diffMin % 30 !== 0) {
-                alert('근무시간은 30분 단위로 입력해주세요.');
+            // if (!row.startDate || !row.endDate) {
+            if (!row.endDate) {
+                alert("종료일을 선택하세요.");
+                return;
+            }
+
+            if (!row.reason || row.reason.trim() === "") {
+                alert("사유를 입력하세요.");
+                return;
+            }
+
+            if (!row.isTodayRequest) {
+                alert("신청 시각을 선택하세요.");
                 return;
             }
         }
@@ -124,12 +162,14 @@ function submitApply(actionUrl, workDate) {
     dateInput.value = workDate;
     form.appendChild(dateInput);
 
+    // general/etc 결정
+    const listName = (pageType === "etc") ? "etcList" : "attList";
     // 선택된 행 데이터 추가
     rows.forEach((row, idx) => {
         Object.entries(row).forEach(([key, value]) => {
             const input = document.createElement('input');
             input.type = 'hidden';
-            input.name = `attList[${idx}].${key}`;
+            input.name = `${listName}[${idx}].${key}`;
             input.value = value;
             form.appendChild(input);
         });
@@ -169,11 +209,13 @@ function submitCancel(actionUrl, workDate) {
     dateInput.value = workDate;
     form.appendChild(dateInput);
 
+    // general/etc 결정
+    const listName = (pageType === "etc") ? "etcList" : "attList";
     // 최소 데이터만 전송
     rows.forEach((row, idx) => {
         const requestIdInput = document.createElement('input');
         requestIdInput.type = 'hidden';
-        requestIdInput.name = `attList[${idx}].requestId`;
+        requestIdInput.name = `${listName}[${idx}].requestId`;
         requestIdInput.value = row.requestId;
         form.appendChild(requestIdInput);
 
