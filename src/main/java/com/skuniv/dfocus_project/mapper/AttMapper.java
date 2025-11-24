@@ -4,7 +4,6 @@ import com.skuniv.dfocus_project.domain.Time.TimeRange;
 import com.skuniv.dfocus_project.dto.BaseAttEmpDto;
 import com.skuniv.dfocus_project.dto.ExistingEtcRequestDto;
 import com.skuniv.dfocus_project.dto.TimeRecordDto;
-import com.skuniv.dfocus_project.dto.approval.ReqInfoDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
@@ -46,7 +45,7 @@ public interface AttMapper {
 
     void insertApprovalRecord(String emp_request, String emp_response, Long requestId, int sequenceNo, String status, LocalDateTime approval_time);
 
-    Long findAttendanceRequestId(String empNo, String workType, LocalDate workDate);
+    Long findAttendanceRequestId(String empNo, String attType, LocalDate workDate);
 
     void updateAttendanceStatus(String status, Long requestId);
 
@@ -100,4 +99,6 @@ public interface AttMapper {
     boolean isEtcTypeByRequestId(Long requestId);
 
     void updateAttPlan(Long requestId);
+
+    String getRequestAttType(Long requestId);
 }

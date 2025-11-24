@@ -3,6 +3,7 @@ package com.skuniv.dfocus_project.mapper;
 import com.skuniv.dfocus_project.dto.approval.*;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
@@ -22,5 +23,11 @@ public interface ApprovalMapper {
 
     List<ApprovalInfoDto> getApprovalInfo(Long requestId);
 
-    void updateApprovalLineStatus(String status, Long requestId);
+    void updateApprovalLineStatus(String status, Long requestId, String empCode);
+
+    void updateApprovalLineTime(Long requestId, String empCode);
+
+    void updateAnnualCount(Long requestId, double count);
+
+    double getAnnualRequestCount(Long requestId);
 }
