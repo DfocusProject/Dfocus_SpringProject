@@ -44,9 +44,8 @@ function loadDetail(requestId) {
             document.querySelector("#detail-area").innerHTML = html;
 
             attachDetailFormHandlers();
-
-            // 👉 상세 로드된 후에 반드시 실행해야 정상 작동함
-            updateActionsVisibility();
+            updateActionsVisibility(); /* 상세 로드된 후에 반드시 실행해야 정상 작동함 */
+            hideActionsIfNoTabs();
         })
         .catch(err => console.error("DETAIL LOAD ERROR:", err));
 }
@@ -103,5 +102,15 @@ function updateActionsVisibility() {
         actions.style.display = "block";  // 결재할 문서
     } else {
         actions.style.display = "none";   // 승인됨 / 반려됨
+    }
+}
+
+// 페이지에 탭이 없는 경우(detail만 표시하는 페이지)
+function hideActionsIfNoTabs() {
+    const hasTabs = document.querySelectorAll(".tab-btn").length > 0;
+    const actions = document.querySelector("#detail-area .actions");
+
+    if (!hasTabs && actions) {
+        actions.style.display = "none";   // 승인/반려 버튼 숨김
     }
 }
