@@ -30,9 +30,9 @@
 
                         <div class="search-row">
                             <label>대상일자
-                                <input type="date" name="startDate" required>
+                                <input type="date" name="startDate" th:value="${startDate}" required>
                                 <span>~</span>
-                                <input type="date" name="endDate" required>
+                                <input type="date" name="endDate" th:value="${endDate}" required>
                             </label>
 
                             <label>사번
@@ -120,7 +120,7 @@
                                     <td th:text="${doc.reqEmpName}"></td>
                                     <td th:text="${doc.department}"></td>
                                     <td th:text="${doc.reqDetailType}"></td>
-                                    <td th:text="${doc.resEmpName}"></td>
+                                    <td th:text="${doc.targetEmpName}"></td>
                                     <td th:text="${doc.reqDate}"></td>
                                 </tr>
                                 </tbody>
@@ -153,7 +153,7 @@
                                     <td th:text="${doc.reqEmpName}"></td>
                                     <td th:text="${doc.department}"></td>
                                     <td th:text="${doc.reqDetailType}"></td>
-                                    <td th:text="${doc.resEmpName}"></td>
+                                    <td th:text="${doc.targetEmpName}"></td>
                                     <td th:text="${doc.reqDate}"></td>
                                 </tr>
                                 </tbody>
@@ -186,7 +186,7 @@
                                     <td th:text="${doc.reqEmpName}"></td>
                                     <td th:text="${doc.department}"></td>
                                     <td th:text="${doc.reqDetailType}"></td>
-                                    <td th:text="${doc.resEmpName}"></td>
+                                    <td th:text="${doc.targetEmpName}"></td>
                                     <td th:text="${doc.reqDate}"></td>
                                 </tr>
                                 </tbody>

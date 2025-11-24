@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -32,20 +34,29 @@ public class ApprovalController {
     }
 
     @GetMapping("/detail/{requestId}")
-    public String getDetail(@PathVariable int requestId, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String getDetail(@PathVariable Long requestId, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String loginEmpCode = userDetails.getUsername(); // getUsername() -> empCode
         EmpInfoDto empInfoDto = approvalService.getEmpInfo(requestId, loginEmpCode);
-//        ReqInfoDto reqInfoDto = approvalService.getReqInfoDto(requestId);
-//        CommuteInfoDto commuteInfoDto = approvalService.getCommuteInfoDto(requestId);
-//        ApprovalInfoDto approvalInfoDto = approvalService.getApprovalInfoDto(requestId);
+        ReqInfoDto reqInfoDto = approvalService.getReqInfoDto(requestId);
+        CommuteInfoDto commuteInfoDto = approvalService.getCommuteInfoDto(empInfoDto.getReqDate(), empInfoDto.getTargetEmpCode());
+        List<ApprovalInfoDto> approvalInfoDto = approvalService.getApprovalInfoDto(requestId);
 
         model.addAttribute("empInfo", empInfoDto);
-//        model.addAttribute("reqInfoDto", reqInfoDto);
-//        model.addAttribute("commuteInfo", commuteInfoDto);
-//        model.addAttribute("approvalInfo", approvalInfoDto);
-
+        model.addAttribute("reqInfo", reqInfoDto);
+        model.addAttribute("commuteInfo", commuteInfoDto);
+        model.addAttribute("approvalInfos", approvalInfoDto);
 
         return "approval/detail :: detailFragment";
+    }
+    @PostMapping("/approve")
+    public String approve(@RequestParam Long requestId){
+        approvalService.approve(requestId);
+        return "redirect:/approval/search";
+    }
+    @PostMapping("/reject")
+    public String reject(@RequestParam Long requestId){
+        approvalService.reject(requestId);
+        return "redirect:/approval/search";
     }
 
 }

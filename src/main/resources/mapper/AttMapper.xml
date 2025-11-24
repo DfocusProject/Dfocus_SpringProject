@@ -465,5 +465,22 @@
         AND CONVERT(DATE, RS.START_DATE) &lt;= CONVERT(DATE, #{end})
         AND CONVERT(DATE, RS.END_DATE) &gt;= CONVERT(DATE, #{start})
     </select>
+    <select id="findAttTypeByrequestId" resultType="String">
+        SELECT attendance_type
+        FROM webattrequest
+        WHERE request_id = #{requestId}
+    </select>
+    <update id="updateAttPlan" parameterType="string">
+        UPDATE ep
+        SET ep.shift_code = was.new_shift_code
+            FROM webempplan ep
+    INNER JOIN webattrequest wa
+        ON wa.emp_code = ep.emp_code
+            INNER JOIN webattrequestspecial was
+            ON wa.request_id = was.request_id
+        WHERE wa.request_id = #{requestId}
+          AND ep.plan_date BETWEEN was.start_date AND was.end_date
+          AND ep.shift_code NOT IN ('12', '13');
+    </update>
 
 </mapper>

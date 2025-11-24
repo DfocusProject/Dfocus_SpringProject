@@ -21,7 +21,7 @@
             </tr>
             <tr>
                 <th>대상자</th>
-                <td th:text="${empInfo.resEmpCode + ' / ' + empInfo.resEmpName}"></td>
+                <td th:text="${empInfo.targetEmpCode + ' / ' + empInfo.targetEmpName}"></td>
                 <th>부서명</th>
                 <td th:text="${empInfo.department}"></td>
                 <th>계획근무</th>
@@ -29,57 +29,80 @@
             </tr>
             </tbody>
         </table>
+        <!-- 신청 근태 상세 (대체 코드) -->
+        <div class="panel">
+<!--            <div class="title" th:text="'신청근태: ' + (${e.reqDetailType} ?: '')">신청근태: []</div>-->
+            <div class="body">
 
-<!--        &lt;!&ndash; 근태기 정보 &ndash;&gt;-->
-<!--        <div class="panel">-->
-<!--            <div class="title">근태기 정보</div>-->
-<!--            <table class="detail-table">-->
-<!--                <thead>-->
-<!--                <tr>-->
-<!--                    <th>날짜</th>-->
-<!--                    <th>출근시간</th>-->
-<!--                    <th>퇴근시간</th>-->
-<!--                </tr>-->
-<!--                </thead>-->
-<!--                <tbody th:each="info : ${detail.attMachineInfo}">-->
-<!--                <tr>-->
-<!--                    <td th:text="${info.date}"></td>-->
-<!--                    <td th:text="${info.startTime}"></td>-->
-<!--                    <td th:text="${info.endTime}"></td>-->
-<!--                </tr>-->
-<!--                </tbody>-->
-<!--            </table>-->
-<!--        </div>-->
+                <!-- 연장근로 -->
+                <table id="tbl-overtime" class="detail-table">
+                    <tr>
+                        <th>근무일</th>
+                        <td class="workDate" th:text="${reqInfo.startDate}"></td>
+                        <th>사유</th>
+                        <td class="reason" th:text="${reqInfo.reason}"></td>
+                    </tr>
+                    <tr>
+                        <th>근무시간</th>
+                        <td colspan="3" class="timeRange"
+                            th:text="(${reqInfo.startNextDay} ? '익일 ' : '당일 ') + ${#strings.substring(reqInfo.startTime, 0, 5)} + ' ~ ' +
+             (${reqInfo.endNextDay} ? '익일 ' : '당일 ') + ${#strings.substring(reqInfo.endTime, 0, 5)} + '(' + ${reqInfo.hours} + '시간)' ">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>사유내용</th>
+                        <td colspan="3" class="detail" th:text="${reqInfo.reasonDetail}">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- 근태기 정보 -->
+        <div class="panel">
+            <div class="title">근태기 정보</div>
+            <table class="detail-table">
+                <thead>
+                <tr>
+                    <th>날짜</th>
+                    <th>출근시간</th>
+                    <th>퇴근시간</th>
+                </tr>
+                </thead>
+                <tr>
+                    <td th:text="${commuteInfo != null && commuteInfo.workDate != null ? commuteInfo.workDate : '-'}"></td>
+                    <td th:text="${commuteInfo != null && commuteInfo.workOnTime != null ? #temporals.format(commuteInfo.workOnTime, 'HH:mm:ss') : '-'}"></td>
+                    <td th:text="${commuteInfo != null && commuteInfo.workOffTime != null ? #temporals.format(commuteInfo.workOffTime, 'HH:mm:ss') : '-'}"></td>
+                </tr>
+            </table>
+        </div>
 
-<!--        &lt;!&ndash; 결재 정보 &ndash;&gt;-->
-<!--        <div class="panel">-->
-<!--            <div class="title">결재 정보</div>-->
-<!--            <table class="detail-table">-->
-<!--                <thead>-->
-<!--                <tr>-->
-<!--                    <th>순번</th>-->
-<!--                    <th>구분</th>-->
-<!--                    <th>부서</th>-->
-<!--                    <th>직책</th>-->
-<!--                    <th>이름</th>-->
-<!--                    <th>사번</th>-->
-<!--                    <th>결과</th>-->
-<!--                    <th>결재완료일</th>-->
-<!--                </tr>-->
-<!--                </thead>-->
-<!--                <tbody th:each="apv : ${detail.approvalLines}">-->
-<!--                <tr>-->
-<!--                    <td th:text="${apv.sequenceNo}"></td>-->
-<!--                    <td th:text="${apv.type}"></td>-->
-<!--                    <td th:text="${apv.department}"></td>-->
-<!--                    <td th:text="${apv.duty}"></td>-->
-<!--                    <td th:text="${apv.name}"></td>-->
-<!--                    <td th:text="${apv.empCode}"></td>-->
-<!--                    <td th:text="${apv.result}"></td>-->
-<!--                    <td th:text="${apv.date}"></td>-->
-<!--                </tr>-->
-<!--                </tbody>-->
-<!--            </table>-->
+        <!-- 결재 정보 -->
+        <div class="panel">
+            <div class="title">결재 정보</div>
+            <table class="detail-table">
+                <thead>
+                <tr>
+                    <th>순번</th>
+                    <th>부서</th>
+                    <th>직책</th>
+                    <th>이름</th>
+                    <th>사번</th>
+                    <th>결과</th>
+                    <th>결재완료일</th>
+                </tr>
+                </thead>
+                <tbody th:each="approvalInfo : ${approvalInfos}">
+                <tr>
+                    <td th:text="${approvalInfo.sequenceNo}"></td>
+                    <td th:text="${approvalInfo.department}"></td>
+                    <td th:text="${approvalInfo.duty}"></td>
+                    <td th:text="${approvalInfo.name}"></td>
+                    <td th:text="${approvalInfo.empCode}"></td>
+                    <td th:text="${approvalInfo.result}"></td>
+                    <td th:text="${approvalInfo.date}"></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
 
     </div>
