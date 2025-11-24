@@ -21,7 +21,7 @@
 
         <div class="att-layout">
 
-            <!-- ================= LEFT AREA ================= -->
+            <!-- LEFT AREA -->
             <div class="left">
 
                 <!-- 검색 영역 -->
@@ -78,7 +78,7 @@
                     </form>
                 </div>
 
-                <!-- 탭 -->
+                <!-- tabs -->
                 <div class="list-tabs">
                     <div class="tab-header">
                         <div class="tab-buttons">
@@ -86,12 +86,21 @@
                             <button class="tab-btn" data-tab="tab2">승인된 문서</button>
                             <button class="tab-btn" data-tab="tab3">반려된 문서</button>
                         </div>
+
                         <div class="bulk-buttons">
-                            <button class="btn bulk-approval">일괄승인</button>
-                            <button class="btn bulk-rejection">일괄반려</button>
+                            <button type="button" class="btn bulk-approval">일괄승인</button>
+                            <button type="button" class="btn bulk-rejection">일괄반려</button>
+                            <select class="reason">
+                                <option value="">반려 사유 선택</option>
+                                <option value="서류 미비">서류 미비</option>
+                                <option value="근거 부족">근거 부족</option>
+                                <option value="승인 필요">승인 필요</option>
+                                <option value="기타">기타</option>
+                            </select>
                         </div>
                     </div>
 
+                    <!-- 탭 내용 -->
                     <div class="tab-contents">
 
                         <!-- TAB1 -->
@@ -111,10 +120,8 @@
                                 </thead>
                                 <tbody th:each="doc : ${pendingDocsList}">
                                 <tr class="doc-row">
-                                    <td>
-                                        <input type="checkbox" class="rowCheck">
-                                        <input type="hidden" class="requestId" th:value="${doc.requestId}">
-                                    </td>
+                                    <input type="hidden" class="requestId" th:value="${doc.requestId}">
+                                    <td><input type="checkbox" class="rowCheck" th:value="${doc.requestId}"></td>
                                     <td th:text="${doc.requestId}"></td>
                                     <td th:text="${doc.reqEmpCode}"></td>
                                     <td th:text="${doc.reqEmpName}"></td>
@@ -132,7 +139,6 @@
                             <table>
                                 <thead>
                                 <tr>
-                                    <th><input type="checkbox" id="checkAll2"></th>
                                     <th>결재번호</th>
                                     <th>신청사번</th>
                                     <th>상신자</th>
@@ -144,10 +150,7 @@
                                 </thead>
                                 <tbody th:each="doc : ${approvedDocsList}">
                                 <tr class="doc-row">
-                                    <td>
-                                        <input type="checkbox" class="rowCheck">
-                                        <input type="hidden" class="requestId" th:value="${doc.requestId}">
-                                    </td>
+                                    <input type="hidden" class="requestId" th:value="${doc.requestId}">
                                     <td th:text="${doc.requestId}"></td>
                                     <td th:text="${doc.reqEmpCode}"></td>
                                     <td th:text="${doc.reqEmpName}"></td>
@@ -165,7 +168,6 @@
                             <table>
                                 <thead>
                                 <tr>
-                                    <th><input type="checkbox" id="checkAll3"></th>
                                     <th>결재번호</th>
                                     <th>신청사번</th>
                                     <th>상신자</th>
@@ -177,10 +179,7 @@
                                 </thead>
                                 <tbody th:each="doc : ${rejectedDocsList}">
                                 <tr class="doc-row">
-                                    <td>
-                                        <input type="checkbox" class="rowCheck">
-                                        <input type="hidden" class="requestId" th:value="${doc.requestId}">
-                                    </td>
+                                    <input type="hidden" class="requestId" th:value="${doc.requestId}">
                                     <td th:text="${doc.requestId}"></td>
                                     <td th:text="${doc.reqEmpCode}"></td>
                                     <td th:text="${doc.reqEmpName}"></td>
@@ -193,22 +192,23 @@
                             </table>
                         </div>
 
-                    </div> <!-- tab-contents -->
-                </div> <!-- list-tabs -->
+                    </div>
+                </div>
 
             </div> <!-- left -->
 
-            <!-- ================= RIGHT AREA ================= -->
+            <!-- RIGHT DETAIL -->
             <div class="right">
                 <div id="detail-area" class="panel">
                     <div class="empty-msg">문서를 선택하면 상세내용이 표시됩니다.</div>
                 </div>
             </div>
 
-        </div> <!-- att-layout -->
+        </div>
     </div>
 </main>
 
+<script th:src="@{/js/script.js}"></script>
 <script th:src="@{/js/approval.js}"></script>
 
 </body>

@@ -3,7 +3,7 @@
 
     <div class="pan-header">
         일근태 신청 상세
-<!--        <span>신청번호: <span th:text="${empInfo.requestId}"></span></span>-->
+                <span style="margin-right: 10px">신청번호: <span th:text="${requestId}"></span></span>
     </div>
 
     <div class="body">
@@ -31,10 +31,10 @@
         </table>
         <!-- 신청 근태 상세 (대체 코드) -->
         <div class="panel">
-<!--            <div class="title" th:text="'신청근태: ' + (${e.reqDetailType} ?: '')">신청근태: []</div>-->
+            <div class="title" th:text="'신청근태: ' + (${reqInfo.reqType} ?: '')">
+                신청근태: []
+            </div>
             <div class="body">
-
-                <!-- 연장근로 -->
                 <table id="tbl-overtime" class="detail-table">
                     <tr>
                         <th>근무일</th>
@@ -44,19 +44,17 @@
                     </tr>
                     <tr>
                         <th>근무시간</th>
-                        <td colspan="3" class="timeRange"
-                            th:text="(${reqInfo.startNextDay} ? '익일 ' : '당일 ') + ${#strings.substring(reqInfo.startTime, 0, 5)} + ' ~ ' +
-             (${reqInfo.endNextDay} ? '익일 ' : '당일 ') + ${#strings.substring(reqInfo.endTime, 0, 5)} + '(' + ${reqInfo.hours} + '시간)' ">
-                        </td>
+                        <td colspan="3" th:text="(${reqInfo.startNextDay} ? '익일 ' : '당일 ') + ${#strings.substring(reqInfo.startTime,0,5)} + ' ~ ' + (${reqInfo.endNextDay} ? '익일 ' : '당일 ') + ${#strings.substring(reqInfo.endTime,0,5)} + '(' + ${reqInfo.hours} + '시간)'"></td>
                     </tr>
                     <tr>
                         <th>사유내용</th>
-                        <td colspan="3" class="detail" th:text="${reqInfo.reasonDetail}">
-                        </td>
+                        <td colspan="3" class="reasondetail" th:text="${reqInfo.reasonDetail}"></td>
                     </tr>
                 </table>
             </div>
         </div>
+    </div>
+
         <!-- 근태기 정보 -->
         <div class="panel">
             <div class="title">근태기 정보</div>
@@ -79,6 +77,26 @@
         <!-- 결재 정보 -->
         <div class="panel">
             <div class="title">결재 정보</div>
+
+            <div class="actions">
+
+                <!-- 승인 form -->
+                <form th:action="@{/approval/approve}" method="post" style="display:inline-block; margin-right:10px;">
+                    <input type="hidden" name="requestId" th:value="${requestId}">
+                    <button type="submit" class="btn approval">승인</button>
+                </form>
+
+                <!-- 반려 form -->
+                <form th:action="@{/approval/reject}" method="post" style="display:inline-block;">
+                    <input type="hidden" name="requestId" th:value="${requestId}">
+                    <label>반려사유</label>
+                    <input type="text" name="reason" placeholder="반려 사유 입력" required>
+                    <button type="submit" class="btn rejection">반려</button>
+                </form>
+
+            </div>
+
+            <!-- 결재 내역 테이블 -->
             <table class="detail-table">
                 <thead>
                 <tr>
@@ -100,10 +118,17 @@
                     <td th:text="${approvalInfo.empCode}"></td>
                     <td th:text="${approvalInfo.result}"></td>
                     <td th:text="${approvalInfo.date}"></td>
+                    <td>
+                      <span th:switch="${approvalInfo.result}">
+                          <span th:case="'PENDING'">승인대기중</span>
+                          <span th:case="'APPROVED'">승인</span>
+                          <span th:case="'REJECTED'">반려</span>
+                          <span th:case="'REQUESTED'">상신완료</span>
+                      </span>
+                    </td>
                 </tr>
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>

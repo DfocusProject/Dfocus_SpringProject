@@ -36,81 +36,6 @@ function submitSearch(formSelector) {
     form.submit();
 }
 
-// // 📌 저장/상신 공통 처리
-// function submitApply(actionUrl) {
-//     const rows = collectSelectedRows();
-//
-//     if (rows.length === 0) {
-//         alert("선택된 행이 없습니다.");
-//         return;
-//     }
-//
-//     // 필수값 체크
-//     for (const row of rows) {
-//         if (!row.newShiftType) {
-//             alert("변경근무를 선택하세요.");
-//             return;
-//         }
-//         if (!row.startDate || !row.endDate) {
-//             alert("시작일과 종료일을 입력하세요.");
-//             return;
-//         }
-//         if (!row.reason) {
-//             alert("사유를 입력하세요.");
-//             return;
-//         }
-//         if (!row.isTodayRequest) {
-//             alert("신청시각을 선택하세요.");
-//             return;
-//         }
-//     }
-//
-//     if (!confirm("처리하시겠습니까?")) return;
-//
-//     const form = document.createElement('form');
-//     form.method = 'post';
-//     form.action = actionUrl;
-//
-//     rows.forEach((row, idx) => {
-//         for (const [key, val] of Object.entries(row)) {
-//             const input = document.createElement('input');
-//             input.type = 'hidden';
-//             input.name = `etcList[${idx}].${key}`;
-//             input.value = val;
-//             form.appendChild(input);
-//         }
-//     });
-//
-//     document.body.appendChild(form);
-//     form.submit();
-// }
-//
-// // 📌 삭제/상신취소 → empCode만 전송
-// function submitCancel(actionUrl) {
-//     const rows = collectSelectedRows();
-//
-//     if (rows.length === 0) {
-//         alert("행을 선택하세요.");
-//         return;
-//     }
-//
-//     if (!confirm("삭제(또는 상신취소) 하시겠습니까?")) return;
-//
-//     const form = document.createElement('form');
-//     form.method = 'post';
-//     form.action = actionUrl;
-//
-//     rows.forEach((row, idx) => {
-//         const input = document.createElement('input');
-//         input.type = 'hidden';
-//         input.name = `etcList[${idx}].empCode`;
-//         input.value = row.empCode;
-//         form.appendChild(input);
-//     });
-//
-//     document.body.appendChild(form);
-//     form.submit();
-// }
 
 // // 📌 선택된 행에 입력창 값 일괄 적용
 // function applyValuesToSelectedRows() {
@@ -190,48 +115,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('btnSave')?.addEventListener('click', () => {
-        const workDate = document.getElementById("startDate")?.value;
-        submitApply('/etc/save', workDate);
+        const workDate = document.getElementById("workDate")?.value;
+        submitApply('save', workDate);
     });
 
     document.getElementById('btnRequest')?.addEventListener('click', () => {
-        const workDate = document.getElementById("startDate")?.value;
-        submitApply('/etc/request', workDate);
+        const workDate = document.getElementById("workDate")?.value;
+        submitApply('request', workDate);
     });
 
     document.getElementById('btnDelete')?.addEventListener('click', () => {
-        const workDate = document.getElementById("startDate")?.value;
-        submitCancel('/etc/delete', workDate);
+        const workDate = document.getElementById("workDate")?.value;
+        submitCancel('delete', workDate);
     });
 
     document.getElementById('btnRequestCancel')?.addEventListener('click', () => {
-        const workDate = document.getElementById("startDate")?.value;
-        submitCancel('/etc/requestCancel', workDate);
+        const workDate = document.getElementById("workDate")?.value;
+        submitCancel('requestCancel', workDate);
     });
 });
 
-// 시작일 (오늘, 내일)
-document.addEventListener("DOMContentLoaded", () => {
-
-    // 시작일 초기값 = 오늘
-    const today = new Date();
-    const todayStr = today.toISOString().split("T")[0];
-    const tomorrowStr = new Date(today.getTime() + 24 * 60 * 60 * 1000).toISOString().split("T")[0];
-
-    const startDateInput = document.getElementById("startDate");
-    if (startDateInput) {
-        startDateInput.value = todayStr;   // 초기값 오늘
-        startDateInput.min = todayStr;     // 오늘 이전 선택 불가
-        startDateInput.max = tomorrowStr;  // 내일까지 가능
-    }
-
-    // 조회 후 테이블 행들에도 적용
-    const applyStartDateLimit = () => {
-        document.querySelectorAll(".startDate").forEach(input => {
-            input.min = todayStr;
-            input.max = tomorrowStr;
-        });
-    };
-    applyStartDateLimit();
-});
 
