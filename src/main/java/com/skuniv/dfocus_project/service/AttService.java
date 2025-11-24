@@ -169,7 +169,7 @@ public class AttService {
                 errorMessages.append(empCode).append(": 이미 상신됨\n");
                 continue;
             }
-            attMapper.updateAttendanceStatus("REQUEST", requestId);
+            attMapper.updateAttendanceStatus("REQUESTED", requestId);
             // 4. 결재선 생성
             try {
                 DeptDto dept = deptMapper.getDeptByEmpCode(empCode);
@@ -549,6 +549,8 @@ public class AttService {
         for (BaseAttEmpDto dto : attList) {
 
             Long requestId = attMapper.findAttendanceRequestId(dto.getEmpCode(), dto.getAttType(), workDate);
+            System.out.println("dto.getAttType() = " + dto.getAttType());
+            System.out.println("requestId = " + requestId);
             if (requestId != null && attMapper.existRequestRecord(requestId)) {
                 errorMessages.append("이미 상신되어 재상신이 불가합니다");
                 continue;

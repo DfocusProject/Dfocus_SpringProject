@@ -149,7 +149,7 @@
         SELECT TOP 1 request_id
         FROM WEBATTREQUEST
         WHERE emp_code = #{empNo}
-          AND attendance_type = #{workType}
+          AND attendance_type = #{attType}
           AND request_date = #{workDate}
     </select>
 
@@ -170,6 +170,7 @@
         SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
         FROM WEBAPPROVALLINE
         WHERE request_id = #{requestId}
+          AND approval_status IN ('APPROVED', 'PENDING');
     </select>
 
     <insert id="insertAttendanceRequestGeneral" parameterType="com.skuniv.dfocus_project.dto.BaseAttEmpDto">
@@ -482,5 +483,17 @@
           AND ep.plan_date BETWEEN was.start_date AND was.end_date
           AND ep.shift_code NOT IN ('12', '13');
     </update>
+    <select id="getRequestAttType" resultType="String" parameterType="long">
+        SELECT attendance_type
+        FROM WEBATTREQUEST
+        WHERE request_id = #{requestId}
+    </select>
+    <!-- AttMapper.xml -->
+    <select id="isEtcTypeByRequestId" resultType="boolean" parameterType="long">
+        SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM WEBATTREQUEST
+        WHERE request_id = #{requestId}
+          AND attendance_type IN ('기타', '연차')
+    </select>
 
 </mapper>
