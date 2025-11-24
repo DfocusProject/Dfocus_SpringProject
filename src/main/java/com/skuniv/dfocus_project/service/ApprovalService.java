@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.time.LocalDate.now;
+
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +55,7 @@ public class ApprovalService {
             return dto;
         } else if(attType.equals("반차")) {
             return approvalMapper.getReqInfo2(requestId);
-        } else if(attType.equals("기타")) {
+        } else if(attType.equals("기타") || attType.equals("연차")) {
             return approvalMapper.getReqInfo3(requestId);
         } else {
             throw new IllegalStateException("Unknown attendance type: " + attType);
@@ -83,7 +85,7 @@ public class ApprovalService {
         dto.setHours(hours);
     }
 
-    public void approve(Long requestId) {
+    public void approve(Long requestId, String loginEmpCode) {
         boolean isEtcOrNot = attMapper.isEtcTypeByRequestId(requestId);
         if (isEtcOrNot) {
             //실제 plan 변경 휴일 빼고
@@ -92,13 +94,25 @@ public class ApprovalService {
         //신청서 상태 변경
         attMapper.updateAttendanceStatus("APPROVED", requestId);
         //결재선 상태 변경
-        approvalMapper.updateApprovalLineStatus("APPROVED", requestId);
+        approvalMapper.updateApprovalLineStatus("APPROVED", requestId, loginEmpCode);
+        //승인 완료 시각
+        approvalMapper.updateApprovalLineTime(requestId, loginEmpCode);
+        String requestType = attMapper.getRequestAttType(requestId);
+
+        if(requestType.equals("반차")){
+            approvalMapper.updateAnnualCount(requestId, 0.5);
+        }
+        else if(requestType.equals("연차")){
+            double count = approvalMapper.getAnnualRequestCount(requestId);
+            approvalMapper.updateAnnualCount(requestId, count);
+        }
     }
 
-    public void reject(Long requestId) {
+    public void reject(Long requestId, String loginEmpCode) {
         //신청서 상태 변경
         attMapper.updateAttendanceStatus("REJECTED", requestId);
         //결재선 상태 변경
-        approvalMapper.updateApprovalLineStatus("REJECTED", requestId);
+        approvalMapper.updateApprovalLineStatus("REJECTED", requestId, loginEmpCode);
+        approvalMapper.updateApprovalLineTime(requestId, loginEmpCode);
     }
 }

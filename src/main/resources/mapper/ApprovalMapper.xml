@@ -13,7 +13,7 @@
         r.emp_code AS reqEmpCode,
         e1.emp_name AS reqEmpName,
         e2.emp_name AS targetEmpName,
-        e1.dept_code AS department,
+        d.dept_name AS department,
         r.attendance_type AS reqDetailType,
         r.request_date AS reqDate,
         a.approval_status AS status
@@ -22,6 +22,7 @@
         LEFT JOIN WEBATTREQUESTSPECIAL s ON r.request_id = s.request_id
         INNER JOIN WEBEMPINFO e1 ON a.emp_request = e1.emp_code
         INNER JOIN WEBEMPINFO e2 ON r.emp_code = e2.emp_code
+        INNER JOIN WEBDEPTINFO d ON e1.dept_code = d.dept_code
         WHERE a.emp_response = #{LoginEmpCode}
         AND r.request_date BETWEEN #{approvalSearchDto.startDate}
         AND #{approvalSearchDto.endDate}
@@ -55,13 +56,14 @@
         ORDER BY a.request_id
     </select>
 
+
     <select id="getDetailEmpInfo" resultType="com.skuniv.dfocus_project.dto.approval.EmpInfoDto" parameterType="map">
         SELECT
             r.applicant AS reqEmpCode,
             e.emp_name AS reqEmpName,
             CONVERT(varchar, r.created_at, 23) AS reqDate,  -- yyyy-mm-dd 형식
-            p.shift_code AS planType,
-            e.dept_code AS department,
+            s.shift_name AS planType,
+            d.dept_name AS department,
             r.emp_code AS targetEmpCode,
             er.emp_name AS targetEmpName
             FROM WEBATTREQUEST r
@@ -72,6 +74,10 @@
                                AND p.work_date = r.request_date  -- 날짜 조건
                  INNER JOIN WEBEMPINFO er                 -- 결재자 정보 join
                             ON r.emp_code = er.emp_code
+                 INNER JOIN WEBDEPTINFO d
+                            ON e.dept_code = d.dept_code
+                 INNER JOIN WEBSHIFTTYPE s
+                            ON p.shift_code = s.shift_code
         WHERE r.request_id = #{requestId}
 
     </select>
@@ -160,5 +166,43 @@
         UPDATE WEBAPPROVALLINE
         SET approval_status = #{status}
         WHERE request_id = #{requestId}
+        AND emp_response = #{empCode}
     </update>
+    <update id="updateApprovalLineTime" parameterType="map">
+        UPDATE WEBAPPROVALLINE
+        SET approval_time = GETDATE()  <!-- SQL Server 기준 현재 시간 -->
+        WHERE request_id = #{requestId}
+        AND emp_response = #{empCode}
+    </update>
+    <select id="getAnnualRequestCount" resultType="double" parameterType="long">
+        SELECT COUNT(*) * 1.0
+        FROM WEBEMPPLAN p
+        WHERE p.emp_code = (
+            SELECT r.emp_code
+            FROM WEBATTREQUEST r
+            WHERE r.request_id = #{requestId}
+        )
+          AND p.plan_date BETWEEN (
+            SELECT s.start_date
+            FROM WEBATTREQUESTSPECIAL s
+            WHERE s.request_id = #{requestId}
+        )
+            AND (
+                SELECT s.end_date
+                FROM WEBATTREQUESTSPECIAL s
+                WHERE s.request_id = #{requestId}
+            )
+          AND p.origin_shift_code NOT IN (12, 13)
+    </select>
+    <update id="updateAnnualCount" parameterType="map">
+        UPDATE WEBANNUALDETAIL
+        SET use_day = use_day + #{count}
+        WHERE emp_code = (
+            SELECT emp_code
+            FROM WEBATTREQUEST
+            WHERE request_id = #{requestId}
+        )
+                  AND year = YEAR(GETDATE());
+    </update>
+
 </mapper>
