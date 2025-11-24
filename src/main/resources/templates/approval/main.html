@@ -120,8 +120,8 @@
                                 </thead>
                                 <tbody th:each="doc : ${pendingDocsList}">
                                 <tr class="doc-row">
-                                    <input type="hidden" class="requestId" th:value="${doc.requestId}">
-                                    <td><input type="checkbox" class="rowCheck" th:value="${doc.requestId}"></td>
+                                    <td><input type="hidden" class="requestId" th:value="${doc.requestId}">
+                                        <input type="checkbox" class="rowCheck" th:value="${doc.requestId}"></td>
                                     <td th:text="${doc.requestId}"></td>
                                     <td th:text="${doc.reqEmpCode}"></td>
                                     <td th:text="${doc.reqEmpName}"></td>

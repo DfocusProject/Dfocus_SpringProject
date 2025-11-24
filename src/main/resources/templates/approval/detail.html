@@ -116,8 +116,6 @@
                     <td th:text="${approvalInfo.duty}"></td>
                     <td th:text="${approvalInfo.name}"></td>
                     <td th:text="${approvalInfo.empCode}"></td>
-                    <td th:text="${approvalInfo.result}"></td>
-                    <td th:text="${approvalInfo.date}"></td>
                     <td>
                       <span th:switch="${approvalInfo.result}">
                           <span th:case="'PENDING'">승인대기중</span>
@@ -126,6 +124,8 @@
                           <span th:case="'REQUESTED'">상신완료</span>
                       </span>
                     </td>
+                    <td th:text="${approvalInfo.date}"></td>
+
                 </tr>
                 </tbody>
             </table>
