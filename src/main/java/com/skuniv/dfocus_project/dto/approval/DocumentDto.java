@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class DocumentDto {
-    private String requestId;
+    private Long requestId;
     private String reqEmpCode;
     private String reqEmpName;
-    private String resEmpName;
+    private String targetEmpName;
     private String department;
     private String reqDetailType;
     private String reqDate;

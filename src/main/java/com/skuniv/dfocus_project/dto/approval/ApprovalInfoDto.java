@@ -7,7 +7,6 @@ import java.time.LocalDate;
 @Data
 public class ApprovalInfoDto {
     private int sequenceNo;
-    private String type;
     private String department;
     private String duty;
     private String name;
