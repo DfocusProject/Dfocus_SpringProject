@@ -6,8 +6,8 @@ import lombok.Data;
 public class EmpInfoDto {
     private String reqEmpCode;
     private String reqEmpName;
-    private String resEmpCode;
-    private String resEmpName;
+    private String targetEmpCode;
+    private String targetEmpName;
     private String reqDate;
     private String planType;
     private String department;

@@ -14,7 +14,7 @@
 
         <!-- 추가 권한 필요 없는 메뉴 -->
         <a th:href="@{/approval/main}" sec:authorize="hasRole('LEADER')">일근태 승인</a>
-        <a href="#">근태 신청 내역</a>
+        <a th:href="@{/myHistory/main}">근태 신청 내역</a>
         <a href="#">부서 근태 조회</a>
     </div>
 </div>

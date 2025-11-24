@@ -12,7 +12,7 @@
         a.request_id AS requestId,
         r.emp_code AS reqEmpCode,
         e1.emp_name AS reqEmpName,
-        e2.emp_name AS resEmpName,
+        e2.emp_name AS targetEmpName,
         e1.dept_code AS department,
         r.attendance_type AS reqDetailType,
         r.request_date AS reqDate,
@@ -20,8 +20,8 @@
         FROM WEBAPPROVALLINE a
         INNER JOIN WEBATTREQUEST r ON a.request_id = r.request_id
         LEFT JOIN WEBATTREQUESTSPECIAL s ON r.request_id = s.request_id
-        INNER JOIN WEBEMPINFO e1 ON r.emp_code = e1.emp_code
-        INNER JOIN WEBEMPINFO e2 ON a.emp_response = e2.emp_code
+        INNER JOIN WEBEMPINFO e1 ON a.emp_request = e1.emp_code
+        INNER JOIN WEBEMPINFO e2 ON r.emp_code = e2.emp_code
         WHERE a.emp_response = #{LoginEmpCode}
         AND r.request_date BETWEEN #{approvalSearchDto.startDate}
         AND #{approvalSearchDto.endDate}
@@ -57,29 +57,108 @@
 
     <select id="getDetailEmpInfo" resultType="com.skuniv.dfocus_project.dto.approval.EmpInfoDto" parameterType="map">
         SELECT
-            a.emp_request AS reqEmpCode,
+            r.applicant AS reqEmpCode,
             e.emp_name AS reqEmpName,
             CONVERT(varchar, r.created_at, 23) AS reqDate,  -- yyyy-mm-dd 형식
             p.shift_code AS planType,
             e.dept_code AS department,
-            a.emp_response AS resEmpCode,                 -- 결재자 사번
-            er.emp_name AS resEmpName                     -- 결재자 이름
-        FROM WEBAPPROVALLINE a
-                 INNER JOIN WEBATTREQUEST r
-                            ON r.request_id = a.request_id
+            r.emp_code AS targetEmpCode,
+            er.emp_name AS targetEmpName
+            FROM WEBATTREQUEST r
                  INNER JOIN WEBEMPINFO e
-                            ON a.emp_request = e.emp_code
+                            ON r.applicant = e.emp_code
                  LEFT JOIN WEBEMPPLAN p
-                           ON a.emp_request = p.emp_code
+                           ON r.emp_code = p.emp_code
                                AND p.work_date = r.request_date  -- 날짜 조건
                  INNER JOIN WEBEMPINFO er                 -- 결재자 정보 join
-                            ON a.emp_response = er.emp_code
-        WHERE a.request_id = #{requestId}
-          AND a.emp_response = #{loginEmpCode}
-          AND a.approval_status = 'PENDING';
+                            ON r.emp_code = er.emp_code
+        WHERE r.request_id = #{requestId}
 
     </select>
 
+    <select id="getDetailCommuteInfo" resultType="com.skuniv.dfocus_project.dto.approval.CommuteInfoDto">
+        SELECT
+            work_date AS workDate,
+            start_time AS workOnTime,
+            end_time AS workOffTime
+        FROM WEBCOMMUTERECORD
+        WHERE work_date = #{reqDate}
+          AND emp_code = #{resEmpCode}
+    </select>
+    <select id="getReqInfo1" resultType="com.skuniv.dfocus_project.dto.approval.ReqInfoDto">
+        SELECT
+            wr.request_date      AS startDate,
+            wr.req_reason        AS reason,
+            wr.req_reason_detail AS reasonDetail,
+            wr.attendance_type AS reqType,
 
+            g.start_time         AS startTime,
+            g.end_time           AS endTime,
+            g.start_next_day     AS startNextDay,
+            g.end_next_day       AS endNextDay
 
+        FROM webattrequest wr
+                 LEFT JOIN webattrequestgeneral g
+                           ON wr.request_id = g.request_id
+        WHERE wr.request_id = #{requestId}
+    </select>
+
+    <select id="getReqInfo2" resultType="com.skuniv.dfocus_project.dto.approval.ReqInfoDto">
+        SELECT
+            wr.request_date      AS startDate,
+            wr.req_reason        AS reason,
+            wr.req_reason_detail AS reasonDetail,
+            wr.attendance_type AS reqType,
+
+            g.half_type          AS halfType
+
+        FROM webattrequest wr
+                 LEFT JOIN webattrequestgeneral g
+                           ON wr.request_id = g.request_id
+        WHERE wr.request_id = #{requestId}
+    </select>
+
+    <select id="getReqInfo3" resultType="com.skuniv.dfocus_project.dto.approval.ReqInfoDto">
+        SELECT
+            wr.req_reason        AS reason,
+            wr.req_reason_detail AS reasonDetail,
+            wr.attendance_type AS reqType,
+
+            s.start_date AS startDate,
+            s.end_date AS endDate,
+            s.new_shift_code AS reqDetailType
+
+        FROM webattrequest wr
+                 LEFT JOIN webattrequestspecial s
+                           ON wr.request_id = s.request_id
+        WHERE wr.request_id = #{requestId}
+    </select>
+
+    <select id="getApprovalInfo" resultType="com.skuniv.dfocus_project.dto.approval.ApprovalInfoDto">
+        SELECT
+            wal.sequence_no          AS sequenceNo,
+            we.dept_code             AS department,
+            we.duty_code             AS duty,
+            we.emp_name              AS name,
+            wal.emp_response         AS empCode,
+            wal.approval_status      AS result,
+            wal.approval_time        AS date
+        FROM webapprovalline wal
+            LEFT JOIN webempinfo we ON wal.emp_response = we.emp_code
+        WHERE wal.request_id = #{requestId}
+        ORDER BY wal.sequence_no
+    </select>
+    <select id="isEtcTypeByRequestId" parameterType="string" resultType="boolean">
+        SELECT CASE
+                   WHEN attendance_type IN ('기타', '연차') THEN 1
+                   ELSE 0
+                   END
+        FROM webattrequest
+        WHERE request_id = #{requestId}
+    </select>
+    <update id="updateApprovalLineStatus">
+        UPDATE WEBAPPROVALLINE
+        SET approval_status = #{status}
+        WHERE request_id = #{requestId}
+    </update>
 </mapper>

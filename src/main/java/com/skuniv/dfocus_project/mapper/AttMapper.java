@@ -4,6 +4,7 @@ import com.skuniv.dfocus_project.domain.Time.TimeRange;
 import com.skuniv.dfocus_project.dto.BaseAttEmpDto;
 import com.skuniv.dfocus_project.dto.ExistingEtcRequestDto;
 import com.skuniv.dfocus_project.dto.TimeRecordDto;
+import com.skuniv.dfocus_project.dto.approval.ReqInfoDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
@@ -93,4 +94,10 @@ public interface AttMapper {
     boolean alreadyRequested(Long requestId);
 
     List<ExistingEtcRequestDto> findExistingEtcRequests(String empCode, LocalDate start, LocalDate end);
+
+    String findAttTypeByrequestId(Long requestId);
+
+    boolean isEtcTypeByRequestId(Long requestId);
+
+    void updateAttPlan(Long requestId);
 }
