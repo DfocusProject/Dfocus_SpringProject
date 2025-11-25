@@ -215,6 +215,11 @@
         </if>
         ORDER BY PI.POSITION_NAME, P.EMP_CODE, I.EMP_NAME
     </select>
+    <select id="getEmpRole" parameterType="string" resultType="string">
+        SELECT role
+        FROM WebAccount
+        WHERE emp_code = #{emp}
+    </select>
 
 </mapper>
 

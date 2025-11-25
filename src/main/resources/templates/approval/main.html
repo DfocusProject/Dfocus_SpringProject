@@ -26,24 +26,25 @@
 
                 <!-- 검색 영역 -->
                 <div class="search-box">
-                    <form th:action="@{/approval/search}" method="get">
+
+                    <form th:action="@{/approval/search}" th:object="${approvalSearchDto}" method="get">
 
                         <div class="search-row">
                             <label>대상일자
-                                <input type="date" name="startDate" th:value="${startDate}" required>
+                                <input type="date" th:field="*{startDate}" required>
                                 <span>~</span>
-                                <input type="date" name="endDate" th:value="${endDate}" required>
+                                <input type="date" th:field="*{endDate}" required>
                             </label>
 
                             <label>사번
-                                <input type="text" name="empCode" placeholder="사번 입력"/>
+                                <input type="text" th:field="*{empCode}" placeholder="사번 입력"/>
                             </label>
                             <button type="submit" class="btnSearchEmpAtt">조회</button>
                         </div>
 
                         <div class="search-row">
                             <label>근태유형
-                                <select name="reqType">
+                                <select th:field="*{reqType}">
                                     <option value="">전체</option>
                                     <option value="OT">연장</option>
                                     <option value="HT">휴일</option>
@@ -53,7 +54,7 @@
                             </label>
 
                             <label>신청근태
-                                <select name="reqDetailType">
+                                <select th:field="*{reqDetailType}">
                                     <option value="">전체</option>
                                     <option value="05">주간</option>
                                     <option value="05-A">현장실습</option>

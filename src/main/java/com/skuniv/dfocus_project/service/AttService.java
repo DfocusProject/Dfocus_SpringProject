@@ -23,8 +23,7 @@ public class AttService {
     private final AttMapper attMapper;
     private final DeptMapper deptMapper;
     private final EmpService empService;
-    private final ShiftMapper shiftMapper;
-
+    private final ApprovalService approvalService;
     public String getRealWorkRecord(String empCode, LocalDate workDate) {
 
         // 1. 실제 출근 기록 조회
@@ -82,7 +81,7 @@ public class AttService {
 
             // 검증 (경고만)
             String validateError = attendanceValidateService.validate(
-                    dto, workDate, getRealWorkRecord(empCode, workDate), getExpectedWorkTime(empCode, workDate)
+                    dto, workDate, getRealWorkRecord(empCode, workDate), getExpectedWorkTime(empCode, workDate), getWeeklyWorkHours(empCode, workDate)
             );
             if (validateError != null) {
                 message.append(empCode).append(": ").append(validateError).append("\n");
@@ -157,7 +156,7 @@ public class AttService {
             // 2. 검증 - 에러 있으면 상신 안 함
             String validateError = attendanceValidateService.validate(
                     dto, workDate, getRealWorkRecord(empCode, workDate),
-                    getExpectedWorkTime(empCode, workDate));
+                    getExpectedWorkTime(empCode, workDate), getWeeklyWorkHours(empCode, workDate));
             if (validateError != null) {
                 errorMessages.append(empCode).append(": 상신 불가 - ").append(validateError).append("\n");
                 continue;  // 상신 안 함
@@ -182,6 +181,7 @@ public class AttService {
                 if (loginEmpCode.equals(leader)) {
                     // 본인이 리더면 자동 승인
                     attMapper.insertApprovalRecord(empCode, leader, requestId, 2, "APPROVED", now());
+                    approvalService.approve(dto.getRequestId(), loginEmpCode);
                     attMapper.updateAttendanceStatus("APPROVED", requestId);
                 } else {
                     // 리더 승인 대기
@@ -572,6 +572,7 @@ public class AttService {
             // 리더 결재선
             if (empCode.equals(leader)) {
                 attMapper.insertApprovalRecord(dto.getEmpCode(), leader, dto.getRequestId(), 2, "APPROVED", now());
+                approvalService.approve(dto.getRequestId(), empCode);
                 attMapper.updateAttendanceStatus("APPROVED", dto.getRequestId());
             } else {
                 attMapper.insertApprovalRecord(dto.getEmpCode(), leader, dto.getRequestId(), 2, "PENDING", null);

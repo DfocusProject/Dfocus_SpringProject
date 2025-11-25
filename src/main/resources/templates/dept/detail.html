@@ -172,6 +172,14 @@
         </div>
     </div>
 </main>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = /*[[${message}]]*/ null;
+    if (errorMsg != null) {
+        alert(errorMsg);
+    }
+    /*]]>*/
+</script>
 <script>
     const moveBtn = document.getElementById('moveDeptBtn');
     const moveSelect = document.getElementById('moveDeptSelect');

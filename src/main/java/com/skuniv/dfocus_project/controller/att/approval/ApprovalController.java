@@ -20,8 +20,10 @@ public class ApprovalController {
     private final ApprovalService approvalService;
     @GetMapping("/main")
     public String main(Model model) {
-        model.addAttribute("startDate", LocalDate.now().withDayOfMonth(1));
-        model.addAttribute("endDate", LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()));
+        ApprovalSearchDto approvalSearchDto = new ApprovalSearchDto();
+        approvalSearchDto.setStartDate(LocalDate.now().withDayOfMonth(1));
+        approvalSearchDto.setEndDate(LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth()));
+        model.addAttribute("approvalSearchDto", approvalSearchDto);
         return "approval/main";
     }
     @GetMapping("/search")
@@ -32,8 +34,7 @@ public class ApprovalController {
         model.addAttribute("pendingDocsList", docsResponse.getPending());
         model.addAttribute("approvedDocsList", docsResponse.getApproved());
         model.addAttribute("rejectedDocsList", docsResponse.getRejected());
-        model.addAttribute("startDate", approvalSearchDto.getStartDate());
-        model.addAttribute("endDate", approvalSearchDto.getEndDate());
+        model.addAttribute("approvalSearchDto", approvalSearchDto);
         return "approval/main";
     }
 
@@ -53,16 +54,20 @@ public class ApprovalController {
         return "approval/detail :: detailFragment";
     }
     @PostMapping("/approve")
-    public String approve(@RequestParam Long requestId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String approve(@RequestParam List<Long> requestIds, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String loginEmpCode = userDetails.getUsername(); // getUsername() -> empCode
-        approvalService.approve(requestId, loginEmpCode);
+        for(Long requestId : requestIds) {
+            approvalService.approve(requestId, loginEmpCode);
+        }
         return "redirect:/approval/main";
     }
 
     @PostMapping("/reject")
-    public String reject(@RequestParam Long requestId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String reject(@RequestParam List<Long> requestIds, @RequestParam String reason, @AuthenticationPrincipal CustomUserDetails userDetails) {
         String loginEmpCode = userDetails.getUsername(); // getUsername() -> empCode
-        approvalService.reject(requestId, loginEmpCode);
+        for(Long requestId : requestIds) {
+            approvalService.reject(requestId, loginEmpCode, reason);
+        }
         return "redirect:/approval/main";
     }
 }

@@ -35,4 +35,8 @@ public interface EmpMapper {
     boolean existsEmpPlan(LocalDate workDate, String empCode);
 
     void updateEmpPlan(LocalDate workDate, String empCode, String deptCode, String shiftCode, String patternName, String holidayYn);
+
+    String getEmpRole(String emp);
+
+    boolean isLeaderOrNot(String empCode);
 }
