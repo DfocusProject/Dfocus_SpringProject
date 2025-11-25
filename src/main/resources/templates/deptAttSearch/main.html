@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>부서근태 조회</title>
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/emp_att.css" />
+</head>
+
+<body>
+<div th:replace="~{header.html::header}"></div>
+
+<main>
+    <div th:replace="~{sidebar.html::sidebar}"></div>
+
+    <!-- 전체 레이아웃 (단일 left 구조) -->
+    <div class="att-layout">
+        <div class="left">
+
+            <!-- 검색 박스 -->
+            <div class="search-box">
+                <form th:action="@{/deptAttSearch/main}" method="get"
+                      th:object="${deptAttSearchDto}"class="attform">
+
+                    <div class="search-row">
+                        <label>근무일
+                            <input type="date" th:field="*{workDate}">
+                        </label>
+
+                        <label>사번
+                            <input type="text" th:field="*{empCode}" placeholder="사번 입력" />
+                        </label>
+
+
+                        <button type="submit" class="btnSearchEmpAtt">조회</button>
+                    </div>
+
+                    <div class="search-row">
+                        <label>근무계획
+                            <select name="plan" id="planType">
+                                <option value="" th:selected="${planType == ''}">전체</option>
+                                <option value="05" th:selected="${planType == '05'}">주간</option>
+                                <option value="05-A" th:selected="${planType == '05-A'}">현장실습</option>
+                                <option value="06" th:selected="${planType == '06'}">연차</option>
+                                <option value="10" th:selected="${planType == '10'}">출장</option>
+                                <option value="31" th:selected="${planType == '31'}">4전</option>
+                                <option value="32" th:selected="${planType == '32'}">4후</option>
+                                <option value="33" th:selected="${planType == '33'}">4야</option>
+                                <option value="45" th:selected="${planType == '45'}">3전</option>
+                                <option value="46" th:selected="${planType == '46'}">3후</option>
+                                <option value="61" th:selected="${planType == '61'}">휴직</option>
+                                <option value="64" th:selected="${planType == '64'}">육아휴직</option>
+                                <option value="62" th:selected="${planType == '62'}">사외교육</option>
+                            </select>
+                        </label>
+
+                        <label>부서
+                            <select th:field="*{deptName}">
+                                <option value="">전체</option>
+                                <option th:each="dept : ${childeDeptList}"
+                                        th:value="${dept}"
+                                        th:text="${dept}">
+                                </option>
+                            </select>
+                        </label>
+
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- 신청 버튼 영역 -->
+            <div style="margin: 10px 20px;">
+                <button type="button" class="btn approval" id="btnGoGeneral">일반근태 신청</button>
+                <button type="button" class="btn approval" id="btnGoEtc">기타근태 신청</button>
+            </div>
+
+            <!-- 리스트 테이블 -->
+            <div class="attAprlList">
+                <form id="attForm" method="post">
+                    <input type="hidden" name="empCodes" id="empCodes">
+
+                    <table>
+                        <thead>
+                        <tr>
+                            <th rowspan="2"><input type="checkbox" id="checkAll1"></th>
+                            <th rowspan="2">사번</th>
+                            <th rowspan="2">성명</th>
+                            <th rowspan="2">직위</th>
+                            <th rowspan="2">부서</th>
+                            <th rowspan="2">계획/실적</th>
+                            <th rowspan="2">가근태</th>
+                            <th rowspan="2">출근시간</th>
+                            <th rowspan="2">퇴근시간</th>
+                            <th rowspan="2">휴일근무</th>
+                            <th rowspan="2">연장근무</th>
+                            <th colspan="3" id="weekRange">${weekRange}</th>
+                        </tr>
+                        <tr>
+                            <th class="highlight">주근무시간</th>
+                            <th>예상근무</th>
+                            <th>예상잔여</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="tbody">
+                        <tr th:each="row : ${results}">
+                            <td><input type="checkbox" class="rowCheck" th:attr="data-empCode=${row.empCode}"></td>
+                            <td th:text="${row.empCode}"></td>
+                            <td th:text="${row.empName}"></td>
+                            <td th:text="${row.position}"></td>
+                            <td th:text="${row.department}"></td>
+                            <td th:text="${row.planType}"></td>
+                            <td th:text="${row.realType}"></td>
+                            <td th:text="${row.workOnTime}"></td>
+                            <td th:text="${row.workOffTime}"></td>
+                            <td th:text="${row.holidayTime}"></td>
+                            <td th:text="${row.overTime}"></td>
+                            <td th:text="${row.regularTime}"></td>
+                            <td th:text="${row.expectedTime}"></td>
+                            <td th:text="${row.remainTime}"></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                </form>
+            </div>
+
+        </div><!-- left -->
+    </div><!-- att-layout -->
+
+</main>
+
+<script th:src="@{/js/script.js}"></script>
+
+<script>
+    /* 체크박스 전체 선택 */
+    document.getElementById("checkAll1").addEventListener("change", function() {
+        const checked = this.checked;
+        document.querySelectorAll(".rowCheck").forEach(cb => cb.checked = checked);
+    });
+
+    /* 개별 체크 시 전체 체크 갱신 */
+    document.querySelectorAll(".rowCheck").forEach(cb => {
+        cb.addEventListener("change", () => {
+            const all = document.querySelectorAll(".rowCheck");
+            const checked = document.querySelectorAll(".rowCheck:checked");
+            document.getElementById("checkAll1").checked = all.length === checked.length;
+        });
+    });
+
+    /* 선택된 사번 모으기 */
+    function getSelectedEmpCodes() {
+        const list = Array.from(document.querySelectorAll(".rowCheck:checked"))
+            .map(cb => cb.dataset.empcode);
+        return list.length ? list.join(",") : null;
+    }
+
+    /* 신청 버튼 처리 */
+    function submitWithAction(actionUrl) {
+        const empCodes = getSelectedEmpCodes();
+        if (!empCodes) {
+            alert("근태신청할 부서원을 선택하십시오.");
+            return;
+        }
+        const form = document.getElementById("attForm");
+        form.action = actionUrl;
+        document.getElementById("empCodes").value = empCodes;
+        form.submit();
+    }
+
+    document.getElementById("btnGoGeneral").onclick = () => submitWithAction("/att/general");
+    document.getElementById("btnGoEtc").onclick = () => submitWithAction("/att/etc");
+</script>
+
+</body>
+</html>
