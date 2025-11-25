@@ -20,7 +20,7 @@
             <!-- 검색 박스 -->
             <div class="search-box">
                 <form th:action="@{/deptAttSearch/main}" method="get"
-                      th:object="${deptAttSearchDto}"class="attform">
+                      th:object="${deptAttSearchDto}" class="attform">
 
                     <div class="search-row">
                         <label>근무일
@@ -55,7 +55,7 @@
                         </label>
 
                         <label>부서
-                            <select th:field="*{deptName}">
+                            <select th:field="*{department}">
                                 <option value="">전체</option>
                                 <option th:each="dept : ${childeDeptList}"
                                         th:value="${dept}"
