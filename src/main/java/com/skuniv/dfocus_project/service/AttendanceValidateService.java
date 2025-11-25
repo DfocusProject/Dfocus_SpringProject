@@ -6,6 +6,7 @@ import com.skuniv.dfocus_project.mapper.AttMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,11 +16,13 @@ public class AttendanceValidateService {
 
     private final AttMapper attMapper;
 
-    public String validate(BaseAttEmpDto dto, LocalDate workDate, String realWorkRecord, TimeRange expectedWorkTime) {
+    public String validate(BaseAttEmpDto dto, LocalDate workDate, String realWorkRecord, TimeRange expectedWorkTime, double weeklyWorkHours) {
         String attType = dto.getAttType();
         String empCode = dto.getEmpCode();
-
-        if ("결근".equals(realWorkRecord)) {
+        if( Duration.between(dto.getStartTime(), dto.getEndTime()).toHours() + weeklyWorkHours > 52){
+            return "주 예상 근로 시간이 52시간을 초과합니다";
+        };
+        if (!dto.getAttType().equals("휴일") && "결근".equals(realWorkRecord)) {
             return "결근 상태에는 신청 불가";
         }
         // 0. 연차 존재 여부 체크: 다른 신청 불가
