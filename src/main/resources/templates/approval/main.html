@@ -53,7 +53,7 @@
                                 </select>
                             </label>
 
-                            <label>신청근태
+                            <label id="detailTypeBox">신청근태
                                 <select th:field="*{reqDetailType}">
                                     <option value="">전체</option>
                                     <option value="05">주간</option>
@@ -71,10 +71,11 @@
                                 </select>
                             </label>
 
-                            <label>부서</label>
+                            <label>부서
                             <input type="text" name="department"
                                    th:value="${#authentication.principal.deptCode}"
                                    readonly placeholder="부서명"/>
+                            </label>
                         </div>
                     </form>
                 </div>

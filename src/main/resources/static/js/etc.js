@@ -106,39 +106,75 @@ function disableStartDate() {
         input.disabled = true;
     });
 }
-// 📌 초기화
-document.addEventListener('DOMContentLoaded', () => {
 
+document.addEventListener("DOMContentLoaded", function () {
+
+    // 📌 초기화
     disableStartDate();
     initCheckAll('#checkAll', '.rowCheck');
 
-    document.getElementById('btnSearchEtc')?.addEventListener('click', () => {
-        submitSearch('#searchForm');
-    });
+    // 버튼 이벤트
+    document.getElementById('btnSearchEtc')?.addEventListener('click', () => submitSearch('#searchForm'));
+    document.getElementById('btnApplyToRow')?.addEventListener('click', applyValuesToRows);
+    document.getElementById('btnSave')?.addEventListener('click', () => submitApply('save', workDate.value));
+    document.getElementById('btnRequest')?.addEventListener('click', () => submitApply('request', workDate.value));
+    document.getElementById('btnDelete')?.addEventListener('click', () => submitCancel('delete', workDate.value));
+    document.getElementById('btnRequestCancel')?.addEventListener('click', () => submitCancel('requestCancel', workDate.value));
 
-    document.getElementById('btnApplyToRow')?.addEventListener('click', () => {
-        applyValuesToSelectedRows();
-    });
+    // 조회 후 isTodayRequest 자동 적용
+    const today = new Date();
+    today.setHours(0,0,0,0);
 
-    document.getElementById('btnSave')?.addEventListener('click', () => {
-        const workDate = document.getElementById("workDate")?.value;
-        submitApply('save', workDate);
-    });
+    const workDateInput = document.getElementById("workDate");
+    if (workDateInput?.value) {
 
-    document.getElementById('btnRequest')?.addEventListener('click', () => {
-        const workDate = document.getElementById("workDate")?.value;
-        submitApply('request', workDate);
-    });
+        const workDate = new Date(workDateInput.value);
+        workDate.setHours(0,0,0,0);
 
-    document.getElementById('btnDelete')?.addEventListener('click', () => {
-        const workDate = document.getElementById("workDate")?.value;
-        submitCancel('delete', workDate);
-    });
+        document.querySelectorAll("#attTable tbody tr").forEach(row => {
+            const select = row.querySelector(".isTodayRequest");
 
-    document.getElementById('btnRequestCancel')?.addEventListener('click', () => {
-        const workDate = document.getElementById("workDate")?.value;
-        submitCancel('requestCancel', workDate);
-    });
+            if (!select) return;
+
+            if (workDate.getTime() === today.getTime()) {
+                select.value = "false"; // 당일 신청
+            } else if (workDate < today) {
+                select.value = "";      // 선택
+            } else {
+                select.value = "true";  // 1일 이전 신청
+            }
+        });
+    }
 });
 
+function applyValuesToRows() {
+    const newShiftType = document.getElementById("newShiftType").value;
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    const reason = document.getElementById("reason").value;
+    const isTodayRequest = document.getElementById("isTodayRequest").value;
 
+    if (!newShiftType || !startDate || !endDate || !reason || !isTodayRequest) {
+        alert("모든 값을 입력해야 적용할 수 있습니다.");
+        return;
+    }
+
+    const checkedRows = document.querySelectorAll(".rowCheck:checked");
+
+    if (checkedRows.length === 0) {
+        alert("적용할 행을 선택해주세요.");
+        return;
+    }
+
+    checkedRows.forEach(rowCheckbox => {
+        const row = rowCheckbox.closest("tr");
+
+        row.querySelector(".newShiftType").value = newShiftType;
+        row.querySelector(".startDate").value = startDate;
+        row.querySelector(".endDate").value = endDate;
+        row.querySelector(".reason").value = reason;
+        row.querySelector(".isTodayRequest").value = isTodayRequest;
+    });
+
+    alert("선택된 행에 적용되었습니다.");
+}
