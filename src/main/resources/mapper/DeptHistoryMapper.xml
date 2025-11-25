@@ -3,35 +3,33 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.skuniv.dfocus_project.mapper.DeptMapper">
-    <select id="findParentDepts" parameterType="string" resultType="string">
-        WITH parent_cte AS (
-        -- 시작점: 자기 부서
-        SELECT dept_code, parent_dept
-        FROM webdeptinfo
-        WHERE dept_code = #{deptCode}
+<mapper namespace="com.skuniv.dfocus_project.mapper.DeptHistoryMapper">
+    <select id="findChildDepts" parameterType="string" resultType="string">
+        WITH child_cte AS (
+            -- 시작점: 자기 부서 포함
+            SELECT dept_code, parent_dept
+            FROM webdeptinfo
+            WHERE dept_code = #{deptCode}
 
-        UNION ALL
+            UNION ALL
 
-        -- 상위 부서로 재귀
-        SELECT w.dept_code, w.parent_dept
-        FROM webdeptinfo w
-        INNER JOIN parent_cte p ON w.dept_code = p.parent_dept
-        WHERE w.parent_dept IS NOT NULL
+            -- 자식 부서로 재귀
+            SELECT w.dept_code, w.parent_dept
+            FROM webdeptinfo w
+                     INNER JOIN child_cte c ON w.parent_dept = c.dept_code
         )
-        SELECT parent_dept
-        FROM parent_cte
-        WHERE parent_dept IS NOT NULL
-        OPTION (MAXRECURSION 0)
+        SELECT dept_code
+        FROM child_cte
     </select>
 
-    <select id="findEmpsBySearch" parameterType="EtcSearchDto" resultType="map">
+
+    <select id="findEmpsBySearch" parameterType="com.skuniv.dfocus_project.dto.att.DeptAttSearchDto" resultType="map">
         SELECT
-        i.emp_code,
-        i.emp_name,
-        i.position_code,
-        c.start_time,
-        c.end_time
+        i.emp_code AS empCode,
+        i.emp_name AS empName,
+        i.position_code AS position,
+        c.start_time AS workOnTime,
+        c.end_time AS workOffTime
         FROM WEBEMPPLAN p
         JOIN WEBEMPINFO i ON p.emp_code = i.emp_code
         LEFT JOIN WEBCOMMUTERECORD c

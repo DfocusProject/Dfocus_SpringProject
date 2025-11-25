@@ -19,7 +19,9 @@
         </div>
 
         <!-- 조회 검색 -->
-        <form id="searchForm" th:action="@{/att/etc/search}" method="get" class="search-box">
+        <form th:action="@{/att/etc/search}" method="get"
+              th:object="${etcSearchDto}" class="search-box">
+
             <label>근무일
                 <input type="date" th:field="*{workDate}">
             </label>

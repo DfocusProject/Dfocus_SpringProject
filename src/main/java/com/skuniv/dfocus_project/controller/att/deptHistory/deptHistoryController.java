@@ -42,8 +42,9 @@ public class deptHistoryController {
         return "deptAttSearch/main";
     }
     @GetMapping("/search")
-    public String search(@ModelAttribute("deptAttSearchDto") EtcSearchDto etcSearchDto) {
+    public String search(Model model, @ModelAttribute("deptAttSearchDto") EtcSearchDto etcSearchDto) {
         List<DeptAttSearchResultDto> results = deptHistoryService.getResultList(etcSearchDto);
+        model.addAttribute("results", results);
         return "redirect:/deptAttSearch/main";
     }
 }
