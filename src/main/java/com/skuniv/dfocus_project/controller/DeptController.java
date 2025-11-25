@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -83,23 +84,27 @@ public class DeptController {
     public String empAction(@RequestParam(required = false) String deptCode,
                             @RequestParam List<String> empCodes,
                             @RequestParam String action,
-                            @RequestParam(required = false) String newDeptCode) {
-
+                            @RequestParam(required = false) String newDeptCode,
+                            RedirectAttributes redirectAttrs) {
+        String message = "";
         switch (action) {
             case "delete":
-                empService.removeFromDept(empCodes);
+                message = empService.removeFromDept(empCodes);
                 break;
             case "setLeader":
-                empService.setDeptLeader(empCodes.get(0), deptCode);
+                message = empService.setDeptLeader(empCodes, deptCode);
                 break;
             case "moveDept":
-                empService.moveDept(empCodes, newDeptCode);
+                message = empService.moveDept(empCodes, newDeptCode);
                 break;
             case "assignDept":
                 empService.assignEmployeesToDept(empCodes, deptCode);
                 String currentPattern = deptService.findByDeptCode(deptCode).getWorkPattern();
                 empService.setPattern(deptCode, currentPattern);
                 break;
+        }
+        if(message != null && !message.isEmpty()){
+            redirectAttrs.addFlashAttribute("message", message);
         }
         return "redirect:/dept/detail?id=" + deptCode; // 다시 상세 페이지로
     }

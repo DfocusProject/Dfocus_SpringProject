@@ -16,4 +16,5 @@ public class ReqInfoDto {
     private String halfType;
     private String reqDetailType;
     private String reqType;    //[연차, 연장, 조출, 휴일, 조퇴, 외출, 반차, 기타]
+    private Boolean isTodayRequest;
 }

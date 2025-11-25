@@ -27,7 +27,9 @@
         AND r.request_date BETWEEN #{approvalSearchDto.startDate}
         AND #{approvalSearchDto.endDate}
         AND e1.dept_code = #{approvalSearchDto.department}
-
+        <if test="approvalSearchDto.empCode != null and approvalSearchDto.empCode != ''">
+            AND r.emp_code = #{approvalSearchDto.empCode}
+        </if>
         <if test="approvalSearchDto.reqType != null and approvalSearchDto.reqType != ''">
             <choose>
                 <when test="approvalSearchDto.reqType == 'OT'">
@@ -129,7 +131,7 @@
             wr.req_reason        AS reason,
             wr.req_reason_detail AS reasonDetail,
             wr.attendance_type AS reqType,
-
+            s.is_today_request AS isTodayRequest,
             s.start_date AS startDate,
             s.end_date AS endDate,
             s.new_shift_code AS reqDetailType

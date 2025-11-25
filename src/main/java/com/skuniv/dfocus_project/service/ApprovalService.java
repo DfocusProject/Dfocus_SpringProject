@@ -108,7 +108,7 @@ public class ApprovalService {
         }
     }
 
-    public void reject(Long requestId, String loginEmpCode) {
+    public void reject(Long requestId, String loginEmpCode, String reason) {
         //신청서 상태 변경
         attMapper.updateAttendanceStatus("REJECTED", requestId);
         //결재선 상태 변경

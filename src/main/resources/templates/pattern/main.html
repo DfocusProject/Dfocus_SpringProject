@@ -17,7 +17,6 @@
                 <h2>🏢 근태패턴별 캘린더</h2>
                 <!-- 상단 액션 버튼 -->
                 <div class="button-group">
-                    <button type="button" class="btn">초기 생성</button>
                     <button type="button" id="topActionBtn" class="btn">패턴 추가</button>
                     <button type="button" id="registerPatternBtn" class="btn">패턴 등록</button>
                     <button type="button" id="savePatternBtn" class="btn">저장</button>
@@ -26,8 +25,6 @@
             <form th:action="@{/pattern/main}" method="get" id="searchForm">
                 <label>조회월:</label>
                 <input type="month" name="yearMonth" th:value="${selectedYearMonth}">
-                <label>패턴명:</label>
-                <input name="pattern">
                 <button type="submit">🔍 조회</button>
             </form>
         </div>

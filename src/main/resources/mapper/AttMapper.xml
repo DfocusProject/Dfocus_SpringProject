@@ -471,7 +471,7 @@
         FROM webattrequest
         WHERE request_id = #{requestId}
     </select>
-    <update id="updateAttPlan" parameterType="string">
+    <update id="updateAttPlan" parameterType="java.lang.Long">
         UPDATE ep
         SET ep.shift_code = was.new_shift_code
             FROM webempplan ep
@@ -480,7 +480,7 @@
             INNER JOIN webattrequestspecial was
             ON wa.request_id = was.request_id
         WHERE wa.request_id = #{requestId}
-          AND ep.plan_date BETWEEN was.start_date AND was.end_date
+          AND ep.work_date BETWEEN was.start_date AND was.end_date
           AND ep.shift_code NOT IN ('12', '13');
     </update>
     <select id="getRequestAttType" resultType="String" parameterType="long">
