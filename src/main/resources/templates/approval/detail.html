@@ -3,7 +3,7 @@
 
     <div class="pan-header">
         일근태 신청 상세
-                <span style="margin-right: 10px">신청번호: <span th:text="${requestId}"></span></span>
+        <span style="margin-right: 10px">신청번호: <span th:text="${requestId}"></span></span>
     </div>
 
     <div class="body">
@@ -55,80 +55,79 @@
         </div>
     </div>
 
-        <!-- 근태기 정보 -->
-        <div class="panel">
-            <div class="title">근태기 정보</div>
-            <table class="detail-table">
-                <thead>
-                <tr>
-                    <th>날짜</th>
-                    <th>출근시간</th>
-                    <th>퇴근시간</th>
-                </tr>
-                </thead>
-                <tr>
-                    <td th:text="${commuteInfo != null && commuteInfo.workDate != null ? commuteInfo.workDate : '-'}"></td>
-                    <td th:text="${commuteInfo != null && commuteInfo.workOnTime != null ? #temporals.format(commuteInfo.workOnTime, 'HH:mm:ss') : '-'}"></td>
-                    <td th:text="${commuteInfo != null && commuteInfo.workOffTime != null ? #temporals.format(commuteInfo.workOffTime, 'HH:mm:ss') : '-'}"></td>
-                </tr>
-            </table>
+    <!-- 근태기 정보 -->
+    <div class="panel">
+        <div class="title">근태기 정보</div>
+        <table class="detail-table">
+            <thead>
+            <tr>
+                <th>날짜</th>
+                <th>출근시간</th>
+                <th>퇴근시간</th>
+            </tr>
+            </thead>
+            <tr>
+                <td th:text="${commuteInfo != null && commuteInfo.workDate != null ? commuteInfo.workDate : '-'}"></td>
+                <td th:text="${commuteInfo != null && commuteInfo.workOnTime != null ? #temporals.format(commuteInfo.workOnTime, 'HH:mm:ss') : '-'}"></td>
+                <td th:text="${commuteInfo != null && commuteInfo.workOffTime != null ? #temporals.format(commuteInfo.workOffTime, 'HH:mm:ss') : '-'}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 결재 정보 -->
+    <div class="panel">
+        <div class="title">결재 정보</div>
+
+        <div class="actions">
+
+            <!-- 승인 form -->
+            <form th:action="@{/approval/approve}" method="post" style="display:inline-block; margin-right:10px;">
+                <input type="hidden" name="requestId" th:value="${requestId}">
+                <button type="submit" class="btn approval">승인</button>
+            </form>
+
+            <!-- 반려 form -->
+            <form th:action="@{/approval/reject}" method="post" style="display:inline-block;">
+                <input type="hidden" name="requestId" th:value="${requestId}">
+                <label>반려사유</label>
+                <input type="text" name="reason" placeholder="반려 사유 입력" required>
+                <button type="submit" class="btn rejection">반려</button>
+            </form>
+
         </div>
 
-        <!-- 결재 정보 -->
-        <div class="panel">
-            <div class="title">결재 정보</div>
-
-            <div class="actions">
-
-                <!-- 승인 form -->
-                <form th:action="@{/approval/approve}" method="post" style="display:inline-block; margin-right:10px;">
-                    <input type="hidden" name="requestId" th:value="${requestId}">
-                    <button type="submit" class="btn approval">승인</button>
-                </form>
-
-                <!-- 반려 form -->
-                <form th:action="@{/approval/reject}" method="post" style="display:inline-block;">
-                    <input type="hidden" name="requestId" th:value="${requestId}">
-                    <label>반려사유</label>
-                    <input type="text" name="reason" placeholder="반려 사유 입력" required>
-                    <button type="submit" class="btn rejection">반려</button>
-                </form>
-
-            </div>
-
-            <!-- 결재 내역 테이블 -->
-            <table class="detail-table">
-                <thead>
-                <tr>
-                    <th>순번</th>
-                    <th>부서</th>
-                    <th>직책</th>
-                    <th>이름</th>
-                    <th>사번</th>
-                    <th>결과</th>
-                    <th>결재완료일</th>
-                </tr>
-                </thead>
-                <tbody th:each="approvalInfo : ${approvalInfos}">
-                <tr>
-                    <td th:text="${approvalInfo.sequenceNo}"></td>
-                    <td th:text="${approvalInfo.department}"></td>
-                    <td th:text="${approvalInfo.duty}"></td>
-                    <td th:text="${approvalInfo.name}"></td>
-                    <td th:text="${approvalInfo.empCode}"></td>
-                    <td>
+        <!-- 결재 내역 테이블 -->
+        <table class="detail-table">
+            <thead>
+            <tr>
+                <th>순번</th>
+                <th>부서</th>
+                <th>직책</th>
+                <th>이름</th>
+                <th>사번</th>
+                <th>결과</th>
+                <th>결재완료일</th>
+            </tr>
+            </thead>
+            <tbody th:each="approvalInfo : ${approvalInfos}">
+            <tr>
+                <td th:text="${approvalInfo.sequenceNo}"></td>
+                <td th:text="${approvalInfo.department}"></td>
+                <td th:text="${approvalInfo.duty}"></td>
+                <td th:text="${approvalInfo.name}"></td>
+                <td th:text="${approvalInfo.empCode}"></td>
+                <td>
                       <span th:switch="${approvalInfo.result}">
                           <span th:case="'PENDING'">승인대기중</span>
                           <span th:case="'APPROVED'">승인</span>
                           <span th:case="'REJECTED'">반려</span>
                           <span th:case="'REQUESTED'">상신완료</span>
                       </span>
-                    </td>
-                    <td th:text="${approvalInfo.date}"></td>
-
-                </tr>
-                </tbody>
-            </table>
-        </div>
+                </td>
+                <td th:text="${approvalInfo.date}"></td>
+            </tr>
+            </tbody>
+        </table>
     </div>
+</div>
 </div>
