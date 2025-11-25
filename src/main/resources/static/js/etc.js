@@ -100,10 +100,16 @@ document.getElementById("btnApplyToRow").addEventListener("click", function () {
 
     alert("선택된 행에 적용되었습니다.");
 });
-
+// 📌 startDate 비활성화 처리 (기타근태신청 용)
+function disableStartDate() {
+    document.querySelectorAll(".startDate").forEach(input => {
+        input.disabled = true;
+    });
+}
 // 📌 초기화
 document.addEventListener('DOMContentLoaded', () => {
 
+    disableStartDate();
     initCheckAll('#checkAll', '.rowCheck');
 
     document.getElementById('btnSearchEtc')?.addEventListener('click', () => {
