@@ -3,7 +3,7 @@
 
     <div class="pan-header">
         일근태 신청 상세
-                <span style="margin-right: 10px">신청번호: <span th:text="${requestId}"></span></span>
+        <span style="margin-right: 10px">신청번호: <span th:text="${requestId}"></span></span>
     </div>
 
     <div class="body">
@@ -29,31 +29,112 @@
             </tr>
             </tbody>
         </table>
-        <!-- 신청 근태 상세 (대체 코드) -->
+
+        <!-- 신청 근태 상세 -->
         <div class="panel">
             <div class="title" th:text="'신청근태: ' + (${reqInfo.reqType} ?: '')">
                 신청근태: []
             </div>
+
             <div class="body">
-                <table id="tbl-overtime" class="detail-table">
+                <!-- 일반 -->
+                <table class="detail-table"
+                       th:if="${reqInfo.reqType != '반차' and reqInfo.reqType != '조퇴' and reqInfo.reqType != '기타'}">
                     <tr>
                         <th>근무일</th>
-                        <td class="workDate" th:text="${reqInfo.startDate}"></td>
-                        <th>사유</th>
-                        <td class="reason" th:text="${reqInfo.reason}"></td>
-                    </tr>
-                    <tr>
+                        <td th:text="${reqInfo.startDate}"></td>
+
                         <th>근무시간</th>
-                        <td colspan="3" th:text="(${reqInfo.startNextDay} ? '익일 ' : '당일 ') + ${#strings.substring(reqInfo.startTime,0,5)} + ' ~ ' + (${reqInfo.endNextDay} ? '익일 ' : '당일 ') + ${#strings.substring(reqInfo.endTime,0,5)} + '(' + ${reqInfo.hours} + '시간)'"></td>
+                        <td th:text="(${reqInfo.startNextDay} ? '익일 ' : '당일 ')
+                           + ${#strings.substring(reqInfo.startTime,0,5)}
+                           + ' ~ '
+                           + (${reqInfo.endNextDay} ? '익일 ' : '당일 ')
+                           + ${#strings.substring(reqInfo.endTime,0,5)}
+                           + '(' + ${reqInfo.hours} + '시간)'"></td>
                     </tr>
+
+                    <tr>
+                        <th>사유</th>
+                        <td th:text="${reqInfo.reason}"></td>
+
+                        <th>변경근태</th>
+                        <td th:text="${reqInfo.reqDetailType}"></td>
+                    </tr>
+
                     <tr>
                         <th>사유내용</th>
-                        <td colspan="3" class="reasondetail" th:text="${reqInfo.reasonDetail}"></td>
+                        <td colspan="3" th:text="${reqInfo.reasonDetail}"></td>
                     </tr>
                 </table>
+
+                <!-- 반차 -->
+                <table class="detail-table"
+                       th:if="${reqInfo.reqType == '반차'}">
+                    <tr>
+                        <th>근무일</th>
+                        <td th:text="${reqInfo.startDate}"></td>
+
+                        <th>근무시간</th>
+                        <td th:text="(${reqInfo.startNextDay} ? '익일 ' : '당일 ')
+                           + ${#strings.substring(reqInfo.startTime,0,5)}
+                           + ' ~ '
+                           + (${reqInfo.endNextDay} ? '익일 ' : '당일 ')
+                           + ${#strings.substring(reqInfo.endTime,0,5)}
+                           + '(' + ${reqInfo.hours} + '시간)'"></td>
+                    </tr>
+
+                    <tr>
+                        <th>사유</th>
+                        <td th:text="${reqInfo.reason}"></td>
+
+                        <th>반차구분</th>
+                        <td th:text="${reqInfo.halfType}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>사유내용</th>
+                        <td colspan="3" th:text="${reqInfo.reasonDetail}"></td>
+                    </tr>
+                </table>
+
+                <!-- 조퇴 -->
+                <table class="detail-table"
+                       th:if="${reqInfo.reqType == '조퇴'}">
+                    <tr>
+                        <th>신청일</th>
+                        <td th:text="${reqInfo.startDate}"></td>
+                        <th>신청시간</th>
+                        <td th:text="${#strings.substring(reqInfo.startTime,0,5)}"></td>
+                    </tr>
+                    <tr>
+                        <th>사유</th>
+                        <td th:text="${reqInfo.reason}"></td>
+                        <th>사유내용</th>
+                        <td th:text="${reqInfo.reasonDetail}"></td>
+                    </tr>
+                </table>
+
+                <!-- 기타 -->
+                <table class="detail-table"
+                       th:if="${reqInfo.reqType == '기타'}">
+                    <tr>
+                        <th>대상기간</th>
+                        <td th:text="${reqInfo.startDate + ' ~ ' + reqInfo.endDate}"></td>
+
+                        <th>신청시각</th>
+                        <td th:text="${reqInfo.isTodayRequest != null ? (reqInfo.isTodayRequest ? '당일신청' : '1일이전신청') : '-'}"></td>
+                    </tr>
+                    <tr>
+                        <th>변경근태</th>
+                        <td th:text="${reqInfo.reqDetailType}"></td>
+
+                        <th>사유</th>
+                        <td th:text="${reqInfo.reason}"></td>
+                    </tr>
+                </table>
+
             </div>
         </div>
-    </div>
 
         <!-- 근태기 정보 -->
         <div class="panel">
@@ -79,7 +160,6 @@
             <div class="title">결재 정보</div>
 
             <div class="actions">
-
                 <!-- 승인 form -->
                 <form th:action="@{/approval/approve}" method="post" style="display:inline-block; margin-right:10px;">
                     <input type="hidden" name="requestId" th:value="${requestId}">
@@ -93,7 +173,6 @@
                     <input type="text" name="reason" placeholder="반려 사유 입력" required>
                     <button type="submit" class="btn rejection">반려</button>
                 </form>
-
             </div>
 
             <!-- 결재 내역 테이블 -->
@@ -116,16 +195,15 @@
                     <td th:text="${approvalInfo.duty}"></td>
                     <td th:text="${approvalInfo.name}"></td>
                     <td th:text="${approvalInfo.empCode}"></td>
-                    <td th:text="${approvalInfo.result}"></td>
-                    <td th:text="${approvalInfo.date}"></td>
                     <td>
-                      <span th:switch="${approvalInfo.result}">
-                          <span th:case="'PENDING'">승인대기중</span>
-                          <span th:case="'APPROVED'">승인</span>
-                          <span th:case="'REJECTED'">반려</span>
-                          <span th:case="'REQUESTED'">상신완료</span>
-                      </span>
+                        <span th:switch="${approvalInfo.result}">
+                            <span th:case="'PENDING'">승인대기중</span>
+                            <span th:case="'APPROVED'">승인</span>
+                            <span th:case="'REJECTED'">반려</span>
+                            <span th:case="'REQUESTED'">상신완료</span>
+                        </span>
                     </td>
+                    <td th:text="${approvalInfo.date}"></td>
                 </tr>
                 </tbody>
             </table>
