@@ -565,7 +565,7 @@ public class AttService {
             DeptDto dept = deptMapper.getDeptByEmpCode(dto.getEmpCode());
             String leader = deptMapper.getLeaderByDeptCode(dept.getDeptCode());
             //상태 변경
-            attMapper.updateAttendanceStatus("APPROVED", dto.getRequestId());
+            attMapper.updateAttendanceStatus("REQUESTED", dto.getRequestId());
             // 본인 결재선
             attMapper.insertApprovalRecord(dto.getEmpCode(), dto.getEmpCode(), dto.getRequestId(), 1, "REQUESTED", now());
 
@@ -576,7 +576,6 @@ public class AttService {
                 attMapper.updateAttendanceStatus("APPROVED", dto.getRequestId());
             } else {
                 attMapper.insertApprovalRecord(dto.getEmpCode(), leader, dto.getRequestId(), 2, "PENDING", null);
-                attMapper.updateAttendanceStatus("REQUESTED", dto.getRequestId());
             }
         }
         return errorMessages.length() > 0 ? errorMessages.toString() : "처리 완료";

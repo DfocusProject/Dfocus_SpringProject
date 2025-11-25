@@ -38,5 +38,5 @@ public interface EmpMapper {
 
     String getEmpRole(String emp);
 
-    boolean isLeaderOrNot(String empCode);
+    void setPersonalPattern(String empCode, String patternCode);
 }

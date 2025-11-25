@@ -1,12 +1,9 @@
 package com.skuniv.dfocus_project.controller;
 
-import com.skuniv.dfocus_project.domain.account.Account;
 import com.skuniv.dfocus_project.domain.pattern.Pattern;
 import com.skuniv.dfocus_project.domain.pattern.ShiftType;
 import com.skuniv.dfocus_project.service.PatternService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

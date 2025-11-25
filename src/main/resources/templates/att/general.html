@@ -79,6 +79,7 @@
             </thead>
             <tbody id="tableBody">
             <tr th:each="emp : ${empList}"
+                th:classappend="${emp.status} == 'APPROVED' ? 'approved' : ''"
                 th:data-half-type="${emp.halfType}"
                 th:data-start-time="${emp.startTime}"
                 th:data-end-time="${emp.endTime}"

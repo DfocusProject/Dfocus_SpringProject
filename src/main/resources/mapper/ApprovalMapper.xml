@@ -169,6 +169,7 @@
         SET approval_status = #{status}
         WHERE request_id = #{requestId}
         AND emp_response = #{empCode}
+        AND sequence_no = 2;
     </update>
     <update id="updateApprovalLineTime" parameterType="map">
         UPDATE WEBAPPROVALLINE
@@ -184,7 +185,7 @@
             FROM WEBATTREQUEST r
             WHERE r.request_id = #{requestId}
         )
-          AND p.plan_date BETWEEN (
+          AND p.work_date BETWEEN (
             SELECT s.start_date
             FROM WEBATTREQUESTSPECIAL s
             WHERE s.request_id = #{requestId}
