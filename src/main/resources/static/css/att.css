@@ -136,7 +136,13 @@ input[readonly]:focus {
     font-size: 13px;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
-
+/* 🔒 비활성화 된 날짜 입력창도 기존 스타일 유지 */
+input[type="date"]:disabled {
+    background-color: #ffffff !important;
+    color: #333 !important;
+    opacity: 1 !important;                 /* 흐려지는 효과 제거 */
+    cursor: not-allowed;                   /* 잠금 표시 */
+}
 #attTable input[type="time"]{
     box-sizing: border-box;
     padding: 6px 8px;

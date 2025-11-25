@@ -1,5 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // 근태유형 선택 시 '신청근태' 표시/숨김
+    const reqType = document.querySelector('select[name="reqType"]');
+    const detailTypeBox = document.getElementById("detailTypeBox");
+
+    if (reqType && detailTypeBox) {
+
+        // 초기 상태 설정
+        toggleDetailType(reqType.value);
+
+        // 변경 시 이벤트
+        reqType.addEventListener("change", (e) => {
+            toggleDetailType(e.target.value);
+        });
+
+        function toggleDetailType(type) {
+            if (type === "ET") {
+                detailTypeBox.style.display = "inline-block";   // 보이기
+            } else {
+                detailTypeBox.style.display = "none";           // 숨기기
+            }
+        }
+    }
+
     // 좌측 상세보기 클릭
     document.addEventListener("click", function (e) {
         const row = e.target.closest(".doc-row");
