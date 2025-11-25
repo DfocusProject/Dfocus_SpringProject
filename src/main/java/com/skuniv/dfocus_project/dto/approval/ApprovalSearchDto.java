@@ -9,7 +9,6 @@ import java.time.LocalDate;
 public class ApprovalSearchDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
-
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     private String empCode;      //대상자 사번
