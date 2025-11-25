@@ -77,4 +77,10 @@ public class EmpService {
     public List<AttEmpViewDto> getEtcAttEmpList(String planType, LocalDate workDate, String searchEmpCode, String deptName) {
         return empMapper.findEtcAttEmpList(planType, workDate, searchEmpCode, deptName);
     }
+
+    public void setPesonalPattern(List<String> empCodes, String patternCode) {
+        for(String empCode : empCodes){
+            empMapper.setPersonalPattern(empCode, patternCode);
+        }
+    }
 }

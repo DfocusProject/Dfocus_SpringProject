@@ -39,7 +39,7 @@
             <div class="body">
                 <!-- 일반 -->
                 <table class="detail-table"
-                       th:if="${reqInfo.reqType != '반차' and reqInfo.reqType != '조퇴' and reqInfo.reqType != '기타'}">
+                       th:if="${reqInfo.reqType != '반차' and reqInfo.reqType != '조퇴' and reqInfo.reqType != '기타'and reqInfo.reqType != '연차'}">
                     <tr>
                         <th>근무일</th>
                         <td th:text="${reqInfo.startDate}"></td>
@@ -57,8 +57,6 @@
                         <th>사유</th>
                         <td th:text="${reqInfo.reason}"></td>
 
-                        <th>변경근태</th>
-                        <td th:text="${reqInfo.reqDetailType}"></td>
                     </tr>
 
                     <tr>
@@ -116,7 +114,7 @@
 
                 <!-- 기타 -->
                 <table class="detail-table"
-                       th:if="${reqInfo.reqType == '기타'}">
+                       th:if="${reqInfo.reqType == '기타' || reqInfo.reqType == '연차'}">
                     <tr>
                         <th>대상기간</th>
                         <td th:text="${reqInfo.startDate + ' ~ ' + reqInfo.endDate}"></td>

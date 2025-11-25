@@ -22,6 +22,13 @@ public class DeptController {
     private final DeptService deptService;
     private final EmpService empService;
     private final PatternService patternService;
+    @PostMapping("/setPersonalPattern")
+    public String setPersonalPattern(
+            @RequestParam("empCodes") List<String> empCodes,
+            @RequestParam("patternCode") String patternCode) {
+        empService.setPesonalPattern(empCodes, patternCode);
+        return "redirect:/dept/main";
+    }
 
     @PostMapping("/patternSave")
     public String patternSave(@RequestParam String deptCode, @RequestParam String patternCode) {

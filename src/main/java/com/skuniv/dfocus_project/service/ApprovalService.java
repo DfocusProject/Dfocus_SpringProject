@@ -49,7 +49,7 @@ public class ApprovalService {
             return null;
         }
 
-        if(attType.equals("연장") || attType.equals("외출") || attType.equals("조퇴") || attType.equals("휴일")) {
+        if(attType.equals("연장") || attType.equals("조출") || attType.equals("외출") || attType.equals("조퇴") || attType.equals("휴일")) {
             ReqInfoDto dto = approvalMapper.getReqInfo1(requestId);
             calculateHours(dto);
             return dto;

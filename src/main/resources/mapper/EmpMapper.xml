@@ -96,6 +96,13 @@
         UPDATE WEBEMPINFO
         SET work_pattern_code = #{patternCode}
         WHERE dept_code = #{deptCode}
+        AND status != 'OFF'
+    </update>
+    <update id="setPersonalPattern" parameterType="map">
+        UPDATE WEBEMPINFO
+        SET work_pattern_code = #{patternCode}
+        WHERE emp_code = #{empCode}
+          AND status != 'OFF'
     </update>
     <select id="selectEmpsByPattern" parameterType="String">
         SELECT
@@ -198,7 +205,7 @@
         LEFT JOIN WEBATTREQUEST R
         ON R.EMP_CODE = P.EMP_CODE
         AND R.REQUEST_DATE = P.WORK_DATE
-        AND R.ATTENDANCE_TYPE = '기타'
+        AND R.ATTENDANCE_TYPE IN ('기타', '연차')
         AND R.REQ_STATUS IN ('SAVED', 'REQUESTED', 'APPROVED')
         LEFT JOIN WEBATTREQUESTSPECIAL RS
         ON RS.REQUEST_ID = R.REQUEST_ID

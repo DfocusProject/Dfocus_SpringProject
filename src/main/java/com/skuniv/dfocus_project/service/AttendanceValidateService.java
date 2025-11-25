@@ -25,6 +25,9 @@ public class AttendanceValidateService {
         if (!dto.getAttType().equals("휴일") && "결근".equals(realWorkRecord)) {
             return "결근 상태에는 신청 불가";
         }
+        if (realWorkRecord.equals("연차")) {
+            return "연차 사용 시 연장이 불가합니다.";
+        }
         // 0. 연차 존재 여부 체크: 다른 신청 불가
 
         int existingAnnualLeave = attMapper.existsAttendanceRequest(empCode, workDate, "연차");
