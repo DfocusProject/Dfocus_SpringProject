@@ -12,5 +12,4 @@ public class myHistorySearchDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
     private String status;
-    private String
 }
