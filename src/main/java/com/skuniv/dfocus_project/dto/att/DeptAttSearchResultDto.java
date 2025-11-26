@@ -2,6 +2,9 @@ package com.skuniv.dfocus_project.dto.att;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Data
 public class DeptAttSearchResultDto {
     private String empCode;
@@ -10,10 +13,10 @@ public class DeptAttSearchResultDto {
     private String department;
     private String planType;
     private String realType;
-    private String workOnTime;
-    private String workOffTime;
-    private String holidayTime;
-    private String overTime;
-    private String expectedTime;
-    private String remainTime;
+    private LocalTime workOnTime;
+    private LocalTime workOffTime;
+    private Double holidayTime;
+    private Double overTime;
+    private Double expectedTime;
+    private Double remainTime;
 }

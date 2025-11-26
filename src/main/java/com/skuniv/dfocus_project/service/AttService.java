@@ -464,7 +464,10 @@ public class AttService {
                 errors.append(dto.getEmpCode())
                         .append(" 직원은 ").append(date).append(" 기존 근무와 동일합니다.\n");
             }
-
+            if(dto.getPlanType().equals("연차") || dto.getPlanType().equals("반차")){
+                errors.append(dto.getEmpCode())
+                        .append(" 직원은 ").append(date).append(" 반차/연차 사용으로 기타 근태 신청이 불가합니다.\n");
+            }
             // 기존 신청 중복
             for (ExistingEtcRequestDto existing : existingRequests) {
                 if (!date.isBefore(existing.getStartDate()) && !date.isAfter(existing.getEndDate())) {
@@ -578,7 +581,7 @@ public class AttService {
                 attMapper.insertApprovalRecord(dto.getEmpCode(), leader, dto.getRequestId(), 2, "PENDING", null);
             }
         }
-        return errorMessages.length() > 0 ? errorMessages.toString() : "처리 완료";
+        return errorMessages.length() > 0 ? errorMessages.toString() : "상신 완료";
     }
 
     public List<AttEmpViewDto> getAttEmpListWithHolidayCheck(String attType, LocalDate workDate, String empCode, String deptName) {
@@ -653,4 +656,50 @@ public class AttService {
 
         return empList;
     }
+    //휴일/연장 근로 시간 계산
+    public double getAttWorkHours(LocalDate workDate, String empCode, String attType) {
+        LocalDate startDate = workDate.with(DayOfWeek.MONDAY);
+        LocalDate endDate = workDate.with(DayOfWeek.SUNDAY);
+
+        List<TimeRange> attRequestList = attMapper.getAttRequestRecord(startDate, endDate, empCode, attType);
+        List<TimeRange> commuteRecordList = attMapper.getActualCommuteRecordList(startDate, endDate, empCode);
+
+        double totalHours = 0;
+
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+
+            LocalDate currentDate = date; // 람다에서 사용할 final 변수
+
+            TimeRange holiday = attRequestList.stream()
+                    .filter(tr -> tr.getBaseDate().equals(currentDate))
+                    .findFirst()
+                    .orElse(null);
+
+            TimeRange commute = commuteRecordList.stream()
+                    .filter(tr -> tr.getBaseDate().equals(currentDate))
+                    .findFirst()
+                    .orElse(null);
+
+            // 둘 다 존재하면 겹치는 시간 계산
+            if (holiday != null && commute != null) {
+
+                LocalDateTime holidayStart = holiday.getStartDateTime();
+                LocalDateTime holidayEnd   = holiday.getEndDateTime();
+                LocalDateTime commuteStart = commute.getStartDateTime();
+                LocalDateTime commuteEnd   = commute.getEndDateTime();
+
+                LocalDateTime maxStart = holidayStart.isAfter(commuteStart) ? holidayStart : commuteStart;
+                LocalDateTime minEnd   = holidayEnd.isBefore(commuteEnd) ? holidayEnd : commuteEnd;
+
+                if (!maxStart.isAfter(minEnd)) {
+                    Duration duration = Duration.between(maxStart, minEnd);
+                    totalHours += duration.toMinutes() / 60.0;
+                }
+            }
+        }
+
+        return totalHours;
+    }
+
+    //연장 근로 시간 계산
 }

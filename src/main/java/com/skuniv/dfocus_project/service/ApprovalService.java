@@ -114,5 +114,6 @@ public class ApprovalService {
         //결재선 상태 변경
         approvalMapper.updateApprovalLineStatus("REJECTED", requestId, loginEmpCode);
         approvalMapper.updateApprovalLineTime(requestId, loginEmpCode);
+        approvalMapper.updateRejectReason(requestId, reason);
     }
 }
