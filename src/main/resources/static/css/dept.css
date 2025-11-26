@@ -134,8 +134,7 @@
 .dept-detail-container {
     display: flex;
     gap: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
+    /*margin: 0 auto;*/
     height: calc(100vh - 140px);
 }
 
@@ -157,6 +156,7 @@
 .info-item {
     display: flex;
     justify-content: space-between;
+    align-items: center; /* 수직 중앙 정렬 */
     padding: 8px 0;
     border-bottom: 1px solid #eee;
 }
@@ -181,7 +181,7 @@
 }
 
 .dept-side {
-    flex: 2;
+    flex: 1;
     background-color: #fff;
     padding: 20px;
     border: 1px solid #ccc;
@@ -211,6 +211,13 @@
     flex-shrink: 0;
 }
 
+.member-section, .no-dept-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* flex 아이템 스크롤 동작 필수 */
+}
+
 .no-dept-section {
     flex: 1;
     display: flex;
@@ -227,7 +234,6 @@
 }
 
 .emp-actions {
-    margin-bottom: 10px;
     flex-shrink: 0;
 }
 
@@ -239,18 +245,23 @@
     flex: 1;
     overflow-y: auto;
     min-height: 0;
+    margin-top: 10px;
 }
 
 .emp-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
+    box-sizing: border-box;
 }
 
 .emp-table th,
 .emp-table td {
-    border: 1px solid #ccc;
     padding: 8px 12px;
+}
+
+.emp-table thead {
+    border: 1px solid #ccc;
 }
 
 .emp-table th {
@@ -261,10 +272,19 @@
     position: sticky;
     top: 0;
     z-index: 1;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* 테이블 헤더에 그림자 추가 */
 }
 
 .emp-table tr:nth-child(even) {
     background-color: #fafafa;
+}
+main {
+    height: 100%; /* 혹은 min-height: 100vh; */ !important;
+}
+
+.container {
+    flex: 1;!important;
+    overflow: hidden; !important;
 }
 
 /* 부서 생성 페이지 */
@@ -295,7 +315,7 @@
 }
 
 .container form label:first-of-type {
-    margin-top: 0;
+    margin: 0;
 }
 
 .container form input[type="text"],
@@ -320,6 +340,38 @@
     width: auto;
     cursor: pointer;
 }
+/* .person-pattern-submit 안의 button을 선택 */
+#person-pattern-submit {
+    margin: 0;
+    padding: 10px 20px;
+    background-color: #0066b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    width: fit-content;
+    font-weight: bold;
+}
+
+/* 전체 div 내에서 요소들을 한 줄로 정렬 */
+.personal-pattern-container {
+    display: flex;
+    align-items: center; /* 세로 정렬을 중앙으로 맞춤 */
+    gap: 10px; /* 요소들 사이에 간격을 추가 */
+}
+
+.personal-pattern-container label {
+    margin: 0; /* label의 기본 여백 제거 */
+    font-size: 14px;
+}
+
+.personal-pattern-container select {
+    padding: 8px 12px; /* select 박스 내부 여백 추가 */
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
 
 .container form button[type="submit"] {
     margin-top: 20px;
@@ -337,3 +389,61 @@
 .container form button[type="submit"]:hover {
     background-color: #004d8a;
 }
+
+/* 드롭다운(select)과 버튼을 한 줄로 배치 */
+#patternForm {
+    display: flex; /* flexbox로 배치 */
+    gap: 10px; /* 요소 간 간격 설정 */
+    align-items: center; /* 수직으로 정렬을 맞춤 */
+    padding: 0;
+    flex-direction: row;
+}
+
+/* select의 크기와 스타일 설정 */
+#patternForm select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: auto; /* select 박스의 너비를 자동으로 맞춤 */
+}
+
+/* 버튼 스타일 설정 */
+#patternForm button {
+    margin: 0;
+    padding: 8px 12px;
+    background-color: #0066b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    width: fit-content;
+}
+
+#patternForm button:hover {
+    background-color: #004d8a; /* hover시 색 변경 */
+}
+
+/* 버튼을 고정된 크기로 만들기 */
+#setPatternBtn {
+    padding: 6px 16px; /* 버튼의 내부 여백 */
+    background-color: #0066b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px; /* 폰트 크기 */
+    cursor: pointer;
+    text-align: center; /* 텍스트 수평 중앙 정렬 */
+    line-height: 1.5; /* 텍스트 수직 중앙 정렬 */
+    display: inline-flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
+    height: auto; /* 버튼 높이 자동으로 결정 */
+}
+
+/* 버튼 hover 효과 */
+#setPatternBtn:hover {
+    background-color: #004d8a;
+}
+

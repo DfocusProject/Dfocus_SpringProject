@@ -18,8 +18,8 @@
             <h1>기타 근태 신청</h1>
         </div>
 
-        <!-- 조회 검색 -->
-        <form th:action="@{/att/etc/search}" method="get"
+        <!-- 검색 폼 -->
+        <form id="searchForm" th:action="@{/att/etc/search}" method="get"
               th:object="${etcSearchDto}" class="search-box">
 
             <label>근무일
@@ -56,7 +56,7 @@
             <input type="text" id="deptName" name="deptName"
                    th:value="${#authentication.principal.deptName}" readonly placeholder="부서명" />
 
-            <button type="submit" id="btnSearch">조회</button>
+            <button type="submit" id="btnSearchEtc">조회</button>
             <span class="note">※ 근무일 선택 후 '조회' 클릭</span>
         </form>
 
@@ -188,6 +188,9 @@
                 </td>
                 <td th:text="${emp.applicant}"></td>
             </tr>
+            <tr th:if="${#lists.isEmpty(empList)}">
+                <td colspan="15" style="text-align:center;">조회된 데이터가 없습니다.</td>
+            </tr>
             </tbody>
         </table>
 
@@ -204,6 +207,13 @@
 <script th:src="@{/js/script.js}"></script>
 <script th:src="@{/js/etc.js}"></script>
 <script th:src="@{/js/form.js}"></script>
-
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchBtn = document.getElementById("btnSearchEtc");
+        if (window.location.pathname.includes("/att/etc/main") && searchBtn) {
+            searchBtn.click();
+        }
+    });
+</script>
 </body>
 </html>
