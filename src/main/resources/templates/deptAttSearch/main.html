@@ -19,7 +19,7 @@
 
             <!-- 검색 박스 -->
             <div class="search-box">
-                <form th:action="@{/deptAttSearch/main}" method="get"
+                <form th:action="@{/deptAttSearch/search}" method="get"
                       th:object="${deptAttSearchDto}" class="attform">
 
                     <div class="search-row">
@@ -89,12 +89,18 @@
                             <th rowspan="2">직위</th>
                             <th rowspan="2">부서</th>
                             <th rowspan="2">계획/실적</th>
-                            <th rowspan="2">가근태</th>
                             <th rowspan="2">출근시간</th>
                             <th rowspan="2">퇴근시간</th>
                             <th rowspan="2">휴일근무</th>
                             <th rowspan="2">연장근무</th>
-                            <th colspan="3" id="weekRange">${weekRange}</th>
+                            <th colspan="3" id="weekRange"
+                                th:if="${startDate != null and endDate != null}"
+                                th:text="${#temporals.format(startDate,'yyyy-MM-dd') + ' ~ ' + #temporals.format(endDate,'yyyy-MM-dd')}">
+                                2025-11-24 ~ 2025-11-30
+                            </th>
+
+
+
                         </tr>
                         <tr>
                             <th class="highlight">주근무시간</th>
@@ -110,15 +116,14 @@
                             <td th:text="${row.empName}"></td>
                             <td th:text="${row.position}"></td>
                             <td th:text="${row.department}"></td>
-                            <td th:text="${row.planType}"></td>
-                            <td th:text="${row.realType}"></td>
-                            <td th:text="${row.workOnTime}"></td>
-                            <td th:text="${row.workOffTime}"></td>
+                            <td th:text="${row.planType + ' / ' + row.realType}"></td>
+                            <td th:text="${#temporals.format(row.workOnTime, 'HH:mm:ss')}"></td>
+                            <td th:text="${#temporals.format(row.workOffTime, 'HH:mm:ss')}"></td>
                             <td th:text="${row.holidayTime}"></td>
                             <td th:text="${row.overTime}"></td>
-                            <td th:text="${row.regularTime}"></td>
+                            <td>52.0</td>
                             <td th:text="${row.expectedTime}"></td>
-                            <td th:text="${row.remainTime}"></td>
+                            <td th:text="${52 - row.expectedTime}"></td>
                         </tr>
                         </tbody>
 

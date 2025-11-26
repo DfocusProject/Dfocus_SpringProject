@@ -23,29 +23,33 @@
     </select>
 
 
-    <select id="findEmpsBySearch" parameterType="com.skuniv.dfocus_project.dto.att.DeptAttSearchDto" resultType="map">
+    <select id="findEmpsBySearch" parameterType="com.skuniv.dfocus_project.dto.att.DeptAttSearchDto" resultType="com.skuniv.dfocus_project.dto.att.DeptAttSearchResultDto">
         SELECT
         i.emp_code AS empCode,
         i.emp_name AS empName,
         i.position_code AS position,
         c.start_time AS workOnTime,
-        c.end_time AS workOffTime
-        FROM WEBEMPPLAN p
-        JOIN WEBEMPINFO i ON p.emp_code = i.emp_code
+        c.end_time AS workOffTime,
+        i.dept_code AS department,
+        p.shift_code AS planType
+        FROM WEBEMPINFO i
+        LEFT JOIN WEBEMPPLAN p
+        ON p.emp_code = i.emp_code
+        AND p.work_date = #{workDate}
         LEFT JOIN WEBCOMMUTERECORD c
         ON c.emp_code = p.emp_code
         AND c.work_date = p.work_date
-        WHERE p.work_date = #{workDate}
-        AND i.dept_code = #{deptCode}
+        WHERE i.dept_code = #{department}   <!-- ← 이 부분을 JOIN 밖으로 이동 -->
 
         <!-- 사번(empCode) 조건 -->
         <if test="empCode != null and empCode != ''">
             AND p.emp_code = #{empCode}
         </if>
 
-        <!-- 근무계획(shiftCode) 조건 -->
-        <if test="shiftCode != null and shiftCode != ''">
-            AND p.shift_code = #{shiftCode}
+        <!-- 근무계획(planType) 조건 -->
+        <if test="planType != null and planType != ''">
+            AND p.shift_code = #{planType}
         </if>
     </select>
+
 </mapper>

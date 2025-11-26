@@ -160,13 +160,13 @@
             <div class="actions">
                 <!-- 승인 form -->
                 <form th:action="@{/approval/approve}" method="post" style="display:inline-block; margin-right:10px;">
-                    <input type="hidden" name="requestId" th:value="${requestId}">
+                    <input type="hidden" name="requestIds" th:value="${requestId}">
                     <button type="submit" class="btn approval">승인</button>
                 </form>
 
                 <!-- 반려 form -->
                 <form th:action="@{/approval/reject}" method="post" style="display:inline-block;">
-                    <input type="hidden" name="requestId" th:value="${requestId}">
+                    <input type="hidden" name="requestIds" th:value="${requestId}">
                     <label>반려사유</label>
                     <input type="text" name="reason" placeholder="반려 사유 입력" required>
                     <button type="submit" class="btn rejection">반려</button>

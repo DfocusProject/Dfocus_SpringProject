@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -42,9 +43,12 @@ public class deptHistoryController {
         return "deptAttSearch/main";
     }
     @GetMapping("/search")
-    public String search(Model model, @ModelAttribute("deptAttSearchDto") EtcSearchDto etcSearchDto) {
-        List<DeptAttSearchResultDto> results = deptHistoryService.getResultList(etcSearchDto);
+    public String search(Model model, @ModelAttribute("deptAttSearchDto") DeptAttSearchDto deptAttSearchDto) {
+        model.addAttribute("startDate", deptAttSearchDto.getWorkDate().with(DayOfWeek.MONDAY));
+        model.addAttribute("endDate", deptAttSearchDto.getWorkDate().with(DayOfWeek.SUNDAY));
+        List<DeptAttSearchResultDto> results = deptHistoryService.getEmpList(deptAttSearchDto);
+        deptHistoryService.calculateDeptAttResult(results, deptAttSearchDto.getWorkDate());
         model.addAttribute("results", results);
-        return "redirect:/deptAttSearch/main";
+        return "deptAttSearch/main";
     }
 }
