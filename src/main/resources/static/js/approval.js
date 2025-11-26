@@ -122,7 +122,7 @@ function attachDetailFormHandlers() {
         approveForm.dataset.bound = true;
         approveForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            const requestId = approveForm.querySelector("input[name='requestId']").value;
+            const requestId = approveForm.querySelector("input[name='requestIds']").value;
             sendApprovalRequest("approve", [requestId]);  // 배열로 전달
         });
     }
@@ -131,7 +131,7 @@ function attachDetailFormHandlers() {
         rejectForm.dataset.bound = true;
         rejectForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            const requestId = rejectForm.querySelector("input[name='requestId']").value;
+            const requestId = rejectForm.querySelector("input[name='requestIds']").value;
             const reasonInput = rejectForm.querySelector("input[name='reason']");
             if (!reasonInput || !reasonInput.value) { alert("반려 사유를 입력하세요."); return; }
 
@@ -156,7 +156,7 @@ function sendApprovalRequest(type, requestId, reason) {
     requestId.forEach(id => {
         const input = document.createElement("input");
         input.type = "hidden";
-        input.name = "requestId";
+        input.name = "requestIds";
         input.value = id;
         form.appendChild(input);
     });

@@ -495,5 +495,34 @@
         WHERE request_id = #{requestId}
           AND attendance_type IN ('기타', '연차')
     </select>
+    <select id="getAttRequestRecord"
+            parameterType="map"
+            resultType="com.skuniv.dfocus_project.domain.Time.TimeRange">
+        SELECT
+            r.request_date AS baseDate,
+            g.start_time AS startTime,
+            g.start_next_day AS startNextDay,
+            g.end_time AS endTime,
+            g.end_next_day AS endNextDay
+        FROM WEBATTREQUEST r
+                 INNER JOIN WEBATTREQUESTGENERAL g
+                            ON r.request_id = g.request_id
+        WHERE r.attendance_type = #{attType}
+          AND r.emp_code = #{empCode}
+          AND r.request_date BETWEEN #{startDate} AND #{endDate}
+    </select>
+    <select id="getActualCommuteRecordList"
+            parameterType="map"
+            resultType="com.skuniv.dfocus_project.domain.Time.TimeRange">
+        SELECT
+            work_date AS baseDate,
+            start_time AS startTime,
+            start_next_day AS startNextDay,
+            end_time AS endTime,
+            end_next_day AS endNextDay
+        FROM WEBCOMMUTERECORD
+          WHERE emp_code = #{empCode}
+          AND work_date BETWEEN #{startDate} AND #{endDate}
+    </select>
 
 </mapper>

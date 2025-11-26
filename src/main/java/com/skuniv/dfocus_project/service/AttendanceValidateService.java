@@ -26,7 +26,7 @@ public class AttendanceValidateService {
             return "결근 상태에는 신청 불가";
         }
         if (realWorkRecord.equals("연차")) {
-            return "연차 사용 시 연장이 불가합니다.";
+            return "연차 사용 시 일반 근태 신청이 불가합니다.";
         }
         // 0. 연차 존재 여부 체크: 다른 신청 불가
 

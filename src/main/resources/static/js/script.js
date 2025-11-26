@@ -12,4 +12,7 @@ function setupDropdowns() {
         });
     }
 }
+window.addEventListener('beforeunload', function () {
+    navigator.sendBeacon('/clearSearchSession'); // POST 요청으로 서버 세션 삭제
+});
 

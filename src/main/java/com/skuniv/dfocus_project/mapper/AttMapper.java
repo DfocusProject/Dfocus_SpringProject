@@ -101,4 +101,8 @@ public interface AttMapper {
     void updateAttPlan(Long requestId);
 
     String getRequestAttType(Long requestId);
+
+    List<TimeRange> getAttRequestRecord(LocalDate startDate, LocalDate endDate, String empCode, String attType);
+
+    List<TimeRange> getActualCommuteRecordList(LocalDate startDate, LocalDate endDate, String empCode);
 }

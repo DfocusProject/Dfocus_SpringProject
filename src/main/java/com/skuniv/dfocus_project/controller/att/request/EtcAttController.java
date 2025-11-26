@@ -46,8 +46,6 @@ public class EtcAttController {
         return dto;
     }
 
-
-
     @GetMapping("/main")
     public String mainPage() {
         // etcSearchDto는 세션에서 자동 바인딩됨
