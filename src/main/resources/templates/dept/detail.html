@@ -24,7 +24,7 @@
 
                 <div class="info-item">
                     <label>상위 부서</label>
-                    <span th:text="${dept.parentDept}">경영본부</span>
+                    <span th:text="${dept.parentDept != null ? dept.parentDept : '-'}">경영본부</span>
                 </div>
 
                 <div class="info-item">
@@ -41,14 +41,19 @@
                     <label>부서 시작일</label>
                     <span th:text="${dept.startDate}">2023-01-01</span>
                 </div>
-
                 <div class="info-item">
                     <label>사용 여부</label>
-                    <span th:text="${dept.useYn == 'Y' ? '사용 중' : '미사용'}"
-                          th:classappend="${dept.useYn == 'Y' ? 'used' : 'not-used'}">
-                        사용 중
-                    </span>
+                    <form th:action="@{/dept/toggleUseYn}" method="post">
+                        <input type="hidden" name="deptCode" th:value="${dept.deptCode}" />
+                        <input type="hidden" name="useYn" th:value="${dept.useYn == 'Y' ? 'N' : 'Y'}" />
+
+                        <label class="switch">
+                            <input type="checkbox" th:checked="${dept.useYn == 'Y'}" onchange="this.form.submit()">
+                            <span class="slider round"></span>
+                        </label>
+                    </form>
                 </div>
+
 
                 <div class="info-item">
                     <label>근태 패턴 코드</label>
