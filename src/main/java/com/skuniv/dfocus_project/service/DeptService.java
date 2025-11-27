@@ -68,4 +68,7 @@ public class DeptService {
         return deptMapper.findAllEmpByDeptCode(deptCode);
     }
 
+    public void updateUseYn(String deptCode, String useYn) {
+        deptMapper.updateUseYn(deptCode, useYn);
+    }
 }
