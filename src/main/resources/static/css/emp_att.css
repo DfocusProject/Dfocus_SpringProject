@@ -213,6 +213,9 @@ table td {
     border: 1px solid #ccc;
 }
 
+.container .pann{
+    margin: 20px;
+}
 /*******************************************
  * 📐 상세 — Row/Col
  *******************************************/
@@ -313,7 +316,6 @@ table td {
     cursor: pointer;
     color: white;
     border-radius: 3px;
-    margin-left: 5px;
 }
 
 .btn.approval {
@@ -377,13 +379,17 @@ table td {
     background: #1f60c7 !important;
 }
 
-/* 테이블 박스 스타일 — 이미지처럼 */
+/* 테이블 스크롤 감싸기 */
 .attAprlList {
-    background: #fff;
-    border-radius: 6px;
-    padding: 15px;
-    border: 1px solid #dcdcdc;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow-x: auto;        /* 가로 스크롤 */
+    overflow-y: hidden;
+    max-width: 100%;         /* 컨테이너 밖으로 못 나가게 */
+    box-sizing: border-box;
+}
+
+.attAprlList table {
+    width: max-content;      /* 테이블 내용 크기만큼 확장 */
+    min-width: 100%;         /* 작은 경우엔 100% 유지 */
 }
 
 /* 테이블 헤더 디자인 보강 */
@@ -425,3 +431,41 @@ table td {
     white-space: nowrap;
 }
 
+/* 넓을 때: 한 줄 유지 */
+.search-box .attform {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;        /* 기본은 한 줄 */
+    gap: 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.search-box .attform label,
+.search-box .btnSearchEmpAtt {
+    flex-shrink: 0;           /* 각각 크기 유지 */
+}
+.attform .right{
+    flex: none;
+    border-left: 1px solid #ddd;
+    white-space: nowrap;
+    padding-left: 20px;
+}
+/* right 안의 버튼은 고정 크기 */
+.search-box .right button {
+    min-width: 110px;
+    height: 34px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* 화면이 좁아지면 자동으로 wrap */
+@media (max-width: 1500px) {     /* 여기 기준 너가 조절 가능! */
+    .search-box .attform {
+        flex-wrap: wrap;         /* 좁아지면 줄바꿈 */
+    }
+    .search-box .right {
+        margin-left: 0;
+        justify-content: flex-end;
+    }
+}
