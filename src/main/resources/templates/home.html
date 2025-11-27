@@ -1,29 +1,221 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>홈</title>
-    <link rel="stylesheet" href="/css/common.css" />
-    <link rel="stylesheet" href="/css/dept.css" />
+    <link rel="stylesheet" href="/css/common.css"/>
+    <link rel="stylesheet" href="/css/home.css"/>
 </head>
 <body>
 <div th:replace="~{ header.html::header}"></div>
+
 <main>
     <div th:replace="~{ sidebar.html::sidebar}"></div>
+
     <div class="container">
         <h2>홈 화면</h2>
         <div id="error-message" th:text="${error}" style="display:none;"></div>
 
-        <!-- 출퇴근 버튼 추가 -->
-        <div class="attendance-buttons" style="margin-top: 20px;">
-            <form th:action="@{/att/general/on}" method="post" style="display:inline;">
-                <button type="submit">출근</button>
-            </form>
-            <form th:action="@{/att/general/off}" method="post" style="display:inline; margin-left:10px;">
-                <button type="submit">퇴근</button>
-            </form>
+        <div class="header-content">
+            <div class="header-left">
+                <h1 th:text="${userName} + ' 님'">시원 님</h1>
+                <p th:text="${today}">2024년 11월 26일 수요일</p>
+            </div>
+            <div class="header-right">
+                <div class="current-time" id="currentTime">09:23:45</div>
+            </div>
         </div>
-    </div>
+
+        <!-- 대시보드 -->
+        <div class="dashboard-grid">
+
+            <!-- 출퇴근 관리 -->
+            <div class="card attendance-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">출퇴근 관리</div>
+                        <div class="card-subtitle">Attendance</div>
+                    </div>
+                </div>
+                <!-- 출퇴근 기록 -->
+                <div class="attendance-buttons" style="margin-top: 20px;">
+                    <form th:action="@{/att/general/on}" method="post" style="display:inline;">
+                        <button type="submit">출근</button>
+                    </form>
+                    <form th:action="@{/att/general/off}" method="post" style="display:inline; margin-left:10px;">
+                        <button type="submit">퇴근</button>
+                    </form>
+                </div>
+
+                <div class="time-display">
+                    <div class="status-item">
+                        <div class="status-label">근무시간</div>
+                        <div class="status-value" th:text="${workHours != null} ? ${workHours} : '--:--'">--:--</div>
+                    </div>
+                </div>
+                <div class="attendance-status">
+                    <div class="status-item">
+                        <div class="status-label">출근시간</div>
+                        <div class="status-value" th:text="${checkOutTime != null} ? ${checkOutTime} : '--:--'">--:--</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">퇴근시간</div>
+                        <div class="status-value" th:text="${checkOutTime != null} ? ${checkOutTime} : '--:--'">--:--</div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" th:disabled="${checkInTime != null}" onclick="checkIn()">출근</button>
+                    <button class="btn btn-success" th:disabled="${checkInTime == null || checkOutTime != null}"
+                            onclick="checkOut()">퇴근
+                    </button>
+                </div>
+            </div>
+
+            <!-- 이번주 근무 현황 -->
+            <div class="card weekly-work-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">이번주 근무 현황</div>
+                        <div class="card-subtitle">Weekly Work Hours</div>
+                    </div>
+                </div>
+
+                <!--                <div class="bar-chart">-->
+                <!--                    <div class="bar-item"-->
+                <!--                         th:each="day, iterStat : ${weeklyWork != null ? weeklyWork : {'월':8.5, '화':9.0, '수':8.0, '목':0, '금':0}}">-->
+                <!--                        <div class="bar"-->
+                <!--                             th:style="'height: ' + ${day.value * 15} + 'px'"-->
+                <!--                             th:attr="data-day=${day.key}, data-hours=${day.value}">-->
+                <!--                            <span class="bar-value" th:text="${day.value} + 'h'">8.5h</span>-->
+                <!--                        </div>-->
+
+                <!--                        <div class="bar-label"-->
+                <!--                             th:text="${day.key}"-->
+                <!--                             th:classappend="${iterStat.index == 2} ? 'today'">-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
+            </div>
+
+            <!-- 연차 현황 카드 -->
+            <div class="card annual-leave-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">연차 현황</div>
+                        <div class="card-subtitle">Annual Leave Status</div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>사용률</span>
+                        <span><strong
+                                th:text="${annualLeave != null} ? ${annualLeave.usageRate} : '40'">40</strong>%</span>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill"
+                             th:style="'width: ' + ${annualLeave != null ? annualLeave.usageRate : 40} + '%'"
+                             style="width: 40%"></div>
+                    </div>
+                </div>
+
+                <div class="leave-stats">
+                    <div class="leave-stat">
+                        <div class="leave-stat-value" th:text="${annualLeave != null} ? ${annualLeave.total} : '15'">
+                            15
+                        </div>
+                        <div class="leave-stat-label">총 연차</div>
+                    </div>
+
+                    <div class="leave-stat">
+                        <div class="leave-stat-value" th:text="${annualLeave != null} ? ${annualLeave.used} : '6'">6
+                        </div>
+                        <div class="leave-stat-label">사용</div>
+                    </div>
+
+                    <div class="leave-stat">
+                        <div class="leave-stat-value" th:text="${annualLeave != null} ? ${annualLeave.remaining} : '9'">
+                            9
+                        </div>
+                        <div class="leave-stat-label">잔여</div>
+                    </div>
+
+                    <div class="leave-stat">
+                        <div class="leave-stat-value" th:text="${annualLeave != null} ? ${annualLeave.planned} : '2'">
+                            2
+                        </div>
+                        <div class="leave-stat-label">예정</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 오늘의 할일 -->
+            <div class="card task-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">오늘의 할일</div>
+                        <div class="card-subtitle">Today's Tasks</div>
+                    </div>
+                </div>
+
+                <div class="task-stats">
+                    <div class="task-stat">
+                        <div class="task-stat-circle total">
+                            <span th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
+                        </div>
+                        <div class="task-stat-info">
+                            <span class="task-stat-value"
+                                  th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
+                            <span class="task-stat-label">전체 업무</span>
+                        </div>
+                    </div>
+
+                    <div class="task-stat">
+                        <div class="task-stat-circle completed">
+                            <span th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
+                        </div>
+                        <div class="task-stat-info">
+                            <span class="task-stat-value" th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
+                            <span class="task-stat-label">완료</span>
+                        </div>
+                    </div>
+
+                    <div class="task-stat">
+                        <div class="task-stat-circle pending">
+                            <span th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
+                        </div>
+                        <div class="task-stat-info">
+                            <span class="task-stat-value"
+                                  th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
+                            <span class="task-stat-label">진행중</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-list">
+                    <div class="task-item"
+                         th:each="task : ${tasks}"
+                         th:classappend="'priority-' + ${task.priority}">
+                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
+
+                        <div class="task-content">
+                            <div class="task-title" th:text="${task.title}">API 문서 작성</div>
+                            <div class="task-meta">
+                                <span class="task-time">⏰ <span th:text="${task.dueTime}">14:00</span></span>
+                                <span th:text="${task.category}">개발</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- task-card end -->
+
+        </div> <!-- dashboard-grid end -->
+
+    </div> <!-- container end -->
+
 </main>
 
 <script>
@@ -32,7 +224,9 @@
         alert(error);
     }
 </script>
+
 <script th:src="@{/js/script.js}"></script>
+<script th:src="@{/js/home.js}"></script>
 
 </body>
 </html>

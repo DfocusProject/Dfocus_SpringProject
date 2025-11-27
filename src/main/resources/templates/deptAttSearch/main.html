@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>부서근태 조회</title>
-    <link rel="stylesheet" href="/css/common.css" />
-    <link rel="stylesheet" href="/css/emp_att.css" />
+    <link rel="stylesheet" href="/css/common.css"/>
+    <link rel="stylesheet" href="/css/emp_att.css"/>
 </head>
 
 <body>
@@ -13,68 +13,56 @@
 <main>
     <div th:replace="~{sidebar.html::sidebar}"></div>
 
-    <!-- 전체 레이아웃 (단일 left 구조) -->
-    <div class="att-layout">
-        <div class="left">
-
+    <div class="container">
+        <div class="pann">
             <!-- 검색 박스 -->
             <div class="search-box">
                 <form th:action="@{/deptAttSearch/search}" method="get"
                       th:object="${deptAttSearchDto}" class="attform">
 
-                    <div class="search-row">
-                        <label>근무일
-                            <input type="date" th:field="*{workDate}">
-                        </label>
+                    <label>근무일
+                        <input type="date" th:field="*{workDate}">
+                    </label>
 
-                        <label>사번
-                            <input type="text" th:field="*{empCode}" placeholder="사번 입력" />
-                        </label>
+                    <label>사번
+                        <input type="text" th:field="*{empCode}" placeholder="사번 입력"/>
+                    </label>
 
+                    <label>근무계획
+                        <select name="plan" id="planType">
+                            <option value="" th:selected="${planType == ''}">전체</option>
+                            <option value="05" th:selected="${planType == '05'}">주간</option>
+                            <option value="05-A" th:selected="${planType == '05-A'}">현장실습</option>
+                            <option value="06" th:selected="${planType == '06'}">연차</option>
+                            <option value="10" th:selected="${planType == '10'}">출장</option>
+                            <option value="31" th:selected="${planType == '31'}">4전</option>
+                            <option value="32" th:selected="${planType == '32'}">4후</option>
+                            <option value="33" th:selected="${planType == '33'}">4야</option>
+                            <option value="45" th:selected="${planType == '45'}">3전</option>
+                            <option value="46" th:selected="${planType == '46'}">3후</option>
+                            <option value="61" th:selected="${planType == '61'}">휴직</option>
+                            <option value="64" th:selected="${planType == '64'}">육아휴직</option>
+                            <option value="62" th:selected="${planType == '62'}">사외교육</option>
+                        </select>
+                    </label>
 
-                        <button type="submit" class="btnSearchEmpAtt">조회</button>
+                    <label>부서
+                        <select th:field="*{department}">
+                            <option value="">전체</option>
+                            <option th:each="dept : ${childeDeptList}"
+                                    th:value="${dept}"
+                                    th:text="${dept}">
+                            </option>
+                        </select>
+                    </label>
+
+                    <button type="submit" class="btnSearchEmpAtt">조회</button>
+                    <div class="right">
+                        <button type="button" class="btn approval" id="btnGoGeneral">일반근태 신청</button>
+                        <button type="button" class="btn approval" id="btnGoEtc">기타근태 신청</button>
                     </div>
-
-                    <div class="search-row">
-                        <label>근무계획
-                            <select name="plan" id="planType">
-                                <option value="" th:selected="${planType == ''}">전체</option>
-                                <option value="05" th:selected="${planType == '05'}">주간</option>
-                                <option value="05-A" th:selected="${planType == '05-A'}">현장실습</option>
-                                <option value="06" th:selected="${planType == '06'}">연차</option>
-                                <option value="10" th:selected="${planType == '10'}">출장</option>
-                                <option value="31" th:selected="${planType == '31'}">4전</option>
-                                <option value="32" th:selected="${planType == '32'}">4후</option>
-                                <option value="33" th:selected="${planType == '33'}">4야</option>
-                                <option value="45" th:selected="${planType == '45'}">3전</option>
-                                <option value="46" th:selected="${planType == '46'}">3후</option>
-                                <option value="61" th:selected="${planType == '61'}">휴직</option>
-                                <option value="64" th:selected="${planType == '64'}">육아휴직</option>
-                                <option value="62" th:selected="${planType == '62'}">사외교육</option>
-                            </select>
-                        </label>
-
-                        <label>부서
-                            <select th:field="*{department}">
-                                <option value="">전체</option>
-                                <option th:each="dept : ${childeDeptList}"
-                                        th:value="${dept}"
-                                        th:text="${dept}">
-                                </option>
-                            </select>
-                        </label>
-
-                    </div>
-
                 </form>
             </div>
-
-            <!-- 신청 버튼 영역 -->
-            <div style="margin: 10px 20px;">
-                <button type="button" class="btn approval" id="btnGoGeneral">일반근태 신청</button>
-                <button type="button" class="btn approval" id="btnGoEtc">기타근태 신청</button>
-            </div>
-
             <!-- 리스트 테이블 -->
             <div class="attAprlList">
                 <form id="attForm" method="post">
@@ -98,7 +86,6 @@
                                 th:text="${#temporals.format(startDate,'yyyy-MM-dd') + ' ~ ' + #temporals.format(endDate,'yyyy-MM-dd')}">
                                 2025-11-24 ~ 2025-11-30
                             </th>
-
 
 
                         </tr>
@@ -130,17 +117,15 @@
                     </table>
                 </form>
             </div>
-
-        </div><!-- left -->
-    </div><!-- att-layout -->
-
+        </div>
+    </div>
 </main>
 
 <script th:src="@{/js/script.js}"></script>
 
 <script>
     /* 체크박스 전체 선택 */
-    document.getElementById("checkAll1").addEventListener("change", function() {
+    document.getElementById("checkAll1").addEventListener("change", function () {
         const checked = this.checked;
         document.querySelectorAll(".rowCheck").forEach(cb => cb.checked = checked);
     });
@@ -174,8 +159,8 @@
         form.submit();
     }
 
-    document.getElementById("btnGoGeneral").onclick = () => submitWithAction("/att/general");
-    document.getElementById("btnGoEtc").onclick = () => submitWithAction("/att/etc");
+    document.getElementById("btnGoGeneral").onclick = () => submitWithAction("/att/general/search");
+    document.getElementById("btnGoEtc").onclick = () => submitWithAction("/att/etc/search");
 </script>
 
 </body>
