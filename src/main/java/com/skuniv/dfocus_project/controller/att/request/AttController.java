@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -25,7 +26,7 @@ public class AttController {
     private final AttService attService;
 
     @GetMapping("/main")
-    public String mainPage(Model model) {
+    public String mainPage() {
         return "att/general";
     }
 
@@ -33,7 +34,7 @@ public class AttController {
     public String search(
             @RequestParam(required = false) String attType,
             @RequestParam(required = false) LocalDate workDate,
-            @RequestParam(required = false) String empCode,
+            @RequestParam(required = false) List<String> empCode,
             Model model,
             Authentication authentication
     ) {
@@ -44,11 +45,11 @@ public class AttController {
         String loginRole = loginUser.getRole();
         String deptName = loginUser.getDeptName();
 
-        String searchEmpCode;
+        List<String> searchEmpCode;
         if ("LEADER".equals(loginRole)) {
-            searchEmpCode = empCode != null ? empCode : "";
+            searchEmpCode = empCode != null ? empCode : null;
         } else {
-            searchEmpCode = loginUser.getUsername();
+            searchEmpCode = Collections.singletonList(loginUser.getUsername());
         }
 
         // 근태 대상자 조회 + 휴일 로직 처리

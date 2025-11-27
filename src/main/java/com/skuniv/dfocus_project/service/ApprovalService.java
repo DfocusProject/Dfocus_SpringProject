@@ -5,6 +5,7 @@ import com.skuniv.dfocus_project.mapper.ApprovalMapper;
 import com.skuniv.dfocus_project.mapper.AttMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -85,6 +86,7 @@ public class ApprovalService {
         dto.setHours(hours);
     }
 
+    @Transactional
     public void approve(Long requestId, String loginEmpCode) {
         boolean isEtcOrNot = attMapper.isEtcTypeByRequestId(requestId);
         if (isEtcOrNot) {
@@ -104,10 +106,12 @@ public class ApprovalService {
         }
         else if(requestType.equals("연차")){
             double count = approvalMapper.getAnnualRequestCount(requestId);
+            System.out.println("count = " + count);
             approvalMapper.updateAnnualCount(requestId, count);
         }
     }
 
+    @Transactional
     public void reject(Long requestId, String loginEmpCode, String reason) {
         //신청서 상태 변경
         attMapper.updateAttendanceStatus("REJECTED", requestId);

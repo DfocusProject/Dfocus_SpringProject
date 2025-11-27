@@ -178,24 +178,16 @@
         AND emp_response = #{empCode}
     </update>
     <select id="getAnnualRequestCount" resultType="double" parameterType="long">
-        SELECT COUNT(*) * 1.0
+        SELECT COUNT(*) * 1.0 AS request_count
         FROM WEBEMPPLAN p
-        WHERE p.emp_code = (
-            SELECT r.emp_code
-            FROM WEBATTREQUEST r
-            WHERE r.request_id = #{requestId}
-        )
-          AND p.work_date BETWEEN (
-            SELECT s.start_date
-            FROM WEBATTREQUESTSPECIAL s
-            WHERE s.request_id = #{requestId}
-        )
-            AND (
-                SELECT s.end_date
-                FROM WEBATTREQUESTSPECIAL s
-                WHERE s.request_id = #{requestId}
-            )
-          AND p.origin_shift_code NOT IN (12, 13)
+                 JOIN WEBATTREQUEST r
+                      ON p.emp_code = r.emp_code
+                 JOIN WEBATTREQUESTSPECIAL s
+                      ON r.request_id = s.request_id
+        WHERE r.request_id = #{requestId}
+          AND p.work_date BETWEEN s.start_date AND s.end_date
+          AND p.origin_shift_code NOT IN ('12', '13');
+
     </select>
     <update id="updateAnnualCount" parameterType="map">
         UPDATE WEBANNUALDETAIL
@@ -209,7 +201,7 @@
     </update>
 
     <update id="updateRejectReason" parameterType="map">
-        UPDATE webappprovalline
+        UPDATE webapprovalline
         SET comments = #{reason}
         WHERE sequence_no = 2
           AND request_id = #{requestId}

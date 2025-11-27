@@ -172,9 +172,14 @@
         AND I.STATUS != 'OFF'
         AND P.SHIFT_CODE NOT IN ('64', '65')
         AND P.WORK_DATE = #{workDate}
-        <if test="empCode != null and empCode != ''">
-            AND P.EMP_CODE = #{empCode}
+        <if test="empCode != null and empCode.size() > 0">
+            AND P.EMP_CODE IN
+            <foreach item="code" collection="empCode" open="(" separator="," close=")">
+                #{code}
+            </foreach>
         </if>
+
+
         <if test="deptName != null and deptName != ''">
             AND D.DEPT_NAME = #{deptName}
         </if>

@@ -544,16 +544,17 @@ public class AttService {
     @Transactional
     public String requestEtcAttendance(LocalDate workDate, List<BaseAttEmpDto> attList, String empCode) {
 
-        // 1. 저장 수행 및 오류 체크
         saveEtcAttendance(workDate, attList, empCode);
 
         StringBuilder errorMessages = new StringBuilder();
 
         for (BaseAttEmpDto dto : attList) {
-
             Long requestId = attMapper.findAttendanceRequestId(dto.getEmpCode(), dto.getAttType(), workDate);
-            System.out.println("dto.getAttType() = " + dto.getAttType());
-            System.out.println("requestId = " + requestId);
+
+            if(workDate.isBefore(LocalDate.now())){
+                errorMessages.append("기타 근태 신청은 당일신청/1일이전신청만 가능합니다");
+                continue;
+            }
             if (requestId != null && attMapper.existRequestRecord(requestId)) {
                 errorMessages.append("이미 상신되어 재상신이 불가합니다");
                 continue;
@@ -584,7 +585,7 @@ public class AttService {
         return errorMessages.length() > 0 ? errorMessages.toString() : "상신 완료";
     }
 
-    public List<AttEmpViewDto> getAttEmpListWithHolidayCheck(String attType, LocalDate workDate, String empCode, String deptName) {
+    public List<AttEmpViewDto> getAttEmpListWithHolidayCheck(String attType, LocalDate workDate, List<String> empCode, String deptName) {
 
         List<AttEmpViewDto> empList = empService.getAttEmpList(attType, workDate, empCode, deptName);
         Iterator<AttEmpViewDto> iterator = empList.iterator();
