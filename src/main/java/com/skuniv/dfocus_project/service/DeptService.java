@@ -2,7 +2,6 @@ package com.skuniv.dfocus_project.service;
 
 import com.skuniv.dfocus_project.domain.dept.Dept;
 import com.skuniv.dfocus_project.domain.emp.Emp;
-import com.skuniv.dfocus_project.dto.DeptDto;
 import com.skuniv.dfocus_project.dto.EmpDto;
 import com.skuniv.dfocus_project.mapper.DeptMapper;
 import com.skuniv.dfocus_project.mapper.EmpMapper;
