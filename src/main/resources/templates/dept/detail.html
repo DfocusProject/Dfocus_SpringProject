@@ -142,6 +142,7 @@
                                         <th>사원 이름</th>
                                         <th>직위</th>
                                         <th>상태</th>
+                                        <th>근태패턴</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -150,8 +151,8 @@
                                         <td th:text="${emp.empCode}">E001</td>
                                         <td th:text="${emp.empName}">홍길동</td>
                                         <td th:text="${emp.positionName}">P1001</td>
-                                        <!-- 일단 임시방편 -->
-                                        <td th:text="${emp.positionName}">P1001</td>
+                                        <td th:text="${emp.status == 'OFF' ? '휴직' : '재직'}">상태</td>
+                                        <td th:text="${emp.workPatternCode}">육아휴직</td>
                                     </tr>
                                     </tbody>
                                 </table>
