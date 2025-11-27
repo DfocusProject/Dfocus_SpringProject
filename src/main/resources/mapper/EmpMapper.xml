@@ -232,7 +232,16 @@
         FROM WebAccount
         WHERE emp_code = #{emp}
     </select>
-
+    <update id="updateEmpStatus" parameterType="String">
+        UPDATE webempinfo
+        SET status = #{leaveType}
+        WHERE emp_code = #{empCode}
+    </update>
+    <update id="setEmpWorkPatternOff" parameterType="String">
+        UPDATE webempinfo
+        SET status = 'OFF'
+        WHERE emp_code = #{empCode}
+    </update>
 </mapper>
 
 

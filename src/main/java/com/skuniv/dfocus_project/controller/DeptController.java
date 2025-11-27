@@ -65,7 +65,11 @@ public class DeptController {
             model.addAttribute("depts", depts);
             return "dept/create";
     }
-
+    @PostMapping("/changeLeave")
+    public String changeLeave(@RequestParam List<String> empCodes, String leaveType){
+        empService.setEmpToOff(empCodes, leaveType);
+        return "dept/main";
+    }
     @PostMapping("/create")
     public String create(@RequestParam String deptCode,
                          @RequestParam String deptName,
