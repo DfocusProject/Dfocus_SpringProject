@@ -90,4 +90,21 @@ public class EmpService {
             empMapper.setPersonalPattern(empCode, patternCode);
         }
     }
+
+    public void setEmpToOff(List<String> empCodes, String leaveType){
+        for(String empCode : empCodes){
+            if(leaveType.equals("WK")){
+                empMapper.updateEmpStatus(empCode, "WORK");
+                empMapper.setPersonalPattern(empCode, null);
+            }
+            else if(leaveType.equals("BL")){
+                empMapper.updateEmpStatus(empCode, "OFF");
+                empMapper.setPersonalPattern(empCode, "휴직");
+            }
+            else{
+                empMapper.updateEmpStatus(empCode, "OFF");
+                empMapper.setPersonalPattern(empCode, "육아휴직");
+            }
+        }
+    }
 }
