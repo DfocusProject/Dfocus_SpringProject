@@ -473,7 +473,9 @@
     </select>
     <update id="updateAttPlan" parameterType="java.lang.Long">
         UPDATE ep
-        SET ep.shift_code = was.new_shift_code
+        SET
+            ep.origin_shift_code = ep.shift_code,   -- 기존 shift_code 저장
+            ep.shift_code = was.new_shift_code      -- 새로운 shift_code로 업데이트
             FROM webempplan ep
     INNER JOIN webattrequest wa
         ON wa.emp_code = ep.emp_code
@@ -483,6 +485,7 @@
           AND ep.work_date BETWEEN was.start_date AND was.end_date
           AND ep.shift_code NOT IN ('12', '13');
     </update>
+
     <select id="getRequestAttType" resultType="String" parameterType="long">
         SELECT attendance_type
         FROM WEBATTREQUEST

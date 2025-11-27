@@ -3,38 +3,76 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.skuniv.dfocus_project.mapper.MyHistoryMapper">
-    <select id="findMyAttRequestList" resultType="com.skuniv.dfocus_project.dto.history.historyListDto">
+
+    <select id="findMyAttRequestList"
+            resultType="com.skuniv.dfocus_project.dto.history.historyListDto">
+        <![CDATA[
     SELECT
-    war.request_id AS requestId,
-    -- 신청일
-    war.created_at AS requestDate,
+        war.request_id AS requestId,
+        war.created_at AS requestDate,
+        war.emp_code AS targetEmpCode,
+        war.request_date AS startDate,
+        war.req_status AS status,
+        wd.dept_name AS department,
 
-    -- 대상자(emp_code)
-    war.emp_code AS targetEmpCode,
+        CASE
+            WHEN war.attendance_type IN ('연차', '기타')
+            THEN was.end_date
+            ELSE war.request_date
+        END AS endDate,
 
-    -- startDate (무조건 req_date)
-    war.request_date AS startDate,
-    war.req_status AS status,
-    wei.dept_code AS department,
-
-    -- endDate (연차/기타만 special의 end_date)
-    CASE
-    WHEN war.attendance_type IN ('연차', '기타')
-    THEN was.end_date
-    ELSE war.request_date
-    END AS endDate,
-
-    -- 신청 근태: 연차/기타일때만 new_shift_code
-    CASE
-    WHEN war.attendance_type IN ('연차', '기타')
-    THEN was.new_shift_code
-    ELSE war.attendance_type
-    END AS reqAttType
+        CASE
+            WHEN war.attendance_type IN ('연차', '기타')
+            THEN wst.shift_name
+            ELSE war.attendance_type
+        END AS reqAttType
 
     FROM webattrequest war
     LEFT JOIN webattrequestgeneral wag ON war.request_id = wag.request_id
     LEFT JOIN webattrequestspecial was ON war.request_id = was.request_id
     LEFT JOIN webempinfo wei ON war.emp_code = wei.emp_code
+    LEFT JOIN webdeptinfo wd ON wei.dept_code = wd.dept_code
+    LEFT JOIN webshifttype wst ON was.new_shift_code = wst.shift_code
+
     WHERE war.emp_code = #{loginEmpCode}
+    AND (
+        (war.attendance_type IN ('연차', '기타')
+         AND was.start_date <= #{myHistorySearchDto.endDate}
+         AND was.end_date >= #{myHistorySearchDto.startDate})
+        OR
+        (war.attendance_type NOT IN ('연차', '기타')
+         AND war.request_date BETWEEN #{myHistorySearchDto.startDate} AND #{myHistorySearchDto.endDate})
+    )
+    ]]>
+
+        <if test="myHistorySearchDto.status != null and myHistorySearchDto.status != ''">
+            AND war.req_status = #{myHistorySearchDto.status}
+        </if>
+
+        <if test="myHistorySearchDto.reqType != null and myHistorySearchDto.reqType != ''">
+            <choose>
+                <when test="myHistorySearchDto.reqType == 'OT'">
+                    AND war.attendance_type IN ('연장','조출')
+                </when>
+
+                <when test="myHistorySearchDto.reqType == 'HT'">
+                    AND war.attendance_type = '휴일'
+                </when>
+
+                <when test="myHistorySearchDto.reqType == 'ET'">
+                    AND war.attendance_type IN ('기타','연차')
+                </when>
+
+                <when test="myHistorySearchDto.reqType == 'LT'">
+                    AND war.attendance_type IN ('조퇴','외출','반차')
+                </when>
+            </choose>
+        </if>
+
+        <if test="myHistorySearchDto.reqDetailType != null and myHistorySearchDto.reqDetailType != ''">
+            AND was.new_shift_code = #{myHistorySearchDto.reqDetailType}
+        </if>
+
     </select>
+
 </mapper>

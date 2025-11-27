@@ -43,6 +43,13 @@ public class EmpService {
         else if(role.equals("LEADER")){
             return "해당 사원은 이미 리더로 지정되어 있습니다";
         }
+        String currentLeaderEmpCode = deptMapper.getLeaderByDeptCode(deptCode);
+
+        // 2. 현재 리더가 있으면 USER로 변경
+        if(currentLeaderEmpCode != null && !currentLeaderEmpCode.isEmpty()) {
+            accountMapper.updateRole(currentLeaderEmpCode, "USER");
+        }
+
         deptMapper.updateDeptLeader(empCodes.get(0), deptCode);
         accountMapper.updateRole(empCodes.get(0), "LEADER");
         return "리더로 지정되었습니다";
@@ -70,7 +77,7 @@ public class EmpService {
         empMapper.setPattern(deptCode, patternCode);
     }
 
-    public List<AttEmpViewDto> getAttEmpList(String attType, LocalDate workDate, String empCode, String deptName) {
+    public List<AttEmpViewDto> getAttEmpList(String attType, LocalDate workDate, List<String> empCode, String deptName) {
         return empMapper.findAttEmpList(attType, workDate, empCode, deptName);
     }
 
