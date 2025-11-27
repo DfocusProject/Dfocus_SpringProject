@@ -21,6 +21,17 @@ if (setPatternBtn) {
     });
 }
 
+// 세 개 패널 모두 닫는 함수
+const movePanel = document.getElementById('moveDeptSelect');
+const personalPanel = document.getElementById('personalPatternSelect');
+const leavePanel = document.getElementById('leaveChangeSelect');
+
+function closeAllPanels() {
+    movePanel.style.display = 'none';
+    personalPanel.style.display = 'none';
+    leavePanel.style.display = 'none';
+}
+
 // 공통 함수: 체크된 사원이 있는지 확인
 function hasCheckedEmployees() {
     return document.querySelectorAll('input[name="empCodes"]:checked').length > 0;
@@ -38,8 +49,7 @@ document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn =>
     }
 });
 
-
-// 부서에서 삭제, 리더 지정 → 제출 전에 확인창 추가
+// 부서에서 삭제, 리더 지정 -> 제출 전에 확인창 추가
 document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn => {
 
     btn.addEventListener('click', (e) => {
@@ -54,17 +64,17 @@ document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn =>
         // 액션별 확인창 메시지
         let msg = "";
         if (btn.value === "delete") {
-            msg = "부서 내 사원을 삭제하시겠습니까?";
+            msg = "부서 내 사원을 [삭제]하시겠습니까?";
         } else if (btn.value === "setLeader") {
-            msg = "부서 내 리더로 지정하시겠습니까?";
+            msg = "부서 내 [리더]로 지정하시겠습니까?";
         } else if (btn.value === "moveDept") {
             const deptName = document.getElementById("newDept").selectedOptions[0].textContent;
-            msg = `부서 내 사원을 ${deptName} 부서로 이동하시겠습니까?`;
+            msg = `부서 내 사원을 [${deptName}] 부서로 이동하시겠습니까?`;
         } else if (btn.value === "setPersonalPattern") {
             const patternName = document.getElementById("personalPatternCode").value;
-            msg = `부서 내 사원에게 패턴(${patternName})을 지정하시겠습니까?`;
+            msg = `부서 내 사원에게 근무패턴:[${patternName}]을 지정하시겠습니까?`;
         } else if (btn.value === "changeLeave") {
-            msg = "부서 내 사원을 휴직 변경 하시겠습니까?";
+            msg = "부서 내 사원을 [휴직 변경] 하시겠습니까?";
         }
 
         if (msg !== "" && !confirm(msg)) {
@@ -76,23 +86,28 @@ document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn =>
 
 //다른 부서로 이동
 const moveBtn = document.getElementById('moveDeptBtn');
-const moveSelect = document.getElementById('moveDeptSelect');
 
 moveBtn.addEventListener('click', () => {
     if (!hasCheckedEmployees()) {
         alert("먼저 사원을 선택해주세요.");
         return;
     }
-    moveSelect.style.display = moveSelect.style.display === 'none' ? 'block' : 'none';
+
+    const isOpen = movePanel.style.display === 'block'; // 현재 열려있는지
+
+    closeAllPanels(); // 일단 모두 닫고
+
+    // 이미 열려있던 경우 → 닫힌 상태 유지 (토글)
+    if (!isOpen) {
+        movePanel.style.display = 'block';
+    }
 });
 
 // 개별 근태 패턴 지정
 const personalBtn = document.getElementById('setPersonalPattern');
-const personalSelect = document.getElementById('personalPatternSelect');
 const personalEmpInputs = document.getElementById('personalEmpInputs');
 
 personalBtn.addEventListener('click', () => {
-    // 체크된 사원 여부 확인
     const checkedEmps = Array.from(document.querySelectorAll('input[name="empCodes"]:checked'))
         .map(cb => cb.value);
 
@@ -101,10 +116,8 @@ personalBtn.addEventListener('click', () => {
         return;
     }
 
-    // 기존 hidden input 초기화
+    // 히든 input 생성
     personalEmpInputs.innerHTML = '';
-
-    // 선택된 사원 hidden input 생성
     checkedEmps.forEach(empCode => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -113,19 +126,43 @@ personalBtn.addEventListener('click', () => {
         personalEmpInputs.appendChild(input);
     });
 
-    personalSelect.style.display = 'block';
+    const isOpen = personalPanel.style.display === 'block';
+
+    closeAllPanels();
+
+    if (!isOpen) {
+        personalPanel.style.display = 'block';
+    }
 });
 
-// 휴직 변경
+// 휴직 변경 버튼
 const changeLeaveBtn = document.getElementById('changeLeave');
-const leaveChangeSelect = document.getElementById('leaveChangeSelect');
+const leaveEmpInputs = document.getElementById('leaveEmpInputs');
 
 changeLeaveBtn.addEventListener('click', () => {
-    if (!hasCheckedEmployees()) {
+    const checkedEmps = Array.from(document.querySelectorAll('input[name="empCodes"]:checked'))
+        .map(cb => cb.value);
+
+    if (checkedEmps.length === 0) {
         alert("먼저 사원을 선택해주세요.");
         return;
     }
 
-    leaveChangeSelect.style.display =
-        leaveChangeSelect.style.display === 'none' ? 'block' : 'none';
+    leaveEmpInputs.innerHTML = '';
+    checkedEmps.forEach(empCode => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'empCodes'; // 서버에서 List<String>으로 바인딩 가능
+        input.value = empCode;
+        leaveEmpInputs.appendChild(input);
+    });
+
+    const isOpen = leavePanel.style.display === 'block';
+
+    closeAllPanels();
+
+    if (!isOpen) {
+        leavePanel.style.display = 'block';
+    }
 });
+

@@ -95,7 +95,6 @@
 
                         <!-- 개인 근태패턴 지정 (숨김) -->
                         <div id="personalPatternSelect" style="display:none; margin-top:10px;">
-                            <!-- form 안에 숨김 필드를 포함시켜야 합니다. -->
                             <div id="personalEmpInputs"></div> <!-- 선택된 사원 input 필드들 -->
                             <div class="personal-pattern-container">
                                 <label for="personalPatternCode">개별 패턴 선택:</label>
@@ -120,13 +119,14 @@
 
                         <!-- 휴직 변경 영역 (숨김) -->
                         <div id="leaveChangeSelect" style="display:none; margin-top:10px;">
+                            <div id="leaveEmpInputs"></div> <!-- 선택된 사원 input 필드들 -->
                             <label for="leaveType">휴직 상태 선택:</label>
                             <select name="leaveType" id="leaveType" required>
                                 <option value="WK">재직</option> <!--working -->
                                 <option value="BL">휴직</option>
                                 <option value="PL">육아휴직</option>
                             </select>
-                            <button type="submit" name="action" value="changeLeave">저장</button>
+                            <button id="leave-change-submit" type="submit" name="action" value="changeLeave">저장</button>
                         </div>
 
 
