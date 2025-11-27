@@ -20,19 +20,28 @@ public class DeptController {
     private final DeptService deptService;
     private final EmpService empService;
     private final PatternService patternService;
-    @PostMapping("/setPersonalPattern")
-    public String setPersonalPattern(
-            @RequestParam("empCodes") List<String> empCodes,
-            @RequestParam("patternCode") String patternCode) {
-        empService.setPesonalPattern(empCodes, patternCode);
-        return "redirect:/dept/main";
+
+    @PostMapping("/toggleUseYn")
+    public String toggleUseYn(@RequestParam String deptCode,
+                              @RequestParam String useYn) {
+        deptService.updateUseYn(deptCode, useYn); // DB 업데이트
+        return "redirect:/dept/detail?id=" + deptCode; // detail 페이지로 돌아가기
     }
+
+//    @PostMapping("/setPersonalPattern")
+//    public String setPersonalPattern(
+//            @RequestParam("empCodes") List<String> empCodes,
+//            @RequestParam("patternCode") String patternCode) {
+//        System.out.println("들어와?");
+//        empService.setPesonalPattern(empCodes, patternCode);
+//        return "redirect:/dept/main";
+//    }
 
     @PostMapping("/patternSave")
     public String patternSave(@RequestParam String deptCode, @RequestParam String patternCode) {
         deptService.setPattern(deptCode, patternCode);
         empService.setPattern(deptCode, patternCode);
-        return "redirect:/dept/main";
+        return "redirect:/dept/detail?id=" + deptCode; // 다시 상세 페이지로
     }
     @GetMapping("/main")
     public String departmentTree(Model model) {
@@ -95,7 +104,8 @@ public class DeptController {
                             @RequestParam String action,
                             @RequestParam(required = false) String newDeptCode,
                             RedirectAttributes redirectAttrs,
-                            @RequestParam(required = false) String leaveType) {
+                            @RequestParam(required = false) String leaveType,
+                            @RequestParam(required = false) String patternCode) {
         String message = "";
         if(empCodes != null) {
             switch (action) {
@@ -115,6 +125,9 @@ public class DeptController {
                     break;
                 case "changeLeave":
                     empService.setEmpToOff(empCodes, leaveType);
+                case "setPersonalPattern":
+                    System.out.println("들어와?");
+                    empService.setPesonalPattern(empCodes, patternCode);
             }
         }
         if(message != null && !message.isEmpty()){

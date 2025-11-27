@@ -26,4 +26,6 @@ public interface DeptMapper {
     DeptDto getDeptByEmpCode(String empCode);
     //부서코드로 리더 찾기
     String getLeaderByDeptCode(String DeptCode);
+
+    void updateUseYn(String deptCode, String useYn);
 }

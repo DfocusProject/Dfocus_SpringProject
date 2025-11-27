@@ -72,7 +72,7 @@
         LEFT JOIN WEBPOSITIONINFO p
         ON e.position_code = p.position_code
         WHERE e.dept_code = #{deptCode}
-        ORDER BY e.emp_name
+        ORDER BY p.position_name
     </select>
 
     <select id="getDeptByEmpCode" parameterType="String" resultType="com.skuniv.dfocus_project.dto.DeptDto">
@@ -97,4 +97,10 @@
         FROM WEBDEPTINFO
         WHERE dept_code = #{deptCode}
     </select>
+    <update id="updateUseYn">
+        UPDATE WEBDEPTINFO
+        SET use_yn = #{useYn}
+        WHERE dept_code = #{deptCode}
+    </update>
+
 </mapper>
