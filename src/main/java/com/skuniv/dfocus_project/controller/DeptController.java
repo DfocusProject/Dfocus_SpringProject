@@ -1,12 +1,10 @@
 package com.skuniv.dfocus_project.controller;
 
-import com.skuniv.dfocus_project.domain.account.Account;
 import com.skuniv.dfocus_project.domain.dept.Dept;
 import com.skuniv.dfocus_project.dto.EmpDto;
 import com.skuniv.dfocus_project.service.DeptService;
 import com.skuniv.dfocus_project.service.EmpService;
 import com.skuniv.dfocus_project.service.PatternService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

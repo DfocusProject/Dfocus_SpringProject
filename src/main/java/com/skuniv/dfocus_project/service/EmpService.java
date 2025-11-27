@@ -36,7 +36,7 @@ public class EmpService {
         if(empCodes.size() != 1) {
             return "리더는 한 명만 지정 가능합니다";
         }
-        String role = empMapper.getEmpRole(empCodes.get(0));
+        String role = empMapper.getEmpRole(empCodes.getFirst());
         if(role.equals("ADMIN")){
             return "관리자는 리더로 설정할 수 없습니다";
         }
@@ -50,8 +50,8 @@ public class EmpService {
             accountMapper.updateRole(currentLeaderEmpCode, "USER");
         }
 
-        deptMapper.updateDeptLeader(empCodes.get(0), deptCode);
-        accountMapper.updateRole(empCodes.get(0), "LEADER");
+        deptMapper.updateDeptLeader(empCodes.getFirst(), deptCode);
+        accountMapper.updateRole(empCodes.getFirst(), "LEADER");
         return "리더로 지정되었습니다";
     }
 
