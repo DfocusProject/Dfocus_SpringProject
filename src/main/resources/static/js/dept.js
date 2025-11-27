@@ -1,3 +1,4 @@
+// 부서 트리(조직도) 열고닫기 구조
 function toggleNode(element) {
     const children = element.nextElementSibling;
     if (!children) return;
@@ -10,7 +11,7 @@ function toggleNode(element) {
     }
 }
 
-//부서 패턴 지정/변경
+// 부서 패턴 지정/변경
 const setPatternBtn = document.getElementById('setPatternBtn');
 const patternSelect = document.getElementById('patternSelect');
 
@@ -25,7 +26,7 @@ function hasCheckedEmployees() {
     return document.querySelectorAll('input[name="empCodes"]:checked').length > 0;
 }
 
-//부서에서 삭제, 리더로 지정 (form전에 검사)
+// 부서에서 삭제, 리더로 지정 (form전에 검사)
 document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn => {
     if (btn.value === "delete" || btn.value === "setLeader") {
         btn.addEventListener('click', (e) => {
@@ -35,6 +36,42 @@ document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn =>
             }
         });
     }
+});
+
+
+// 부서에서 삭제, 리더 지정 → 제출 전에 확인창 추가
+document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn => {
+
+    btn.addEventListener('click', (e) => {
+
+        // 사원 미선택 검사
+        if (!hasCheckedEmployees()) {
+            e.preventDefault();
+            alert("먼저 사원을 선택해주세요.");
+            return;
+        }
+
+        // 액션별 확인창 메시지
+        let msg = "";
+        if (btn.value === "delete") {
+            msg = "부서 내 사원을 삭제하시겠습니까?";
+        } else if (btn.value === "setLeader") {
+            msg = "부서 내 리더로 지정하시겠습니까?";
+        } else if (btn.value === "moveDept") {
+            const deptName = document.getElementById("newDept").selectedOptions[0].textContent;
+            msg = `부서 내 사원을 ${deptName} 부서로 이동하시겠습니까?`;
+        } else if (btn.value === "setPersonalPattern") {
+            const patternName = document.getElementById("personalPatternCode").value;
+            msg = `부서 내 사원에게 패턴(${patternName})을 지정하시겠습니까?`;
+        } else if (btn.value === "changeLeave") {
+            msg = "부서 내 사원을 휴직 변경 하시겠습니까?";
+        }
+
+        if (msg !== "" && !confirm(msg)) {
+            e.preventDefault();
+        }
+    });
+
 });
 
 //다른 부서로 이동
@@ -81,10 +118,14 @@ personalBtn.addEventListener('click', () => {
 
 // 휴직 변경
 const changeLeaveBtn = document.getElementById('changeLeave');
+const leaveChangeSelect = document.getElementById('leaveChangeSelect');
 
 changeLeaveBtn.addEventListener('click', () => {
     if (!hasCheckedEmployees()) {
         alert("먼저 사원을 선택해주세요.");
         return;
     }
+
+    leaveChangeSelect.style.display =
+        leaveChangeSelect.style.display === 'none' ? 'block' : 'none';
 });

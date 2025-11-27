@@ -118,6 +118,18 @@
                             <button type="submit" name="action" value="moveDept">이동 실행</button>
                         </div>
 
+                        <!-- 휴직 변경 영역 (숨김) -->
+                        <div id="leaveChangeSelect" style="display:none; margin-top:10px;">
+                            <label for="leaveType">휴직 상태 선택:</label>
+                            <select name="leaveType" id="leaveType" required>
+                                <option value="WK">재직</option> <!--working -->
+                                <option value="BL">휴직</option>
+                                <option value="PL">육아휴직</option>
+                            </select>
+                            <button type="submit" name="action" value="changeLeave">저장</button>
+                        </div>
+
+
                         <!-- 스크롤 영역 -->
                         <div class="table-scroll">
                             <table class="emp-table">
