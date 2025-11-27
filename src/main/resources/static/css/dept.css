@@ -226,7 +226,7 @@
     flex: 0 0 auto;   /* flex-grow, flex-shrink, flex-basis */
     display: flex;
     flex-direction: column;
-    min-height: 0;    /* scroll 동작 유지 */
+    min-height: 400px;    /* scroll 동작 유지 */
 }
 
 .no-dept-section {
@@ -257,7 +257,7 @@
 .table-scroll {
     flex: 1;
     overflow-y: auto;
-    min-height: 150px;
+
 }
 
 
@@ -267,7 +267,6 @@
     font-size: 14px;
     box-sizing: border-box;
     margin-top: 10px;
-    min-height: 150px;
 }
 
 .emp-table th,
@@ -360,7 +359,6 @@ main, .container, .dept-detail-container {
 
 /* 전체 div 내에서 요소들을 한 줄로 정렬 */
 .personal-pattern-container {
-    display: flex;
     align-items: center; /* 세로 정렬을 중앙으로 맞춤 */
     gap: 10px; /* 요소들 사이에 간격을 추가 */
 }
@@ -491,4 +489,68 @@ main, .container, .dept-detail-container {
     cursor: pointer;
     width: fit-content;
     font-weight: bold;
+}
+
+/* ------------------ 사용 여부 토글 버튼 ------------------ */
+/* 사용 여부 토글 버튼 */
+/* 토글 스위치 전체 */
+.info-item form {
+    padding: 0;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+/* 숨긴 체크박스 */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* 슬라이더 배경 */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+}
+
+/* 슬라이더 둥근 부분 */
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+/* 체크 시 배경색과 슬라이더 이동 */
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* 둥근 모서리 */
+.slider.round {
+    border-radius: 24px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }

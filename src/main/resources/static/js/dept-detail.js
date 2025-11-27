@@ -1,12 +1,38 @@
 // 부서 패턴 지정/변경
 const setPatternBtn = document.getElementById('setPatternBtn');
 const patternSelect = document.getElementById('patternSelect');
+const patternForm = document.getElementById('patternForm');
 
 if (setPatternBtn) {
     setPatternBtn.addEventListener('click', () => {
-        patternSelect.style.display = patternSelect.style.display === 'none' ? 'block' : 'none';
+        // 패널 보이기
+        patternSelect.style.display = 'block';
+        // 변경하기 버튼 숨김
+        setPatternBtn.style.display = 'none';
     });
 }
+
+// 저장 버튼 클릭 시
+if (patternForm) {
+    patternForm.addEventListener('submit', (e) => {
+        // submit 전에 선택값 확인
+        const selectedPattern = patternForm.patternCode.value;
+        if (!selectedPattern) {
+            e.preventDefault();
+            alert('패턴을 선택해주세요.');
+            return;
+        }
+
+        // form은 그대로 submit → 서버로 patternCode와 deptCode 전송
+        // submit 후 다시 버튼 보여주려면 다음처럼 가능
+        // submit 후 다시 버튼 보여주려면 다음처럼 가능
+        patternForm.addEventListener('submit', () => {
+            setPatternBtn.style.display = 'inline-block';
+            patternSelect.style.display = 'none';
+        });
+    });
+}
+
 
 // 세 개 패널 모두 닫는 함수
 const movePanel = document.getElementById('moveDeptSelect');
@@ -36,7 +62,7 @@ document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn =>
     }
 });
 
-// 부서에서 삭제, 리더 지정 -> 제출 전에 확인창 추가
+
 document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn => {
 
     btn.addEventListener('click', (e) => {
