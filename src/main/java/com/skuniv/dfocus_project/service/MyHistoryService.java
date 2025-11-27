@@ -1,5 +1,6 @@
 package com.skuniv.dfocus_project.service;
 
+import com.skuniv.dfocus_project.dto.att.MyHistorySearchDto;
 import com.skuniv.dfocus_project.dto.history.historyListDto;
 import com.skuniv.dfocus_project.mapper.MyHistoryMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyHistoryService {
     private final MyHistoryMapper myHistoryMapper;
-    public List<historyListDto> getMyAttRequestList(String loginEmpCode) {
-        return myHistoryMapper.findMyAttRequestList(loginEmpCode);
+    public List<historyListDto> getMyAttRequestList(String loginEmpCode, MyHistorySearchDto myHistorySearchDto) {
+        return myHistoryMapper.findMyAttRequestList(loginEmpCode, myHistorySearchDto);
     }
 }

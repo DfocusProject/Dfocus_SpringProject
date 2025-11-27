@@ -180,6 +180,14 @@
 </main>
 
 <!-- 스크립트 부분 -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = /*[[${message}]]*/ null;
+    if (errorMsg != null) {
+        alert(errorMsg);
+    }
+    /*]]>*/
+</script>
 <script>
     const moveBtn = document.getElementById('moveDeptBtn');
     const moveSelect = document.getElementById('moveDeptSelect');

@@ -26,17 +26,18 @@
 
                 <!-- 검색 영역 -->
                 <div class="search-box">
-                    <form th:action="@{/myHistory/search}" method="get">
+                    <form th:action="@{/myHistory/search}" method="get"
+                          th:object="${myHistorySearchDto}">
 
-                        <div class="search-row">
+                    <div class="search-row">
                             <label>대상일자
-                                <input type="date" name="startDate" th:value="${startDate}" required>
+                                <input type="date" th:field="*{startDate}" required>
                                 <span>~</span>
-                                <input type="date" name="endDate" th:value="${endDate}" required>
+                                <input type="date" th:field="*{endDate}" required>
                             </label>
 
                             <label>상태
-                                <select name="status">
+                                <select th:field="*{status}">
                                     <option value="">전체</option>
                                     <option value="SAVED">저장</option>
                                     <option value="REQUESTED">상신</option>
@@ -49,7 +50,7 @@
 
                         <div class="search-row">
                             <label>근태유형
-                                <select name="reqType">
+                                <select th:field="*{reqType}">
                                     <option value="">전체</option>
                                     <option value="OT">연장</option>
                                     <option value="HT">휴일</option>
@@ -59,7 +60,7 @@
                             </label>
 
                             <label id="detailTypeBox">신청근태
-                                <select name="reqDetailType">
+                                <select th:field="*{reqDetailType}">
                                     <option value="">전체</option>
                                     <option value="05">주간</option>
                                     <option value="05-A">현장실습</option>
@@ -103,7 +104,14 @@
                             <td th:text="${list.department}"></td>
                             <td th:text="${list.targetEmpCode}"></td>
                             <td th:text="${list.reqAttType}"></td>
-                            <td th:text="${list.status}"></td>
+                            <td>
+                              <span th:switch="${list.status}">
+                                  <span th:case="'SAVED'">저장</span>
+                                  <span th:case="'APPROVED'">승인</span>
+                                  <span th:case="'REJECTED'">반려</span>
+                                  <span th:case="'REQUESTED'">상신</span>
+                              </span>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
