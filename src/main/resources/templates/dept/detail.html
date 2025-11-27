@@ -12,6 +12,7 @@
     <div th:replace="~{ sidebar.html::sidebar}"></div>
     <div class="container">
         <div class="dept-detail-container">
+            <div class="spacer"></div> <!-- 좌측 공백 -->
             <!-- 왼쪽: 부서 상세 -->
             <div class="dept-info">
                 <h2 th:utext="${dept.deptName} + '<br/>부서 상세 정보'">부서 상세 정보</h2>
@@ -74,112 +75,130 @@
 
                 </div>
 
-
             </div>
             <!-- 오른쪽: 구성원 목록 -->
-            <div class="dept-side">
-                <form th:action="@{/dept/empAction}" method="post">
-                    <input type="hidden" name="deptCode" th:value="${dept.deptCode}"/>
+            <div class="dept-members"> <!-- 부서 구성원 영역 -->
+                <div class="dept-side">
+                    <form th:action="@{/dept/empAction}" method="post">
+                        <input type="hidden" name="deptCode" th:value="${dept.deptCode}"/>
 
-                    <!-- 상단 섹션: 부서 구성원 -->
-                    <div class="member-section">
-                        <h3>부서 구성원</h3>
+                        <!-- 상단 섹션: 부서 구성원 -->
+                        <div class="member-section">
+                            <h3>부서 구성원</h3>
 
-                        <div class="emp-actions">
-                            <button type="submit" name="action" value="delete">부서에서 삭제</button>
-                            <button type="submit" name="action" value="setLeader">리더로 지정</button>
-                            <button type="button" id="moveDeptBtn">다른 부서로 이동</button>
-                            <button type="button" id="setPersonalPattern">개별 근태패턴 지정</button>
-                        </div>
+                            <div class="emp-actions">
+                                <button type="submit" name="action" value="delete">부서에서 삭제</button>
+                                <button type="submit" name="action" value="setLeader">리더로 지정</button>
+                                <button type="button" id="moveDeptBtn">다른 부서로 이동</button>
+                                <button type="button" id="setPersonalPattern">개별 근태패턴 지정</button>
+                                <button type="button" id="changeLeave">휴직 변경</button>
+                            </div>
 
-                        <!-- 개인 근태패턴 지정 (숨김) -->
-                        <div id="personalPatternSelect" style="display:none; margin-top:10px;">
-                            <!-- form 안에 숨김 필드를 포함시켜야 합니다. -->
-                            <div id="personalEmpInputs"></div> <!-- 선택된 사원 input 필드들 -->
-                            <div class="personal-pattern-container">
-                                <label for="personalPatternCode">개별 패턴 선택:</label>
-                                <select name="patternCode" id="personalPatternCode" required>
-                                    <option th:each="p : ${patternList}" th:value="${p}" th:text="${p}">패턴명</option>
+                            <!-- 개인 근태패턴 지정 (숨김) -->
+                            <div id="personalPatternSelect" style="display:none;">
+                                <div id="personalEmpInputs"></div> <!-- 선택된 사원 input 필드들 -->
+                                <div class="personal-pattern-container">
+                                    <label for="personalPatternCode">개별 패턴 선택:</label>
+                                    <select name="patternCode" id="personalPatternCode" required>
+                                        <option th:each="p : ${patternList}" th:value="${p}" th:text="${p}">패턴명</option>
+                                    </select>
+                                    <button id="person-pattern-submit" type="submit" name="action"
+                                            value="setPersonalPattern">저장
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 부서 이동 선택 영역 (숨김) -->
+                            <div id="moveDeptSelect" style="display: none;" >
+                                <label for="newDept">이동할 부서 선택:</label>
+                                <select name="newDeptCode" id="newDept" required>
+                                    <option th:each="d : ${allDepts}" th:value="${d.deptCode}" th:text="${d.deptName}">
+                                        부서명
+                                    </option>
                                 </select>
-                                <button id="person-pattern-submit" type="submit" name="action"
-                                        value="setPersonalPattern">저장
+                                <button type="submit" name="action" value="moveDept">이동 실행</button>
+                            </div>
+
+                            <!-- 휴직 변경 영역 (숨김) -->
+                            <div id="leaveChangeSelect" style="display:none;">
+                                <div id="leaveEmpInputs"></div> <!-- 선택된 사원 input 필드들 -->
+                                <label for="leaveType">휴직 상태 선택:</label>
+                                <select name="leaveType" id="leaveType" required>
+                                    <option value="WK">재직</option> <!--working -->
+                                    <option value="BL">휴직</option>
+                                    <option value="PL">육아휴직</option>
+                                </select>
+                                <button id="leave-change-submit" type="submit" name="action" value="changeLeave">저장
                                 </button>
+                            </div>
+
+                            <!-- 스크롤 영역 -->
+                            <div class="table-scroll">
+                                <table class="emp-table">
+                                    <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>사원 번호</th>
+                                        <th>사원 이름</th>
+                                        <th>직위</th>
+                                        <th>상태</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="emp : ${emps}">
+                                        <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
+                                        <td th:text="${emp.empCode}">E001</td>
+                                        <td th:text="${emp.empName}">홍길동</td>
+                                        <td th:text="${emp.positionName}">P1001</td>
+                                        <!-- 일단 임시방편 -->
+                                        <td th:text="${emp.positionName}">P1001</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 
-                        <!-- 부서 이동 선택 영역 (숨김) -->
-                        <div id="moveDeptSelect" style="display: none; margin-bottom: 10px;">
-                            <label for="newDept">이동할 부서 선택:</label>
-                            <select name="newDeptCode" id="newDept" required>
-                                <option th:each="d : ${allDepts}" th:value="${d.deptCode}" th:text="${d.deptName}">부서명
-                                </option>
-                            </select>
-                            <button type="submit" name="action" value="moveDept">이동 실행</button>
-                        </div>
+                        <!-- 하단 섹션: 부서 미배정 사원 -->
+                        <div class="no-dept-section">
+                            <div class="section1">
+                                <h3>부서 미배정 사원</h3>
 
-                        <!-- 스크롤 영역 -->
-                        <div class="table-scroll">
-                            <table class="emp-table">
-                                <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>사원 번호</th>
-                                    <th>사원 이름</th>
-                                    <th>직위</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="emp : ${emps}">
-                                    <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
-                                    <td th:text="${emp.empCode}">E001</td>
-                                    <td th:text="${emp.empName}">홍길동</td>
-                                    <td th:text="${emp.positionName}">P1001</td>
-                                </tr>
-                                </tbody>
-                            </table>
+                                <div class="emp-actions">
+                                    <button type="submit" name="action" value="assignDept">이 부서로 배정</button>
+                                </div>
+                            </div>
+                            <!-- 스크롤 영역 -->
+                            <div class="table-scroll">
+                                <table class="emp-table">
+                                    <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>사원 번호</th>
+                                        <th>사원 이름</th>
+                                        <th>직위</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="emp : ${empsNoDept}">
+                                        <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
+                                        <td th:text="${emp.empCode}">E999</td>
+                                        <td th:text="${emp.empName}">김무소속</td>
+                                        <td th:text="${emp.positionName}">P0000</td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(empsNoDept)}">
+                                        <td colspan="4" style="text-align:center;">모든 사원이 부서에 배정되어 있습니다.</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- 하단 섹션: 부서 미배정 사원 -->
-                    <div class="no-dept-section">
-                        <h3>부서 미배정 사원</h3>
-
-                        <div class="emp-actions">
-                            <button type="submit" name="action" value="assignDept">이 부서로 배정</button>
-                        </div>
-
-                        <!-- 스크롤 영역 -->
-                        <div class="table-scroll">
-                            <table class="emp-table">
-                                <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>사원 번호</th>
-                                    <th>사원 이름</th>
-                                    <th>직위</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="emp : ${empsNoDept}">
-                                    <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
-                                    <td th:text="${emp.empCode}">E999</td>
-                                    <td th:text="${emp.empName}">김무소속</td>
-                                    <td th:text="${emp.positionName}">P0000</td>
-                                </tr>
-                                <tr th:if="${#lists.isEmpty(empsNoDept)}">
-                                    <td colspan="4" style="text-align:center;">모든 사원이 부서에 배정되어 있습니다.</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
+            <div class="spacer"></div> <!-- 우측 공백 -->
         </div>
     </div>
 </main>
-
-<!-- 스크립트 부분 -->
 <script th:inline="javascript">
     /*<![CDATA[*/
     const errorMsg = /*[[${message}]]*/ null;
@@ -188,54 +207,7 @@
     }
     /*]]>*/
 </script>
-<script>
-    const moveBtn = document.getElementById('moveDeptBtn');
-    const moveSelect = document.getElementById('moveDeptSelect');
-
-    moveBtn.addEventListener('click', () => {
-        moveSelect.style.display = moveSelect.style.display === 'none' ? 'block' : 'none';
-    });
-
-    const setPatternBtn = document.getElementById('setPatternBtn');
-    const patternSelect = document.getElementById('patternSelect');
-
-    if (setPatternBtn) {
-        setPatternBtn.addEventListener('click', () => {
-            patternSelect.style.display = patternSelect.style.display === 'none' ? 'block' : 'none';
-        });
-    }
-
-    const personalBtn = document.getElementById('setPersonalPattern');
-    const personalSelect = document.getElementById('personalPatternSelect');
-    const personalEmpInputs = document.getElementById('personalEmpInputs');
-
-    personalBtn.addEventListener('click', () => {
-        // 체크된 사원들 가져오기
-        const checkedEmps = Array.from(document.querySelectorAll('input[name="empCodes"]:checked'))
-            .map(cb => cb.value);
-
-        if (checkedEmps.length === 0) {
-            alert("먼저 사원을 선택해주세요.");
-            return;
-        }
-
-        // 기존 hidden input 초기화
-        personalEmpInputs.innerHTML = '';
-
-        // 체크된 사원마다 hidden input 생성 (서버에서 List<String>으로 바인딩)
-        checkedEmps.forEach(empCode => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'empCodes';
-            input.value = empCode;
-            personalEmpInputs.appendChild(input);
-        });
-
-        // 우측 드롭다운 영역 표시
-        personalSelect.style.display = 'block';
-    });
-</script>
-
+<script th:src="@{/js/dept-detail.js}"></script>
 <script th:src="@{/js/script.js}"></script>
 </body>
 </html>

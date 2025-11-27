@@ -1,3 +1,4 @@
+// 부서 트리(조직도) 열고닫기 구조
 function toggleNode(element) {
     const children = element.nextElementSibling;
     if (!children) return;
