@@ -3,7 +3,6 @@ package com.skuniv.dfocus_project.controller.att.deptHistory;
 import com.skuniv.dfocus_project.CustomUserDetails;
 import com.skuniv.dfocus_project.dto.att.DeptAttSearchDto;
 import com.skuniv.dfocus_project.dto.att.DeptAttSearchResultDto;
-import com.skuniv.dfocus_project.dto.att.EtcSearchDto;
 import com.skuniv.dfocus_project.service.DeptHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -21,7 +20,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/deptAttSearch")
-@SessionAttributes("deptAttSearchDto")  // ← ★ 검색조건 DTO를 세션에서 유지
+@SessionAttributes("deptAttSearchDto")  // 검색조건 DTO를 세션에서 유지
 public class deptHistoryController {
     private final DeptHistoryService deptHistoryService;
     @ModelAttribute("deptAttSearchDto")
