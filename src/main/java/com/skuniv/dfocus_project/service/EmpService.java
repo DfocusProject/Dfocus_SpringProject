@@ -98,12 +98,12 @@ public class EmpService {
                 empMapper.setPersonalPattern(empCode, null);
             }
             else if(leaveType.equals("BL")){
-                empMapper.updateEmpStatus(empCode, "OFF");
                 empMapper.setPersonalPattern(empCode, "휴직");
+                empMapper.updateEmpStatus(empCode, "OFF");
             }
             else{
-                empMapper.updateEmpStatus(empCode, "OFF");
                 empMapper.setPersonalPattern(empCode, "육아휴직");
+                empMapper.updateEmpStatus(empCode, "OFF");
             }
         }
     }

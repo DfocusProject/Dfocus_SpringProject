@@ -63,11 +63,11 @@ public class DeptController {
             model.addAttribute("depts", depts);
             return "dept/create";
     }
-    @PostMapping("/changeLeave")
-    public String changeLeave(@RequestParam List<String> empCodes, String leaveType){
-        empService.setEmpToOff(empCodes, leaveType);
-        return "dept/main";
-    }
+//    @PostMapping("/changeLeave")
+//    public String changeLeave(@RequestParam List<String> empCodes, String leaveType){
+//        empService.setEmpToOff(empCodes, leaveType);
+//        return "dept/main";
+//    }
     @PostMapping("/create")
     public String create(@RequestParam String deptCode,
                          @RequestParam String deptName,
@@ -91,26 +91,31 @@ public class DeptController {
 
     @PostMapping("/empAction")
     public String empAction(@RequestParam(required = false) String deptCode,
-                            @RequestParam List<String> empCodes,
+                            @RequestParam(required = false) List<String> empCodes,
                             @RequestParam String action,
                             @RequestParam(required = false) String newDeptCode,
-                            RedirectAttributes redirectAttrs) {
+                            RedirectAttributes redirectAttrs,
+                            @RequestParam(required = false) String leaveType) {
         String message = "";
-        switch (action) {
-            case "delete":
-                message = empService.removeFromDept(empCodes);
-                break;
-            case "setLeader":
-                message = empService.setDeptLeader(empCodes, deptCode);
-                break;
-            case "moveDept":
-                message = empService.moveDept(empCodes, newDeptCode);
-                break;
-            case "assignDept":
-                empService.assignEmployeesToDept(empCodes, deptCode);
-                String currentPattern = deptService.findByDeptCode(deptCode).getWorkPattern();
-                empService.setPattern(deptCode, currentPattern);
-                break;
+        if(empCodes != null) {
+            switch (action) {
+                case "delete":
+                    message = empService.removeFromDept(empCodes);
+                    break;
+                case "setLeader":
+                    message = empService.setDeptLeader(empCodes, deptCode);
+                    break;
+                case "moveDept":
+                    message = empService.moveDept(empCodes, newDeptCode);
+                    break;
+                case "assignDept":
+                    empService.assignEmployeesToDept(empCodes, deptCode);
+                    String currentPattern = deptService.findByDeptCode(deptCode).getWorkPattern();
+                    empService.setPattern(deptCode, currentPattern);
+                    break;
+                case "changeLeave":
+                    empService.setEmpToOff(empCodes, leaveType);
+            }
         }
         if(message != null && !message.isEmpty()){
             redirectAttrs.addFlashAttribute("message", message);

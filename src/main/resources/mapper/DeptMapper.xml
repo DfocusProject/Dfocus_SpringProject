@@ -66,7 +66,8 @@
             e.emp_name AS empName,
             p.position_name AS positionName,   <!-- position_name으로 변경 -->
             e.dept_code AS deptCode,
-            e.work_pattern_code AS workPatternCode
+            e.work_pattern_code AS workPatternCode,
+            e.status AS status
         FROM WEBEMPINFO e
         LEFT JOIN WEBPOSITIONINFO p
         ON e.position_code = p.position_code

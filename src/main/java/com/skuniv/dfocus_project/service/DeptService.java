@@ -69,7 +69,4 @@ public class DeptService {
         return deptMapper.findAllEmpByDeptCode(deptCode);
     }
 
-    public DeptDto getDeptByEmpCode(String empCode) {
-        return deptMapper.getDeptByEmpCode(empCode);
-    }
 }
