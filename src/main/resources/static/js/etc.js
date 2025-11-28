@@ -107,10 +107,20 @@ function disableStartDate() {
     });
 }
 
+// 📌 isTodayRequest 비활성화 처리
+function readonlyIsTodayRequest() {
+    document.querySelectorAll(".isTodayRequest").forEach(select => {
+        select.classList.add("readonly");
+    });
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // 📌 초기화
     disableStartDate();
+    readonlyIsTodayRequest();
+
     initCheckAll('#checkAll', '.rowCheck');
 
     // 버튼 이벤트

@@ -222,12 +222,16 @@ function handleNextDayCheckboxes(selectedType, rows) {
                 break;
 
             case '조퇴':
-                if (startNext) startNext.closest('label').style.display = '';
+                if (startNext) {
+                    startNext.closest('label').style.display = '';
+                    startNext.checked = row.dataset.startNext === 'true';
+                }
                 if (endNext) {
                     endNext.closest('label').style.display = 'none';
                     endNext.checked = false;
                 }
                 break;
+
 
             default:
                 // 나머지는 전부 숨김

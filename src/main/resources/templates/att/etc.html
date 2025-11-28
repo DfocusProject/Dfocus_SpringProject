@@ -90,14 +90,6 @@
                 <input type="text" id="reason" placeholder="사유를 입력하세요">
             </label>
 
-            <label>신청시각
-                <select id="isTodayRequest">
-                    <option value="">선택</option>
-                    <option value="true">1일 이전 신청</option>
-                    <option value="false">당일 신청</option>
-                </select>
-            </label>
-
             <button type="button" class="btn btn-save" id="btnApplyToRow">적용</button>
         </div>
 
@@ -172,7 +164,7 @@
 
                 <!-- 신청시각 isTodayRequest -->
                 <td>
-                    <select class="isTodayRequest" required>
+                    <select id="isTodayRequest" name="isTodayRequest" class="isTodayRequest" required>
                         <option value="">선택</option>
                         <option value="true" th:selected="${emp.isTodayRequest} == true">1일 이전 신청</option>
                         <option value="false" th:selected="${emp.isTodayRequest} == false">당일 신청</option>

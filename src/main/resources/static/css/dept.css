@@ -13,6 +13,20 @@
     align-items: center;
 }
 
+/* 부서 상세 정보 헤더 */
+.header2 {
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header2 h1 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #212529;
+}
+
 .header h1 {
     font-size: 18px;
     font-weight: bold;
@@ -169,6 +183,31 @@
     border-bottom: 2px solid #4a90e2;
     padding-bottom: 5px;
 }
+
+.dept-header {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* h2와 버튼 간격 */
+}
+
+.dept-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+#deleteDeptBtn {
+    padding: 6px 12px;
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#deleteDeptBtn:hover {
+    background-color: #c9302c;
+}
+
 
 .info-item {
     display: flex;
@@ -389,6 +428,33 @@ main, .container, .dept-detail-container {
 }
 
 .container button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #0066b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    width: fit-content;
+    font-weight: bold;
+}
+
+/* dept-main 안의 create-btn만 적용 */
+.container .header > a > button.create-btn {
+    margin: 0;
+    padding: 10px 20px;
+    background-color: #0066b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    width: fit-content;
+    font-weight: bold;
+}
+
+.container .header button {
     margin-top: 10px;
     padding: 10px 20px;
     background-color: #0066b3;

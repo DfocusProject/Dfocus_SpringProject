@@ -14,19 +14,10 @@
     height: 100%;
 }
 
-.header {
-    background: #e8e8e8;
-    padding: 15px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    flex-shrink: 0;
-}
-
 .header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
     gap: 10px;
 }
 
@@ -128,7 +119,7 @@
     gap: 20px;
     flex: 1;
     min-height: 0;
-    padding: 0 10px 10px 10px;
+    margin: 10px;
 }
 
 .calendar-form {
