@@ -544,7 +544,7 @@ public class AttService {
     @Transactional
     public String requestEtcAttendance(LocalDate workDate, List<BaseAttEmpDto> attList, String empCode) {
 
-        saveEtcAttendance(workDate, attList, empCode);
+        saveEtcAttendance(attList, empCode);
 
         StringBuilder errorMessages = new StringBuilder();
 
