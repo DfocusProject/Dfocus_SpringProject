@@ -56,10 +56,23 @@ function handleWorkTypeChange(selectedType) {
             rows.forEach(row => {
                 const startInput = row.querySelector('.startTime');
                 const endInput = row.querySelector('.endTime');
+                const startNext = row.querySelector('.startNextDay');
+                const endNext = row.querySelector('.endNextDay');
+
                 const planEnd = row.dataset.planEnd || '';
                 const savedEnd = row.dataset.reqEnd || '';
-                startInput.value = planEnd;       // ✅ 퇴근시간
-                endInput.value = savedEnd || '';  // ✅ 저장값 또는 없음
+                const planEndNext = row.dataset.planEndNext === 'true';
+                const savedEndNext = row.dataset.endNext === 'true';
+
+                startInput.value = planEnd;
+                endInput.value = savedEnd || '';
+                if (startNext) {
+                    startNext.checked = planEndNext;
+                }
+                if (endNext) {
+                    endNext.checked = savedEnd ? savedEndNext : false;
+                }
+
                 startInput.disabled = true;
                 endInput.disabled = false;
             });
@@ -200,12 +213,20 @@ function handleNextDayCheckboxes(selectedType, rows) {
                 break;
 
             case '휴일':
-                // ✅ 휴일근로일 때는 시작 익일 숨기고 종료 익일만 표시
+                // 휴일근로일 때는 시작 익일 숨기고 종료 익일만 표시
                 if (startNext) {
                     startNext.closest('label').style.display = 'none';
                     startNext.checked = false;
                 }
                 if (endNext) endNext.closest('label').style.display = '';
+                break;
+
+            case '조퇴':
+                if (startNext) startNext.closest('label').style.display = '';
+                if (endNext) {
+                    endNext.closest('label').style.display = 'none';
+                    endNext.checked = false;
+                }
                 break;
 
             default:
