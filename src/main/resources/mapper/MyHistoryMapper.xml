@@ -34,7 +34,7 @@
     LEFT JOIN webdeptinfo wd ON wei.dept_code = wd.dept_code
     LEFT JOIN webshifttype wst ON was.new_shift_code = wst.shift_code
 
-    WHERE war.emp_code = #{loginEmpCode}
+    WHERE (war.emp_code = #{loginEmpCode} OR war.applicant = #{loginEmpCode})
     AND (
         (war.attendance_type IN ('연차', '기타')
          AND was.start_date <= #{myHistorySearchDto.endDate}

@@ -70,9 +70,8 @@ public class AttService {
                 continue;  // 이건 저장 안 함
             }
             if("조퇴".equals(dto.getAttType())) {
-                TimeRange t = attMapper.getPlannedCommuteTime2(workDate, dto.getEmpCode());
-                dto.setEndNextDay(false);
-                dto.setEndTime(t.getEndTime());
+                dto.setEndNextDay(dto.getStartNextDay());
+                dto.setEndTime(dto.getStartTime());
             }
             // 반차 시간 계산
             if ("반차".equals(dto.getAttType())) {
@@ -434,7 +433,7 @@ public class AttService {
             }
         }
 
-        return totalHours;
+        return totalHours < 0 ? 0 : totalHours;
     }
 
     public void cancelAttendance(List<BaseAttEmpDto> attList) {
