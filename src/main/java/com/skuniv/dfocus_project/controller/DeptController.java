@@ -83,8 +83,13 @@ public class DeptController {
                          @RequestParam String parentDeptCode,
                          @RequestParam String deptCategory,
                          @RequestParam String startDate,
-                         @RequestParam String useYn
+                         @RequestParam String useYn,
+                         Model model
                          ) {
+        if(deptService.isExistDept(deptCode)){
+            model.addAttribute("message", "동일한 부서코드를 가진 부서가 존재합니다.");
+            return "redirect:/dept/main";
+        }
         String formattedDate = startDate.replace("-", "");
         String formattedUseYn;
         if ("on".equals(useYn)) {
@@ -125,9 +130,10 @@ public class DeptController {
                     break;
                 case "changeLeave":
                     empService.setEmpToOff(empCodes, leaveType);
+                    break;
                 case "setPersonalPattern":
-                    System.out.println("들어와?");
                     empService.setPesonalPattern(empCodes, patternCode);
+                    break;
             }
         }
         if(message != null && !message.isEmpty()){
