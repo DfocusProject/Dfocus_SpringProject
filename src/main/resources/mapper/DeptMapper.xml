@@ -113,5 +113,8 @@
                 ELSE FALSE
                 END
     </select>
-
+    <delete id="deleteDept">
+        DELETE FROM webdeptinfo
+        WHERE dept_code = #{deptCode}
+    </delete>
 </mapper>

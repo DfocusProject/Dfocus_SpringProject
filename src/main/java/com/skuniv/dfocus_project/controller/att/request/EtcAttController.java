@@ -89,7 +89,7 @@ public class EtcAttController {
         String applicant = userDetails.getUsername();
 
         String message = attService.saveEtcAttendance(
-                request.getWorkDate(), request.getEtcList(), applicant);
+                request.getEtcList(), applicant);
 
         if (message != null) {
             redirectAttributes.addFlashAttribute("error", message);
