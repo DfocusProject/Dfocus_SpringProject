@@ -15,7 +15,13 @@
             <div class="spacer"></div> <!-- 좌측 공백 -->
             <!-- 왼쪽: 부서 상세 -->
             <div class="dept-info">
-                <h2 th:utext="${dept.deptName} + '<br/>부서 상세 정보'">부서 상세 정보</h2>
+                <div class="header2">
+                    <h1 th:utext="${dept.deptName} + '<br/>부서 상세 정보'">부서 상세 정보</h1>
+                    <form th:action="@{/dept/delete}" method="post" id="deleteDeptForm">
+                        <input type="hidden" name="deptCode" th:value="${dept.deptCode}"/>
+                        <button type="submit" id="deleteDeptBtn">부서 삭제</button>
+                    </form>
+                </div>
 
                 <div class="info-item">
                     <label>부서 코드</label>
@@ -44,8 +50,8 @@
                 <div class="info-item">
                     <label>사용 여부</label>
                     <form th:action="@{/dept/toggleUseYn}" method="post">
-                        <input type="hidden" name="deptCode" th:value="${dept.deptCode}" />
-                        <input type="hidden" name="useYn" th:value="${dept.useYn == 'Y' ? 'N' : 'Y'}" />
+                        <input type="hidden" name="deptCode" th:value="${dept.deptCode}"/>
+                        <input type="hidden" name="useYn" th:value="${dept.useYn == 'Y' ? 'N' : 'Y'}"/>
 
                         <label class="switch">
                             <input type="checkbox" th:checked="${dept.useYn == 'Y'}" onchange="this.form.submit()">
@@ -114,7 +120,7 @@
                             </div>
 
                             <!-- 부서 이동 선택 영역 (숨김) -->
-                            <div id="moveDeptSelect" style="display: none;" >
+                            <div id="moveDeptSelect" style="display: none;">
                                 <label for="newDept">이동할 부서 선택:</label>
                                 <select name="newDeptCode" id="newDept" required>
                                     <option th:each="d : ${allDepts}" th:value="${d.deptCode}" th:text="${d.deptName}">
@@ -153,7 +159,7 @@
                                     <tbody>
                                     <tr th:each="emp : ${emps}"
                                         th:classappend="${emp.empCode == dept.deptLeader} ? ' leader-highlight' : ''">
-                                    <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
+                                        <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
                                         <td th:text="${emp.empCode}">E001</td>
                                         <td th:text="${emp.empName}">홍길동</td>
                                         <td th:text="${emp.positionName}">P1001</td>
