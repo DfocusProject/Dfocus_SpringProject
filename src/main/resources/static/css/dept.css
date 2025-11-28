@@ -335,11 +335,25 @@
 main, .container, .dept-detail-container {
     overflow: visible !important; /* 화면 전체 스크롤 제거 */
 }
+/* 전체 화면 스크롤 제거, 내부 컨테이너만 스크롤 가능 */
+html, body {
+    height: 100%;
+    overflow: hidden; /* 화면 전체 스크롤 제거 */
+}
+
+main {
+    display: flex;
+    height: 100%; /* 화면 높이 꽉 채움 */
+    overflow: hidden; /* main 내부 스크롤 제거 */
+}
 
 .container {
+    height: 100%;!important;
+    display: flex;!important;
     flex: 1;!important;
     overflow: hidden; !important;
-    height: auto; !important;
+    flex-direction: column;
+    /*height: auto; !important;*/
 }
 
 /* 부서 생성 페이지 */

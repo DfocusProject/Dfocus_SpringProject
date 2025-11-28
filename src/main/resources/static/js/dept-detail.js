@@ -1,3 +1,18 @@
+// 부서 삭제 버튼
+const deleteDeptBtn = document.getElementById('deleteDeptBtn');
+const deleteDeptForm = document.getElementById('deleteDeptForm');
+
+if (deleteDeptBtn && deleteDeptForm) {
+    deleteDeptBtn.addEventListener('click', (e) => {
+        e.preventDefault(); // 기본 제출 막기
+
+        const confirmDelete = confirm("부서를 삭제하시겠습니까?");
+        if (confirmDelete) {
+            deleteDeptForm.submit(); // 확인 시 폼 제출
+        }
+    });
+}
+
 // 부서 패턴 지정/변경
 const setPatternBtn = document.getElementById('setPatternBtn');
 const patternSelect = document.getElementById('patternSelect');
@@ -61,7 +76,6 @@ document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn =>
         });
     }
 });
-
 
 document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn => {
 
