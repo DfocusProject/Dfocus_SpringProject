@@ -13,18 +13,17 @@
     <div th:replace="~{ sidebar.html::sidebar}"></div>
 
     <div class="container">
-        <h2>홈 화면</h2>
         <div id="error-message" th:text="${error}" style="display:none;"></div>
 
-        <div class="header-content">
-            <div class="header-left">
-                <h1 th:text="${userName} + ' 님'">시원 님</h1>
-                <p th:text="${today}">2024년 11월 26일 수요일</p>
-            </div>
-            <div class="header-right">
-                <div class="current-time" id="currentTime">09:23:45</div>
-            </div>
-        </div>
+<!--        <div class="header-content">-->
+<!--            <div class="header-left">-->
+<!--                <h1 th:text="${userName} + ' 님'">시원 님</h1>-->
+<!--                <p th:text="${today}">2024년 11월 26일 수요일</p>-->
+<!--            </div>-->
+<!--            <div class="header-right">-->
+<!--                <div class="current-time" id="currentTime">09:23:45</div>-->
+<!--            </div>-->
+<!--        </div>-->
 
         <!-- 대시보드 -->
         <div class="dashboard-grid">
@@ -37,15 +36,7 @@
                         <div class="card-subtitle">Attendance</div>
                     </div>
                 </div>
-                <!-- 출퇴근 기록 -->
-                <div class="attendance-buttons" style="margin-top: 20px;">
-                    <form th:action="@{/att/general/on}" method="post" style="display:inline;">
-                        <button type="submit">출근</button>
-                    </form>
-                    <form th:action="@{/att/general/off}" method="post" style="display:inline; margin-left:10px;">
-                        <button type="submit">퇴근</button>
-                    </form>
-                </div>
+
 
                 <div class="time-display">
                     <div class="status-item">
@@ -64,11 +55,21 @@
                     </div>
                 </div>
 
-                <div class="btn-group">
-                    <button class="btn btn-primary" th:disabled="${checkInTime != null}" onclick="checkIn()">출근</button>
-                    <button class="btn btn-success" th:disabled="${checkInTime == null || checkOutTime != null}"
-                            onclick="checkOut()">퇴근
-                    </button>
+<!--                <div class="btn-group">-->
+<!--                    <button class="btn btn-primary" th:disabled="${checkInTime != null}" onclick="checkIn()">출근</button>-->
+<!--                    <button class="btn btn-success" th:disabled="${checkInTime == null || checkOutTime != null}"-->
+<!--                            onclick="checkOut()">퇴근-->
+<!--                    </button>-->
+<!--                </div>-->
+
+                <!-- 출퇴근 기록 -->
+                <div class="attendance-buttons">
+                    <form th:action="@{/att/general/on}" method="post" style="display:inline;">
+                        <button class="btn btn-primary" type="submit">출근</button>
+                    </form>
+                    <form th:action="@{/att/general/off}" method="post" style="display:inline;">
+                        <button class="btn btn-success" type="submit">퇴근</button>
+                    </form>
                 </div>
             </div>
 
