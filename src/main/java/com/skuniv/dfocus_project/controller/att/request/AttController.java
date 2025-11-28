@@ -22,7 +22,6 @@ import java.util.List;
 @RequestMapping("/att/general")
 public class AttController {
 
-    private final EmpService empService;
     private final AttService attService;
 
     @GetMapping("/main")
@@ -47,7 +46,7 @@ public class AttController {
 
         List<String> searchEmpCode;
         if ("LEADER".equals(loginRole)) {
-            searchEmpCode = empCode != null ? empCode : null;
+            searchEmpCode = empCode;
         } else {
             searchEmpCode = Collections.singletonList(loginUser.getUsername());
         }

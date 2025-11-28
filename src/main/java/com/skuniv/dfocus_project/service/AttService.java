@@ -4,7 +4,6 @@ import com.skuniv.dfocus_project.domain.Time.TimeRange;
 import com.skuniv.dfocus_project.dto.*;
 import com.skuniv.dfocus_project.mapper.AttMapper;
 import com.skuniv.dfocus_project.mapper.DeptMapper;
-import com.skuniv.dfocus_project.mapper.ShiftMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,9 +42,8 @@ public class AttService {
 
         // 4. 둘 다 아니면 plannedShiftName 반환
         String plannedShift = attMapper.getPlannedShift(empCode, workDate);
-        String plannedShiftName = attMapper.getShiftName(plannedShift);
 
-        return plannedShiftName;
+        return attMapper.getShiftName(plannedShift);
     }
 
 
@@ -103,7 +101,7 @@ public class AttService {
             }
         }
 
-        return message.length() > 0 ? message.toString() : "저장되었습니다";
+        return !message.isEmpty() ? message.toString() : "저장되었습니다";
     }
 
     private void calculateHalfDayTime(BaseAttEmpDto dto, LocalDate workDate) {
@@ -197,14 +195,14 @@ public class AttService {
 
         // 5. 결과 메시지
         StringBuilder result = new StringBuilder();
-        if (successMessages.length() > 0) {
+        if (!successMessages.isEmpty()) {
             result.append("=== 상신 완료 ===\n").append(successMessages).append("\n");
         }
-        if (errorMessages.length() > 0) {
+        if (!errorMessages.isEmpty()) {
             result.append("=== 상신 불가 ===\n").append(errorMessages);
         }
 
-        return result.length() > 0 ? result.toString() : "처리 완료";
+        return !result.isEmpty() ? result.toString() : "처리 완료";
     }
 
     public TimeRange getExpectedWorkTime(String empCode, LocalDate workDate) {
@@ -500,8 +498,7 @@ public class AttService {
     }
 
     @Transactional
-    public String saveEtcAttendance(LocalDate selectedDate,
-                                    List<BaseAttEmpDto> attList,
+    public String saveEtcAttendance(List<BaseAttEmpDto> attList,
                                     String loginEmpCode) {
 
         StringBuilder errorBuilder = new StringBuilder();
@@ -585,7 +582,7 @@ public class AttService {
                 attMapper.insertApprovalRecord(dto.getEmpCode(), leader, dto.getRequestId(), 2, "PENDING", null);
             }
         }
-        return errorMessages.length() > 0 ? errorMessages.toString() : "상신 완료";
+        return !errorMessages.isEmpty() ? errorMessages.toString() : "상신 완료";
     }
 
     public List<AttEmpViewDto> getAttEmpListWithHolidayCheck(String attType, LocalDate workDate, List<String> empCode, String deptName) {

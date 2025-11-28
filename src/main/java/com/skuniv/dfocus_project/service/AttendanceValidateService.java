@@ -6,7 +6,6 @@ import com.skuniv.dfocus_project.mapper.AttMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
