@@ -132,14 +132,13 @@
 
 
                 <td class="expectedHours highlight">
-                    <span th:text="${emp.expectedWorkHours}"></span>
+                    <span th:text="${#numbers.formatDecimal(emp.expectedWorkHours, 1, 2)}"></span>
                 </td>
                 <td class="status" th:switch="${emp.status}">
                     <span th:case="'SAVED'">저장</span>
                     <span th:case="'REQUESTED'">상신</span>
                     <span th:case="'APPROVED'">승인</span>
                     <span th:case="'REJECTED'">반려</span>
-                    <span th:text="${#numbers.formatDecimal(emp.expectedWorkHours, 1, 2)}"></span>
                 </td>
                 <td class="applicant" th:text="${emp.applicant}"></td>
             </tr>
