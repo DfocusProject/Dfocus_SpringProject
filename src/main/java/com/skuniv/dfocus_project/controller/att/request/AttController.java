@@ -54,7 +54,6 @@ public class AttController {
 
         // 근태 대상자 조회 + 휴일 로직 처리
         List<AttEmpViewDto> empList = attService.getAttEmpListWithHolidayCheck(attType, workDate, searchEmpCode, deptName);
-        System.out.println("empList.getFirst().getPlannedEndNextDay() = " + empList.getFirst().getPlannedEndNextDay());
         model.addAttribute("attType", attType);
         model.addAttribute("workDate", workDate);
         model.addAttribute("empList", empList);
@@ -97,7 +96,7 @@ public class AttController {
         if (message != null) {
             redirectAttributes.addFlashAttribute("error", message);
         }
-        redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+        redirectAttributes.addAttribute("attType", request.getAttList().getFirst().getAttType());
         redirectAttributes.addAttribute("workDate", request.getWorkDate());
         return "redirect:/att/general/search";
     }
@@ -116,14 +115,14 @@ public class AttController {
 
         if (error != null) {
             redirectAttributes.addFlashAttribute("error", error);
-            redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+            redirectAttributes.addAttribute("attType", request.getAttList().getFirst().getAttType());
             redirectAttributes.addAttribute("workDate", request.getWorkDate());
             return "redirect:/att/general/search"; // 오류 있으면 다시 돌아가기
         }
 
         redirectAttributes.addFlashAttribute("message", "상신이 완료되었습니다.");
 
-        redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+        redirectAttributes.addAttribute("attType", request.getAttList().getFirst().getAttType());
         redirectAttributes.addAttribute("workDate", request.getWorkDate());
         return "redirect:/att/general/main";
     }
@@ -131,16 +130,15 @@ public class AttController {
     @PostMapping("/delete")
     public String delete(@ModelAttribute AttendanceRequestDto request, RedirectAttributes redirectAttributes){
         attService.deleteAttendance(request.getAttList());
-        redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+        redirectAttributes.addAttribute("attType", request.getAttList().getFirst().getAttType());
         redirectAttributes.addAttribute("workDate", request.getWorkDate());
         return "redirect:/att/general/main";
     }
     @PostMapping("/requestCancel")
     public String requestCancel(@ModelAttribute AttendanceRequestDto request, RedirectAttributes redirectAttributes){
         attService.cancelAttendance(request.getAttList());
-        redirectAttributes.addAttribute("attType", request.getAttList().get(0).getAttType());
+        redirectAttributes.addAttribute("attType", request.getAttList().getFirst().getAttType());
         redirectAttributes.addAttribute("workDate", request.getWorkDate());
         return "redirect:/att/general/main";
     }
-
 }

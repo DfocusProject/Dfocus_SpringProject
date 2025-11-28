@@ -30,4 +30,6 @@ public interface DeptMapper {
     void updateUseYn(String deptCode, String useYn);
 
     boolean isExistDept(String deptCode);
+
+    void deleteDept(String deptCode);
 }

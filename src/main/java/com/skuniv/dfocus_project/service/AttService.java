@@ -103,7 +103,7 @@ public class AttService {
             }
         }
 
-        return message.length() > 0 ? message.toString() : "저장 완료";
+        return message.length() > 0 ? message.toString() : "저장되었습니다";
     }
 
     private void calculateHalfDayTime(BaseAttEmpDto dto, LocalDate workDate) {
@@ -252,7 +252,11 @@ public class AttService {
                         break;
                     case "조출":
                     case "조퇴":
-                        finalEnd = requestWorkTime.getStartDateTime(); // 퇴근 조정
+                        LocalDateTime proposedEnd = requestWorkTime.getStartDateTime(); // 퇴근 조정 시간
+                        // finalStart와 finalEnd 사이일 때만 finalEnd 조정
+                        if (!proposedEnd.isBefore(finalStart) && proposedEnd.isBefore(finalEnd)) {
+                            finalEnd = proposedEnd;
+                        }
                         break;
                     case "전반차":
                         System.out.println("전반차 들어옴");
@@ -508,14 +512,13 @@ public class AttService {
                     errorBuilder.append("이미 상신되어 수정 불가합니다");
                     continue;
                 }
-                // 🔍 검증 - String 단일 메시지 반환
                 String validationMsg = validateEtcAttendance(dto);
 
                 if (!validationMsg.isEmpty()) {
                     errorBuilder.append(validationMsg).append("\n");
                 }
 
-                // ✔ 저장은 검증 에러가 있어도 계속 진행
+                // 저장은 검증 에러가 있어도 계속 진행
                 LocalDate start = dto.getStartDate();
 
                 dto.setPlanType(attMapper.getPlannedShift(dto.getEmpCode(), start));
@@ -538,7 +541,8 @@ public class AttService {
             }
         }
 
-        return errorBuilder.toString().trim(); // 컨트롤러로 반환
+        String errorMessage = errorBuilder.toString().trim();
+        return errorMessage.isEmpty() ? "저장되었습니다" : errorMessage;
     }
     @Transactional
     public String requestEtcAttendance(LocalDate workDate, List<BaseAttEmpDto> attList, String empCode) {
