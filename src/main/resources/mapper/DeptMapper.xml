@@ -109,8 +109,8 @@
                     SELECT 1
                     FROM webdeptinfo
                     WHERE dept_code = #{deptCode}
-                ) THEN TRUE
-                ELSE FALSE
+                ) THEN 1
+                ELSE 0
                 END
     </select>
     <delete id="deleteDept">

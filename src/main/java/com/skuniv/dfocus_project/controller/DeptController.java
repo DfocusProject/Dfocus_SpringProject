@@ -106,7 +106,7 @@ public class DeptController {
     @PostMapping("/delete")
     public String deptDelete(@RequestParam String deptCode){
         deptService.deleteDept(deptCode);
-        return "dept/main";
+        return "redirect:/dept/main";
     }
     @PostMapping("/empAction")
     public String empAction(@RequestParam(required = false) String deptCode,
