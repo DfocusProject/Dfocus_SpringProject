@@ -19,9 +19,20 @@ public class AttendanceValidateService {
     public String validate(BaseAttEmpDto dto, LocalDate workDate, String realWorkRecord, TimeRange expectedWorkTime, double weeklyWorkHours) {
         String attType = dto.getAttType();
         String empCode = dto.getEmpCode();
-        if( Duration.between(dto.getStartTime(), dto.getEndTime()).toHours() + weeklyWorkHours > 52){
+        long startMinutes = dto.getStartTime().toSecondOfDay() / 60;
+        long endMinutes = dto.getEndTime().toSecondOfDay() / 60;
+
+        // 익일 근무라면 24시간 추가
+        if (dto.getEndNextDay()) {
+            endMinutes += 1440;
+        }
+
+        long workHours = (endMinutes - startMinutes) / 60;
+
+        if (workHours + weeklyWorkHours > 52) {
             return "주 예상 근로 시간이 52시간을 초과합니다";
-        };
+        }
+
         if (!dto.getAttType().equals("휴일") && "결근".equals(realWorkRecord)) {
             return "결근 상태에는 신청 불가";
         }

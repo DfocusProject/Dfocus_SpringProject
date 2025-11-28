@@ -28,4 +28,6 @@ public interface DeptMapper {
     String getLeaderByDeptCode(String DeptCode);
 
     void updateUseYn(String deptCode, String useYn);
+
+    boolean isExistDept(String deptCode);
 }

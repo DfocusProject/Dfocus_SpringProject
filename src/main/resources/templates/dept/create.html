@@ -48,7 +48,6 @@
 
         <label for= "useYn">사용 여부
           <input type="checkbox" id="useYn" name="useYn" checked>
-          <span class="slider"></span>
         </label>
 
         <button type="submit">부서 생성</button>
@@ -57,5 +56,13 @@
 
   </main>
   <script th:src="@{/js/script.js}"></script>
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    const errorMsg = /*[[${message}]]*/ null;
+    if (errorMsg != null) {
+      alert(errorMsg);
+    }
+    /*]]>*/
+  </script>
 </body>
 </html>

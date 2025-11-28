@@ -71,4 +71,8 @@ public class DeptService {
     public void updateUseYn(String deptCode, String useYn) {
         deptMapper.updateUseYn(deptCode, useYn);
     }
+
+    public boolean isExistDept(String deptCode) {
+        return deptMapper.isExistDept(deptCode);
+    }
 }

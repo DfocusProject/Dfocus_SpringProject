@@ -102,5 +102,16 @@
         SET use_yn = #{useYn}
         WHERE dept_code = #{deptCode}
     </update>
+    <select id="isExistDept" resultType="boolean">
+        SELECT
+            CASE
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM webdeptinfo
+                    WHERE dept_code = #{deptCode}
+                ) THEN TRUE
+                ELSE FALSE
+                END
+    </select>
 
 </mapper>
