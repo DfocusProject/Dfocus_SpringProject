@@ -6,7 +6,6 @@ import com.skuniv.dfocus_project.mapper.AttMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,6 +16,8 @@ public class AttendanceValidateService {
     private final AttMapper attMapper;
 
     public String validate(BaseAttEmpDto dto, LocalDate workDate, String realWorkRecord, TimeRange expectedWorkTime, double weeklyWorkHours) {
+        String result = null;
+
         String attType = dto.getAttType();
         String empCode = dto.getEmpCode();
         long startMinutes = dto.getStartTime().toSecondOfDay() / 60;
@@ -33,7 +34,7 @@ public class AttendanceValidateService {
             return "주 예상 근로 시간이 52시간을 초과합니다";
         }
 
-        if (!dto.getAttType().equals("휴일") && "결근".equals(realWorkRecord)) {
+        if (!attType.equals("휴일") && "결근".equals(realWorkRecord)) {
             return "결근 상태에는 신청 불가";
         }
         if (realWorkRecord.equals("연차")) {
@@ -54,18 +55,19 @@ public class AttendanceValidateService {
             return validateOvertime(dto, workDate);
         }
         if ("반차".equals(attType) || "조퇴".equals(attType)) {
-            return validateTimeConflict(dto, workDate);
+            result = validateTimeConflict(dto, workDate);
         }
-        if ("외출".equals(attType)) {
+        if ("외출".equals(attType) || "조퇴".equals(attType)) {
             TimeRange requestTime = new TimeRange(workDate,
                     dto.getStartTime(), dto.getStartNextDay(),
                     dto.getEndTime(), dto.getEndNextDay());
-
+            System.out.println("requestTime = " + requestTime);
+            System.out.println("expectedWorkTime = " + expectedWorkTime);
             if (!expectedWorkTime.contains(requestTime)) {
-                return "외출 신청 가능 시간이 아닙니다.";
+                result = "근무시간이 아닙니다.";
             }
         }
-        return null;
+        return result;
     }
 
     private String validateOvertime(BaseAttEmpDto dto, LocalDate workDate) {
@@ -94,10 +96,7 @@ public class AttendanceValidateService {
 
             int count = attMapper.existsAttendanceRequest(empCode, workDate, conflictType);
             if (count > 0) {
-                boolean approved = attMapper.isApproved(empCode, workDate, conflictType);
-                return approved
-                        ? "이미 승인된 " + conflictType + " 내역 존재"
-                        : "이미 " + conflictType + " 신청 내역 존재";
+                return "이미 " + conflictType + " 신청 내역 존재";
             }
         }
         int exists = attMapper.existsHalfDayRequest(empCode, workDate, "전반차");

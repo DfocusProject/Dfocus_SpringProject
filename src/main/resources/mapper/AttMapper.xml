@@ -84,7 +84,7 @@
         WHERE emp_code = #{empCode}
         AND request_date = #{selectedDate}
         AND attendance_type = #{attType}
-        AND req_status = 'REQUESTED'
+        AND req_status IN ('REQUESTED', 'APPROVED')
     </select>
     <!-- 승인 상태 여부 -->
     <select id="isApproved" resultType="boolean">

@@ -1,7 +1,6 @@
 package com.skuniv.dfocus_project.mapper;
 
 import com.skuniv.dfocus_project.domain.dept.Dept;
-import com.skuniv.dfocus_project.domain.emp.Emp;
 import com.skuniv.dfocus_project.dto.DeptDto;
 import com.skuniv.dfocus_project.dto.EmpDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -30,4 +29,6 @@ public interface DeptMapper {
     void updateUseYn(String deptCode, String useYn);
 
     boolean isExistDept(String deptCode);
+
+    void deleteDept(String deptCode);
 }

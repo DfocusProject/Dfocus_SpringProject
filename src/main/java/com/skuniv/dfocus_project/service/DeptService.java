@@ -75,4 +75,8 @@ public class DeptService {
     public boolean isExistDept(String deptCode) {
         return deptMapper.isExistDept(deptCode);
     }
+
+    public void deleteDept(String deptCode) {
+        deptMapper.deleteDept(deptCode);
+    }
 }
