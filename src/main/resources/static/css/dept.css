@@ -554,3 +554,9 @@ input:checked + .slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+/* 리더 highlight */
+table.emp-table tbody tr.leader-highlight {
+    font-weight: bold;
+    background-color: #ffeaea;
+}

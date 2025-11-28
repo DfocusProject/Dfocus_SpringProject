@@ -117,26 +117,19 @@
                 <td>
                     <label>
                         <input type="hidden" name="startNextDay" value="false"/>
-                        <input type="checkbox" class="startNextDay" name="startNextDay" value="true"
-                               th:checked="${emp.startNextDay == true}" /> 익일
+                        <input type="checkbox" class="startNextDay" name="startNextDay" value="true" /> 익일
                     </label>
                     <input type="time" class="startTime" name="startTime" th:value="${emp.startTime}">
-                    <span class="planNext"
-                          th:if="${emp.plannedStartNextDay == true}"
-                          style="color:#999; font-size:0.8em;">(계획: 익일)</span>
                 </td>
 
                 <td>
                     <label>
                         <input type="hidden" name="endNextDay" value="false"/>
-                        <input type="checkbox" class="endNextDay" name="endNextDay" value="true"
-                               th:checked="${emp.endNextDay == true}" /> 익일
+                        <input type="checkbox" class="endNextDay" name="endNextDay" value="true" /> 익일
                     </label>
                     <input type="time" class="endTime" name="endTime" th:value="${emp.endTime}">
-                    <span class="planNext"
-                          th:if="${emp.plannedEndNextDay == true}"
-                          style="color:#999; font-size:0.8em;">(계획: 익일)</span>
                 </td>
+
 
                 <td class="expectedHours highlight">
                     <span th:text="${emp.expectedWorkHours}"></span>
@@ -146,7 +139,7 @@
                     <span th:case="'REQUESTED'">상신</span>
                     <span th:case="'APPROVED'">승인</span>
                     <span th:case="'REJECTED'">반려</span>
-                    <span th:case="*"></span>
+                    <span th:text="${#numbers.formatDecimal(emp.expectedWorkHours, 1, 2)}"></span>
                 </td>
                 <td class="applicant" th:text="${emp.applicant}"></td>
             </tr>

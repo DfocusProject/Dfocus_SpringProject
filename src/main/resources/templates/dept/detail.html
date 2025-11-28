@@ -151,8 +151,9 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    <tr th:each="emp : ${emps}">
-                                        <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
+                                    <tr th:each="emp : ${emps}"
+                                        th:classappend="${emp.empCode == dept.deptLeader} ? ' leader-highlight' : ''">
+                                    <td><input type="checkbox" name="empCodes" th:value="${emp.empCode}"/></td>
                                         <td th:text="${emp.empCode}">E001</td>
                                         <td th:text="${emp.empName}">홍길동</td>
                                         <td th:text="${emp.positionName}">P1001</td>
