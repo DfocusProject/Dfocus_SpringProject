@@ -139,7 +139,7 @@
                     <span th:case="'REQUESTED'">상신</span>
                     <span th:case="'APPROVED'">승인</span>
                     <span th:case="'REJECTED'">반려</span>
-                    <span th:case="*"></span>
+                    <span th:text="${#numbers.formatDecimal(emp.expectedWorkHours, 1, 2)}"></span>
                 </td>
                 <td class="applicant" th:text="${emp.applicant}"></td>
             </tr>

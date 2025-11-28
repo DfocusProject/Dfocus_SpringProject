@@ -559,5 +559,4 @@ input:checked + .slider:before {
 table.emp-table tbody tr.leader-highlight {
     font-weight: bold;
     background-color: #ffeaea;
-    color: #c62828;
 }
