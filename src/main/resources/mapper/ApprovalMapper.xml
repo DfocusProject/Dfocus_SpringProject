@@ -199,12 +199,10 @@
         )
                   AND year = YEAR(GETDATE());
     </update>
-
     <update id="updateRejectReason" parameterType="map">
         UPDATE webapprovalline
         SET comments = #{reason}
         WHERE sequence_no = 2
           AND request_id = #{requestId}
     </update>
-
 </mapper>
