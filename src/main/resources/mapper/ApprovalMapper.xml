@@ -32,19 +32,19 @@
         <if test="approvalSearchDto.reqType != null and approvalSearchDto.reqType != ''">
             <choose>
                 <when test="approvalSearchDto.reqType == 'OT'">
-                    AND r.attendance_type IN ('연장','조출')
+                    AND r.attendance_type IN (N'연장',N'조출')
                 </when>
 
                 <when test="approvalSearchDto.reqType == 'HT'">
-                    AND r.attendance_type = '휴일'
+                    AND r.attendance_type = N'휴일'
                 </when>
 
                 <when test="approvalSearchDto.reqType == 'ET'">
-                    AND r.attendance_type IN ('기타','연차')
+                    AND r.attendance_type IN (N'기타',N'연차')
                 </when>
 
                 <when test="approvalSearchDto.reqType == 'LT'">
-                    AND r.attendance_type IN ('조퇴','외출','반차')
+                    AND r.attendance_type IN (N'조퇴',N'외출',N'반차')
                 </when>
             </choose>
         </if>
@@ -158,7 +158,7 @@
     </select>
     <select id="isEtcTypeByRequestId" parameterType="string" resultType="boolean">
         SELECT CASE
-                   WHEN attendance_type IN ('기타', '연차') THEN 1
+                   WHEN attendance_type IN (N'기타', N'연차') THEN 1
                    ELSE 0
                    END
         FROM webattrequest
