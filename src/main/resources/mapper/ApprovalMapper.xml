@@ -7,7 +7,6 @@
     <select id="getDocumentList"
             resultType="com.skuniv.dfocus_project.dto.approval.DocumentDto"
             parameterType="map">
-
         SELECT
         a.request_id AS requestId,
         r.emp_code AS reqEmpCode,

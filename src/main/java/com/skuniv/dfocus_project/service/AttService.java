@@ -602,25 +602,26 @@ public class AttService {
             // A. 날짜 기준 휴일 필터링
             // -----------------------------------------
             if (isHoliday) {
-
-                if ("휴일".equals(attType)) {
-                    // OK
-                } else if (isExtendedOrEarly) {
-                    boolean hasOver8 = attMapper.hasHolidayWorkOver8Hours(emp.getEmpCode(), workDate);
-                    if (!hasOver8) {
+                if (!"휴일".equals(attType)) {
+                    if (isExtendedOrEarly) {
+                        boolean hasOver8 = attMapper.hasHolidayWorkOver8Hours(emp.getEmpCode(), workDate);
+                        if (!hasOver8) {
+                            iterator.remove();
+                            continue;
+                        }
+                    } else {
                         iterator.remove();
                         continue;
                     }
-                } else {
-                    iterator.remove();
-                    continue;
                 }
             } else {
+                // 평일일 때 "휴일" 타입이면 제거
                 if ("휴일".equals(attType)) {
                     iterator.remove();
                     continue;
                 }
             }
+
 
             // -----------------------------------------
             // B. 실적 (출근기록 판단) 1회만
