@@ -51,55 +51,84 @@ function handleWorkTypeChange(selectedType) {
     table.querySelectorAll('td.half-col').forEach(td => td.remove());
 
     // 🔸 근무유형별 처리
-    // 근무유형별 처리
     switch (selectedType) {
         case '연장':
             rows.forEach(row => {
                 const startInput = row.querySelector('.startTime');
-                const endInput   = row.querySelector('.endTime');
+                const endInput = row.querySelector('.endTime');
+                const startNext = row.querySelector('.startNextDay');
+                const endNext = row.querySelector('.endNextDay');
 
-                const savedStart = row.dataset.reqStart || '';  // 저장된 시작
-                const savedEnd   = row.dataset.reqEnd   || '';  // 저장된 종료
-                const planEnd    = row.dataset.planEnd  || '';  // 휴일근무 종료
+                const planShiftType = row.querySelector('.planShiftType')?.innerText?.trim() || '';
+                const savedStart = row.dataset.reqStart || '';
+                const savedEnd = row.dataset.reqEnd || '';
+                const planEnd = row.dataset.planEnd || '';
+                const planEndNext = row.dataset.planEndNext === 'true';
+                const savedEndNext = row.dataset.endNext === 'true';
 
-                // 저장된 값이 있으면 → 저장된 값 그대로 사용
-                if (savedStart) {
-                    startInput.value = savedStart;
+                if (planShiftType === '연차') {
+                    // ✅ 저장값이 있으면 저장값 표시, 없으면 빈값으로 자유입력
+                    startInput.value = savedStart || '';
+                    endInput.value = savedEnd || '';
+                    startInput.disabled = false;
+                    endInput.disabled = false;
+
+                    // 익일 체크: 저장값이 있으면 저장값 기준
+                    if (startNext) startNext.checked = savedStart ? (row.dataset.startNext === 'true') : false;
+                    if (endNext) endNext.checked = savedEnd ? savedEndNext : false;
+                } else {
+                    // 기존 로직 유지
+                    startInput.value = savedStart || planEnd;
+                    endInput.value = savedEnd || '';
+
+                    if (startNext) {
+                        startNext.checked = savedStart ? (row.dataset.startNext === 'true') : planEndNext;
+                    }
+                    if (endNext) {
+                        endNext.checked = savedEnd ? savedEndNext : false;
+                    }
+
+                    startInput.disabled = true;
+                    endInput.disabled = false;
                 }
-                // 저장된 값이 없을 때만 → planEnd 사용
-                else {
-                    startInput.value = planEnd;
-                }
-
-                // 종료는 저장값 우선
-                endInput.value = savedEnd || '';
-
-                startInput.disabled = true;
-                endInput.disabled = false;
             });
             break;
-
 
         case '조출':
             rows.forEach(row => {
                 const startInput = row.querySelector('.startTime');
                 const endInput = row.querySelector('.endTime');
+                const startNext = row.querySelector('.startNextDay');
+                const endNext = row.querySelector('.endNextDay');
 
-                const savedStart = row.dataset.reqStart || ''; // 저장된 시작
-                const savedEnd   = row.dataset.reqEnd   || ''; // 저장된 종료
-                const planStart  = row.dataset.planStart || ''; // 계획 시작
+                const planShiftType = row.querySelector('.planShiftType')?.innerText?.trim() || '';
+                const savedStart = row.dataset.reqStart || '';
+                const savedEnd = row.dataset.reqEnd || '';
+                const planStart = row.dataset.planStart || '';
 
-                // 시작값: 저장값 우선, 없으면 planStart
-                startInput.value = savedStart || planStart;
+                if (planShiftType === '연차') {
+                    // ✅ 저장값이 있으면 저장값 표시, 없으면 빈값으로 자유입력
+                    startInput.value = savedStart || '';
+                    endInput.value = savedEnd || '';
+                    startInput.disabled = false;
+                    endInput.disabled = false;
 
-                // 종료값: 저장값 우선, 없으면 planStart (조출 종료는 기본 출근시간)
-                endInput.value = savedEnd || planStart;
+                    // 익일 체크: 저장값이 있으면 저장값 기준
+                    if (startNext) startNext.checked = savedStart ? (row.dataset.startNext === 'true') : false;
+                    if (endNext) endNext.checked = savedEnd ? (row.dataset.endNext === 'true') : false;
+                } else {
+                    // 기존 로직 유지
+                    startInput.value = savedStart || '';
+                    endInput.value = savedEnd || planStart;
+                    startInput.disabled = false;
+                    endInput.disabled = true;
 
-                startInput.disabled = false; // 시작 입력 가능
-                endInput.disabled = true;    // 종료는 조출에서 수정 불가
+                    // 익일 체크: 저장값 우선
+                    if (startNext) startNext.checked = savedStart ? (row.dataset.startNext === 'true') : false;
+                    if (endNext) endNext.checked = savedEnd ? (row.dataset.endNext === 'true') : false;
+                }
             });
             break;
-
 
         case '조퇴': {
             const startTh = thead.querySelector(`th:nth-child(${startColIndex})`);
@@ -113,14 +142,15 @@ function handleWorkTypeChange(selectedType) {
                 const endInput = row.querySelector('.endTime');
                 const startTd = row.querySelector(`td:nth-child(${startColIndex})`);
                 const endTd = row.querySelector(`td:nth-child(${endColIndex})`);
+                const startNext = row.querySelector('.startNextDay');
 
-                // ✅ 계획이 '연차'인 경우 자유롭게 입력 가능
                 const planShiftType = row.querySelector('.planShiftType')?.innerText?.trim() || '';
+                const savedStart = row.dataset.reqStart || '';
 
                 if (planShiftType === '연차') {
-                    // 연차일 때는 시작 시간만 입력 가능 (값은 비움)
+                    // ✅ 저장값이 있으면 저장값 표시, 없으면 빈값으로 자유입력
                     if (startInput) {
-                        startInput.value = '';
+                        startInput.value = savedStart || '';
                         startInput.disabled = false;
                         startInput.style.display = '';
                     }
@@ -131,9 +161,13 @@ function handleWorkTypeChange(selectedType) {
                     }
                     if (endTd) endTd.style.display = 'none';
                     if (startTd) startTd.style.display = '';
+
+                    // 익일 체크: 저장값이 있으면 저장값 기준
+                    if (startNext) startNext.checked = savedStart ? (row.dataset.startNext === 'true') : false;
                 } else {
                     // 기존 로직 유지
                     if (startInput) {
+                        startInput.value = savedStart || '';
                         startInput.disabled = false;
                         startInput.style.display = '';
                     }
@@ -144,6 +178,8 @@ function handleWorkTypeChange(selectedType) {
                     }
                     if (endTd) endTd.style.display = 'none';
                     if (startTd) startTd.style.display = '';
+
+                    if (startNext) startNext.checked = row.dataset.startNext === 'true';
                 }
             });
             break;
@@ -211,22 +247,28 @@ function handleWorkTypeChange(selectedType) {
             rows.forEach(row => {
                 const startInput = row.querySelector('.startTime');
                 const endInput = row.querySelector('.endTime');
+                const startNext = row.querySelector('.startNextDay');
+                const endNext = row.querySelector('.endNextDay');
 
-                // ✅ 계획이 '연차'인 경우에도 자유롭게 입력 가능 (값은 비움)
                 const planShiftType = row.querySelector('.planShiftType')?.innerText?.trim() || '';
+                const savedStart = row.dataset.reqStart || '';
+                const savedEnd = row.dataset.reqEnd || '';
 
+                // ✅ 저장값이 있으면 저장값 표시, 없으면 빈값으로 자유입력
                 if (planShiftType === '연차') {
-                    startInput.value = '';
-                    endInput.value = '';
+                    startInput.value = savedStart || '';
+                    endInput.value = savedEnd || '';
                 } else {
-                    const savedStart = row.dataset.reqStart || '';
-                    const savedEnd = row.dataset.reqEnd || '';
                     startInput.value = savedStart;
                     endInput.value = savedEnd;
                 }
 
                 startInput.disabled = false;
                 endInput.disabled = false;
+
+                // 익일 체크: 저장값이 있으면 저장값 기준
+                if (startNext) startNext.checked = savedStart ? (row.dataset.startNext === 'true') : false;
+                if (endNext) endNext.checked = savedEnd ? (row.dataset.endNext === 'true') : false;
             });
             break;
     }
@@ -268,7 +310,6 @@ function handleNextDayCheckboxes(selectedType, rows) {
                 }
                 break;
 
-
             default:
                 // 나머지는 전부 숨김
                 if (startNext) {
@@ -283,7 +324,6 @@ function handleNextDayCheckboxes(selectedType, rows) {
         }
     });
 }
-
 
 // 🔹 form 전송 전에 체크박스 상태를 hidden input으로 추가
 function attachNextDayValues(form) {
