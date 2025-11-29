@@ -212,6 +212,16 @@
 
 <script th:src="@{/js/script.js}"></script>
 <script th:src="@{/js/approval.js}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchBtn = document.querySelector(".btnSearchEmpAtt");
+
+        // 현 페이지가 /approval/main 일 때만 자동 조회
+        if (window.location.pathname.includes("/approval/main") && searchBtn) {
+            searchBtn.click();
+        }
+    });
+</script>
 
 </body>
 </html>
