@@ -78,6 +78,7 @@
         WHERE shift_code = #{shiftCode}
     </select>
 
+
     <select id="existsAttendanceRequest" resultType="int">
         SELECT COUNT(*)
         FROM WEBATTREQUEST

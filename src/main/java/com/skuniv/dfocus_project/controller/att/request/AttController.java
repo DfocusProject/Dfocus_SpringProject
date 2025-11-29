@@ -52,6 +52,8 @@ public class AttController {
 
         // 근태 대상자 조회 + 휴일 로직 처리
         List<AttEmpViewDto> empList = attService.getAttEmpListWithHolidayCheck(attType, workDate, searchEmpCode, deptName);
+        System.out.println(empList.getFirst().getStartTime());
+        System.out.println(empList.getFirst().getEndTime());
         model.addAttribute("attType", attType);
         model.addAttribute("workDate", workDate);
         model.addAttribute("empList", empList);

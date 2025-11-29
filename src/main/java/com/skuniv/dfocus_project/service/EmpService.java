@@ -32,9 +32,12 @@ public class EmpService {
 
     @Transactional
     public String setDeptLeader(List<String> empCodes, String deptCode) {
-
+        boolean isOff = empMapper.getEmpStatus(empCodes.getFirst());
         if(empCodes.size() != 1) {
             return "리더는 한 명만 지정 가능합니다";
+        }
+        if(isOff){
+            return "휴직자는 리더 지정이 불가합니다";
         }
         String role = empMapper.getEmpRole(empCodes.getFirst());
         if(role.equals("ADMIN")){
