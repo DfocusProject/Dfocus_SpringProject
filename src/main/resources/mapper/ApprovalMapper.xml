@@ -150,7 +150,8 @@
             we.emp_name              AS name,
             wal.emp_response         AS empCode,
             wal.approval_status      AS result,
-            wal.approval_time        AS date
+            wal.approval_time        AS date,
+            wal.comments AS reason
         FROM webapprovalline wal
             LEFT JOIN webempinfo we ON wal.emp_response = we.emp_code
         WHERE wal.request_id = #{requestId}

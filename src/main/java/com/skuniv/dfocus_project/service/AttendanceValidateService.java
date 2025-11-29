@@ -23,7 +23,12 @@ public class AttendanceValidateService {
         long startMinutes = dto.getStartTime().toSecondOfDay() / 60;
         long endMinutes = dto.getEndTime().toSecondOfDay() / 60;
 
-        // 익일 근무라면 24시간 추가
+        // 시작 시간이 익일이면 24시간 추가
+        if (dto.getStartNextDay()) {
+            startMinutes += 1440;
+        }
+
+        // 종료 시간이 익일이면 24시간 추가
         if (dto.getEndNextDay()) {
             endMinutes += 1440;
         }

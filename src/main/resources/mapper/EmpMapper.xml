@@ -242,6 +242,18 @@
         SET status = 'OFF'
         WHERE emp_code = #{empCode}
     </update>
+    <select id="getEmpStatus" parameterType="string" resultType="boolean">
+    SELECT
+        CASE
+        WHEN EXISTS (
+        SELECT 1
+        FROM webempinfo
+        WHERE emp_code = #{empCode}
+        AND status = 'OFF'
+        ) THEN 1
+        ELSE 0
+        END
+    </select>
 </mapper>
 
 

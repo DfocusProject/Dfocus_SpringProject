@@ -249,6 +249,8 @@ public class AttService {
                         finalEnd = requestWorkTime.getEndDateTime();
                         break;
                     case "조출":
+                        finalStart = requestWorkTime.getStartDateTime();
+                        break;
                     case "조퇴":
                         LocalDateTime proposedEnd = requestWorkTime.getStartDateTime(); // 퇴근 조정 시간
                         // finalStart와 finalEnd 사이일 때만 finalEnd 조정
@@ -263,7 +265,7 @@ public class AttService {
                         System.out.println("finalStart = " + finalStart);
                         break;
                     case "후반차":
-                        finalEnd = requestWorkTime.getEndDateTime(); // 퇴근만 조정
+                        finalEnd = requestWorkTime.getStartDateTime(); // 퇴근만 조정
                         break;
                 }
             }
@@ -682,7 +684,9 @@ public class AttService {
                     .orElse(null);
 
             // 둘 다 존재하면 겹치는 시간 계산
-            if (holiday != null && commute != null) {
+            if (holiday != null && commute != null
+                    && commute.getStartDateTime() != null
+                    && commute.getEndDateTime() != null) {
 
                 LocalDateTime holidayStart = holiday.getStartDateTime();
                 LocalDateTime holidayEnd   = holiday.getEndDateTime();

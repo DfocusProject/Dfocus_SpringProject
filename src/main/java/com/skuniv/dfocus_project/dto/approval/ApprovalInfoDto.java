@@ -13,4 +13,5 @@ public class ApprovalInfoDto {
     private String empCode;
     private String result;
     private LocalDate date;
+    private String reason;
 }

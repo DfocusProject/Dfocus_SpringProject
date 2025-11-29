@@ -10,8 +10,7 @@
         </div>
         <div class="header-right" th:if="${#authentication != null}">
             <span>
-                사원번호: <span th:text="${#authentication.principal.username}"></span>,
-                이름: <span th:text="${#authentication.principal.empName}"></span>,
+                <span th:text="${#authentication.principal.empName + ' (' + #authentication.principal.username + ')님 😄'}"></span>
             </span>
             <!-- 로그아웃 버튼 -->
             <form th:action="@{/logout}" method="post" style="display:inline">
