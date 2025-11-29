@@ -15,6 +15,14 @@ function initCheckAll(masterSelector, itemSelector) {
 function collectSelectedRows() {
     return Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb => {
         const row = cb.closest('tr');
+
+        const selectedType = row.querySelector('.attType')?.innerText?.trim();
+        if (selectedType === '연차') {
+            row.dataset.planStart = '';
+            row.dataset.planEnd = '';
+            row.dataset.planType = '';
+        }
+
         return {
             empCode: row.querySelector('.empCode').innerText,
             attType: row.querySelector('.attType')?.innerText || '',

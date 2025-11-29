@@ -51,43 +51,52 @@ function handleWorkTypeChange(selectedType) {
     table.querySelectorAll('td.half-col').forEach(td => td.remove());
 
     // 🔸 근무유형별 처리
+    // 근무유형별 처리
     switch (selectedType) {
         case '연장':
             rows.forEach(row => {
                 const startInput = row.querySelector('.startTime');
-                const endInput = row.querySelector('.endTime');
-                const startNext = row.querySelector('.startNextDay');
-                const endNext = row.querySelector('.endNextDay');
+                const endInput   = row.querySelector('.endTime');
 
-                const planEnd = row.dataset.planEnd || '';
-                const savedEnd = row.dataset.reqEnd || '';
-                const planEndNext = row.dataset.planEndNext === 'true';
-                const savedEndNext = row.dataset.endNext === 'true';
+                const savedStart = row.dataset.reqStart || '';  // 저장된 시작
+                const savedEnd   = row.dataset.reqEnd   || '';  // 저장된 종료
+                const planEnd    = row.dataset.planEnd  || '';  // 휴일근무 종료
 
-                startInput.value = planEnd;
+                // 저장된 값이 있으면 → 저장된 값 그대로 사용
+                if (savedStart) {
+                    startInput.value = savedStart;
+                }
+                // 저장된 값이 없을 때만 → planEnd 사용
+                else {
+                    startInput.value = planEnd;
+                }
+
+                // 종료는 저장값 우선
                 endInput.value = savedEnd || '';
-                if (startNext) {
-                    startNext.checked = planEndNext;
-                }
-                if (endNext) {
-                    endNext.checked = savedEnd ? savedEndNext : false;
-                }
 
                 startInput.disabled = true;
                 endInput.disabled = false;
             });
             break;
 
+
         case '조출':
             rows.forEach(row => {
                 const startInput = row.querySelector('.startTime');
                 const endInput = row.querySelector('.endTime');
-                const planStart = row.dataset.planStart || '';
-                const savedStart = row.dataset.reqStart || '';
-                startInput.value = savedStart || ''; // ✅ 저장값 또는 없음
-                endInput.value = planStart;          // ✅ 출근시간
-                startInput.disabled = false;
-                endInput.disabled = true;
+
+                const savedStart = row.dataset.reqStart || ''; // 저장된 시작
+                const savedEnd   = row.dataset.reqEnd   || ''; // 저장된 종료
+                const planStart  = row.dataset.planStart || ''; // 계획 시작
+
+                // 시작값: 저장값 우선, 없으면 planStart
+                startInput.value = savedStart || planStart;
+
+                // 종료값: 저장값 우선, 없으면 planStart (조출 종료는 기본 출근시간)
+                endInput.value = savedEnd || planStart;
+
+                startInput.disabled = false; // 시작 입력 가능
+                endInput.disabled = true;    // 종료는 조출에서 수정 불가
             });
             break;
 
@@ -105,17 +114,37 @@ function handleWorkTypeChange(selectedType) {
                 const startTd = row.querySelector(`td:nth-child(${startColIndex})`);
                 const endTd = row.querySelector(`td:nth-child(${endColIndex})`);
 
-                if (startInput) {
-                    startInput.disabled = false;
-                    startInput.style.display = '';
+                // ✅ 계획이 '연차'인 경우 자유롭게 입력 가능
+                const planShiftType = row.querySelector('.planShiftType')?.innerText?.trim() || '';
+
+                if (planShiftType === '연차') {
+                    // 연차일 때는 시작 시간만 입력 가능 (값은 비움)
+                    if (startInput) {
+                        startInput.value = '';
+                        startInput.disabled = false;
+                        startInput.style.display = '';
+                    }
+                    if (endInput) {
+                        endInput.value = '';
+                        endInput.disabled = true;
+                        endInput.style.display = 'none';
+                    }
+                    if (endTd) endTd.style.display = 'none';
+                    if (startTd) startTd.style.display = '';
+                } else {
+                    // 기존 로직 유지
+                    if (startInput) {
+                        startInput.disabled = false;
+                        startInput.style.display = '';
+                    }
+                    if (endInput) {
+                        endInput.value = '';
+                        endInput.disabled = true;
+                        endInput.style.display = 'none';
+                    }
+                    if (endTd) endTd.style.display = 'none';
+                    if (startTd) startTd.style.display = '';
                 }
-                if (endInput) {
-                    endInput.value = '';
-                    endInput.disabled = true;
-                    endInput.style.display = 'none';
-                }
-                if (endTd) endTd.style.display = 'none';
-                if (startTd) startTd.style.display = '';
             });
             break;
         }
@@ -183,11 +212,18 @@ function handleWorkTypeChange(selectedType) {
                 const startInput = row.querySelector('.startTime');
                 const endInput = row.querySelector('.endTime');
 
-                const savedStart = row.dataset.reqStart || '';
-                const savedEnd = row.dataset.reqEnd || '';
+                // ✅ 계획이 '연차'인 경우에도 자유롭게 입력 가능 (값은 비움)
+                const planShiftType = row.querySelector('.planShiftType')?.innerText?.trim() || '';
 
-                startInput.value = savedStart;
-                endInput.value = savedEnd;
+                if (planShiftType === '연차') {
+                    startInput.value = '';
+                    endInput.value = '';
+                } else {
+                    const savedStart = row.dataset.reqStart || '';
+                    const savedEnd = row.dataset.reqEnd || '';
+                    startInput.value = savedStart;
+                    endInput.value = savedEnd;
+                }
 
                 startInput.disabled = false;
                 endInput.disabled = false;
