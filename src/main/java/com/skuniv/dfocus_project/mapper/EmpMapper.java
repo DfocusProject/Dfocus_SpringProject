@@ -41,4 +41,6 @@ public interface EmpMapper {
     void setPersonalPattern(String empCode, String patternCode);
 
     void updateEmpStatus(String empCode, String leaveType);
+
+    boolean getEmpStatus(String first);
 }
