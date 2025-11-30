@@ -37,6 +37,7 @@ body {
     color: #888;
     font-size: 0.9em;
     margin-left: 10px;
+    white-space: nowrap;
 }
 
 /* Buttons */
