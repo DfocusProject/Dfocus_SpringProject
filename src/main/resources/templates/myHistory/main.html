@@ -45,7 +45,7 @@
                                     <option value="REJECTED">반려</option>
                                 </select>
                             </label>
-                            <button type="submit" class="btnSearchEmpAtt">조회</button>
+                            <button type="submit" id="btnSearchMyhistory" class="btnSearchMyhistory">조회</button>
                         </div>
 
                         <div class="search-row">
@@ -131,6 +131,13 @@
 
 <script th:src="@{/js/approval.js}"></script>
 <script th:src="@{/js/script.js}"></script>
-
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchBtn = document.getElementById("btnSearchMyhistory");
+        if (window.location.pathname.includes("/myHistory/main") && searchBtn) {
+            searchBtn.click();
+        }
+    });
+</script>
 </body>
 </html>
