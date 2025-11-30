@@ -59,7 +59,7 @@
                         </select>
                     </label>
 
-                    <button type="submit" class="btnSearchEmpAtt">조회</button>
+                    <button type="submit" id="btnSearchDeptAtt" class="btnSearchDeptAtt">조회</button>
                     <div class="right">
                         <button type="button" class="btn approval" id="btnGoGeneral">일반근태 신청</button>
                         <button type="button" class="btn approval" id="btnGoEtc">기타근태 신청</button>
@@ -125,45 +125,13 @@
 </main>
 
 <script th:src="@{/js/script.js}"></script>
-
 <script>
-    /* 체크박스 전체 선택 */
-    document.getElementById("checkAll1").addEventListener("change", function () {
-        const checked = this.checked;
-        document.querySelectorAll(".rowCheck").forEach(cb => cb.checked = checked);
-    });
-
-    /* 개별 체크 시 전체 체크 갱신 */
-    document.querySelectorAll(".rowCheck").forEach(cb => {
-        cb.addEventListener("change", () => {
-            const all = document.querySelectorAll(".rowCheck");
-            const checked = document.querySelectorAll(".rowCheck:checked");
-            document.getElementById("checkAll1").checked = all.length === checked.length;
-        });
-    });
-
-    /* 선택된 사번 모으기 */
-    function getSelectedEmpCodes() {
-        const list = Array.from(document.querySelectorAll(".rowCheck:checked"))
-            .map(cb => cb.dataset.empcode);
-        return list.length ? list.join(",") : null;
-    }
-
-    /* 신청 버튼 처리 */
-    function submitWithAction(actionUrl) {
-        const empCodes = getSelectedEmpCodes();
-        if (!empCodes) {
-            alert("근태신청할 부서원을 선택하십시오.");
-            return;
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchBtn = document.getElementById("btnSearchDeptAtt");
+        if (window.location.pathname.includes("/deptAttSearch/main") && searchBtn) {
+            searchBtn.click();
         }
-        const form = document.getElementById("attForm");
-        form.action = actionUrl;
-        document.getElementById("empCodes").value = empCodes;
-        form.submit();
-    }
-
-    document.getElementById("btnGoGeneral").onclick = () => submitWithAction("/att/general/search");
-    document.getElementById("btnGoEtc").onclick = () => submitWithAction("/att/etc/search");
+    });
 </script>
 
 </body>
