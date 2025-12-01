@@ -120,4 +120,8 @@ public class ApprovalService {
         approvalMapper.updateApprovalLineTime(requestId, loginEmpCode);
         approvalMapper.updateRejectReason(requestId, reason);
     }
+
+    public String getRejectedReason(Long requestId) {
+        return approvalMapper.getRejectedReason(requestId);
+    }
 }
