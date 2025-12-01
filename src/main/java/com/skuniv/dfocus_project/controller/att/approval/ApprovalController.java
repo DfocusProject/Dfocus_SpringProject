@@ -45,12 +45,13 @@ public class ApprovalController {
         ReqInfoDto reqInfoDto = approvalService.getReqInfoDto(requestId);
         CommuteInfoDto commuteInfoDto = approvalService.getCommuteInfoDto(empInfoDto.getReqDate(), empInfoDto.getTargetEmpCode());
         List<ApprovalInfoDto> approvalInfoDto = approvalService.getApprovalInfoDto(requestId);
-
+        String rejectionReason = approvalService.getRejectedReason(requestId);
         model.addAttribute("empInfo", empInfoDto);
         model.addAttribute("reqInfo", reqInfoDto);
         model.addAttribute("commuteInfo", commuteInfoDto);
         model.addAttribute("approvalInfos", approvalInfoDto);
         model.addAttribute("requestId", requestId);
+        model.addAttribute("rejectionReason", rejectionReason);  // 추가
         return "approval/detail :: detailFragment";
     }
     @PostMapping("/approve")

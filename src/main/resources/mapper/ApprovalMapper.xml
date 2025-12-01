@@ -149,8 +149,7 @@
             we.emp_name              AS name,
             wal.emp_response         AS empCode,
             wal.approval_status      AS result,
-            wal.approval_time        AS date,
-            wal.comments AS reason
+            wal.approval_time        AS date
         FROM webapprovalline wal
             LEFT JOIN webempinfo we ON wal.emp_response = we.emp_code
         WHERE wal.request_id = #{requestId}
@@ -205,4 +204,11 @@
         WHERE sequence_no = 2
           AND request_id = #{requestId}
     </update>
+    <select id="getRejectedReason" parameterType="java.lang.Long">
+        SELECT comments
+        FROM WEBAPPROVALLINE
+        WHERE sequence_no = 2
+        AND approval_status = 'REJECTED'
+        AND request_id = #{requestId}
+    </select>
 </mapper>
