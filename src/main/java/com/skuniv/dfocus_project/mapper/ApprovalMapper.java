@@ -3,7 +3,6 @@ package com.skuniv.dfocus_project.mapper;
 import com.skuniv.dfocus_project.dto.approval.*;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
