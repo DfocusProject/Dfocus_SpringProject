@@ -1,5 +1,20 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    // 페이지 로드 시 첫 번째 행 자동 선택 (조회 결과가 있는 경우)
+    setTimeout(() => {
+        const firstRow = document.querySelector("#tab1 .doc-row");
+        if (firstRow) {
+            const requestIdInput = firstRow.querySelector(".requestId");
+            if (requestIdInput) {
+                const requestId = requestIdInput.value;
+                loadDetail(requestId);
+
+                document.querySelectorAll(".doc-row").forEach(r => r.classList.remove("active"));
+                firstRow.classList.add("active");
+            }
+        }
+    }, 100);
+
     // 근태유형 선택 시 '신청근태' 표시/숨김
     const reqType = document.querySelector('select[name="reqType"]');
     const detailTypeBox = document.getElementById("detailTypeBox");
@@ -50,8 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             updateActionsVisibility();
-            document.querySelector("#detail-area").innerHTML =
-                '<div class="empty-msg">문서를 선택하면 상세내용이 표시됩니다.</div>';
+
+            // 탭 전환 시 첫 번째 행 자동 선택
+            selectFirstRow(target);
         });
     });
 
@@ -98,6 +114,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+
+// 첫 번째 행 자동 선택 함수
+function selectFirstRow(tabId) {
+    const targetTab = document.querySelector(`#${tabId}`);
+    if (!targetTab) return;
+
+    const firstRow = targetTab.querySelector(".doc-row");
+    if (firstRow) {
+        const requestIdInput = firstRow.querySelector(".requestId");
+        if (requestIdInput) {
+            const requestId = requestIdInput.value;
+            loadDetail(requestId);
+
+            document.querySelectorAll(".doc-row").forEach(r => r.classList.remove("active"));
+            firstRow.classList.add("active");
+        }
+    } else {
+        // 데이터가 없는 경우
+        document.querySelector("#detail-area").innerHTML =
+            '<div class="empty-msg">문서를 선택하면 상세내용이 표시됩니다.</div>';
+    }
+}
 
 // 상세 로드
 function loadDetail(requestId) {

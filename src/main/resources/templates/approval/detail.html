@@ -55,8 +55,7 @@
 
                     <tr>
                         <th>사유</th>
-                        <td th:text="${reqInfo.reason}"></td>
-
+                        <td colspan="3" th:text="${reqInfo.reason}"></td>
                     </tr>
 
                     <tr>
@@ -205,6 +204,19 @@
                 </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- 반려사유 (반려된 경우만 표시) -->
+        <div class="panel" th:if="${rejectionReason != null and rejectionReason != ''}">
+            <div class="title">반려사유</div>
+            <div class="body">
+                <table class="detail-table">
+                    <tr>
+                        <th style="width: 150px;">반려사유</th>
+                        <td th:text="${rejectionReason}"></td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </div>
