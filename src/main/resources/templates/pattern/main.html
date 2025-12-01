@@ -20,6 +20,7 @@
                     <button type="button" id="registerPatternBtn" class="btn">패턴 입력</button>
                     <button type="button" id="savePatternBtn" class="btn">등록</button>
                     <button type="button" id="topActionBtn" class="btn">패턴 추가</button>
+                    <button type="button" id="deletePatternBtn" class="btn">패턴 삭제</button>
                 </div>
             </div>
             <form th:action="@{/pattern/main}" method="get" id="searchForm">
@@ -82,7 +83,6 @@
         </div>
     </div>
 </main>
-
 <!-- 패턴 추가 모달 -->
 <div class="modal-overlay" id="patternModal">
     <div class="modal-content">
@@ -111,7 +111,9 @@
     <input type="hidden" name="patternName" id="patternNameInput">
     <input type="hidden" name="description" id="patternDescInput">
 </form>
-
+<form id="deletePatternForm" method="post" th:action="@{/pattern/delete}">
+    <input type="hidden" name="deletePattern" id="deletePatternInput">
+</form>
 <script th:src="@{/js/script.js}"></script>
 <script th:src="@{/js/pattern.js}"></script>
 </body>
