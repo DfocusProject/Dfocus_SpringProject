@@ -32,4 +32,6 @@ public interface ApprovalMapper {
     double getAnnualRequestCount(Long requestId);
 
     void updateRejectReason(Long requestId, String reason);
+
+    String getRejectedReason(Long requestId);
 }
