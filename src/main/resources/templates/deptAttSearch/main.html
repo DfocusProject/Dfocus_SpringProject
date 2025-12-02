@@ -52,7 +52,7 @@
                     <label>부서
                         <select th:field="*{department}">
                             <option value="">전체</option>
-                            <option th:each="dept : ${childeDeptList}"
+                            <option th:each="dept : *{childDeptList}"
                                     th:value="${dept}"
                                     th:text="${dept}">
                             </option>
@@ -68,10 +68,11 @@
             </div>
             <!-- 리스트 테이블 -->
             <div class="attAprlList">
-                <form id="attForm" method="post">
+                <form id="attForm" method="get">
                     <input type="hidden" name="empCodes" id="empCodes">
-
-                    <table>
+                    <input type="hidden" name="workDate" id="workDateHidden">
+                </form>
+                <table>
                         <thead>
                         <tr>
                             <th rowspan="2"><input type="checkbox" id="checkAll1"></th>
@@ -101,7 +102,9 @@
 
                         <tbody id="tbody">
                         <tr th:each="row : ${results}">
-                            <td><input type="checkbox" class="rowCheck" th:attr="data-empCode=${row.empCode}"></td>
+                            <td><input type="checkbox" class="rowCheck"
+                                       th:attr="data-empcode=${row.empCode}, data-department=${row.department}">
+                            </td>
                             <td th:text="${row.empCode}"></td>
                             <td th:text="${row.empName}"></td>
                             <td th:text="${row.position}"></td>
@@ -118,19 +121,29 @@
                         </tbody>
 
                     </table>
-                </form>
             </div>
         </div>
     </div>
 </main>
 
 <script th:src="@{/js/script.js}"></script>
+<script th:src="@{/js/deptAttSearch.js}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const searchBtn = document.getElementById("btnSearchDeptAtt");
         if (window.location.pathname.includes("/deptAttSearch/main") && searchBtn) {
             searchBtn.click();
         }
+    });
+</script>
+<script th:inline="javascript">
+    console.log("results:", /*[[${results}]]*/ []);
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const rows = document.querySelectorAll("#tbody tr");
+        console.log("table rows:", rows.length, rows);
     });
 </script>
 

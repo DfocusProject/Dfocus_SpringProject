@@ -1,19 +1,24 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+    if (!document.querySelector(".att-layout")) return;
     // 페이지 로드 시 첫 번째 행 자동 선택 (조회 결과가 있는 경우)
     setTimeout(() => {
-        const firstRow = document.querySelector("#tab1 .doc-row");
+        const firstRow = document.querySelector(".doc-row");
         if (firstRow) {
-            const requestIdInput = firstRow.querySelector(".requestId");
-            if (requestIdInput) {
-                const requestId = requestIdInput.value;
-                loadDetail(requestId);
+            const requestId = firstRow.querySelector(".requestId")?.value;
+            if (requestId) loadDetail(requestId);
 
-                document.querySelectorAll(".doc-row").forEach(r => r.classList.remove("active"));
-                firstRow.classList.add("active");
-            }
+            document.querySelectorAll(".doc-row")
+                .forEach(r => r.classList.remove("active"));
+            firstRow.classList.add("active");
         }
+        if (!firstRow) {
+            document.querySelector("#detail-area").innerHTML =
+                '<div class="empty-msg">조회된 데이터가 없습니다.</div>';
+        }
+
     }, 100);
+
 
     // 근태유형 선택 시 '신청근태' 표시/숨김
     const reqType = document.querySelector('select[name="reqType"]');

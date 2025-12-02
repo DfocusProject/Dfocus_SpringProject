@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const topBtn = document.getElementById("topActionBtn");
     const registerBtn = document.getElementById("registerPatternBtn");
     const saveBtn = document.getElementById("savePatternBtn");
+    const deleteBtn = document.getElementById("deletePatternBtn ");
     const modal = document.getElementById("patternModal");
     const modalCancelBtn = document.getElementById("modalCancelBtn");
     const modalConfirmBtn = document.getElementById("modalConfirmBtn");
@@ -106,6 +107,8 @@ document.addEventListener("DOMContentLoaded", () => {
         saveBtn.style.display = "block";
         registerBtn.style.display = "none";
         topBtn.style.display = "none";
+        deletePatternBtn.style.display = "none";
+
     });
 
     // 저장 버튼 클릭
@@ -140,4 +143,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    deleteBtn.addEventListener("click", () => {
+        const selected = document.querySelector('input[name="selectedPattern"]:checked');
+
+        if (!selected) {
+            alert("삭제할 패턴을 선택해주세요.");
+            return;
+        }
+
+        if (!confirm("정말 삭제하시겠습니까?")) return;
+
+        const row = selected.closest("tr");
+        if (row) row.remove();
+
+        alert("삭제되었습니다.");
+    });
+
 });
