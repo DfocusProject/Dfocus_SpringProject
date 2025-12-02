@@ -13,24 +13,25 @@ document.querySelectorAll(".rowCheck").forEach(cb => {
     });
 });
 
-/* 선택된 사번과 부서 모으기 */
+/* 선택된 사번 리스트 가져오기 */
 function getSelectedEmpData() {
     return Array.from(document.querySelectorAll(".rowCheck:checked"))
         .map(cb => ({
             empCode: cb.dataset.empcode,
-            empDept: cb.dataset.department  // 여기에 데이터-부서 속성 추가 필요
+            empDept: cb.dataset.department
         }));
 }
 
 /* 신청 버튼 처리 */
-function submitWithAction(actionUrl, userDept) {
+function submitWithAction(url, userDept) {
+
     const selected = getSelectedEmpData();
     if (selected.length === 0) {
         alert("근태신청할 부서원을 선택하십시오.");
         return;
     }
 
-    // 본인 부서 체크
+    // 본인 부서 확인
     const invalid = selected.some(emp => emp.empDept !== userDept);
     if (invalid) {
         alert("하위 부서 직원은 근태신청할 수 없습니다.");
@@ -38,14 +39,26 @@ function submitWithAction(actionUrl, userDept) {
     }
 
     const empCodes = selected.map(emp => emp.empCode).join(",");
-    const form = document.getElementById("attForm");
-    form.action = actionUrl;
-    document.getElementById("empCodes").value = empCodes;
-    form.submit();
+    const workDate = document.querySelector("input[name='workDate']").value;
+
+    // GET 방식 → URL에 파라미터 붙여서 이동
+    const finalUrl = `${url}?empCodes=${encodeURIComponent(empCodes)}&workDate=${workDate}`;
+
+    // DEBUG
+    console.log("===== 요청 URL =====");
+    console.log(finalUrl);
+    console.log("====================");
+
+    window.location.href = finalUrl;
 }
 
-// userDept는 서버에서 로그인한 사용자 부서로 동적으로 넣어줘야 함
-const userDept = /*[[${loginUser.department}]]*/ 'DEV'; // 예시
+// userDept 서버에서 세팅해야 함
+const userDept = /*[[${loginUser.department}]]*/ 'G1510'; // 예시
 
-document.getElementById("btnGoGeneral").onclick = () => submitWithAction("/att/general", userDept);
-document.getElementById("btnGoEtc").onclick = () => submitWithAction("/att/etc", userDept);
+// 일반근태신청 → /att/general/search
+document.getElementById("btnGoGeneral").onclick = () =>
+    submitWithAction("/att/general/search", userDept);
+
+// 기타근태신청 → /att/etc/search
+document.getElementById("btnGoEtc").onclick = () =>
+    submitWithAction("/att/etc/search", userDept);

@@ -47,35 +47,26 @@
                 <div class="attendance-status">
                     <div class="status-item">
                         <div class="status-label">출근시간</div>
-                        <div class="status-value" th:text="${checkOutTime != null} ? ${checkOutTime} : '--:--'">--:--
-                        </div>
-                    </div>
-                    <div class="status-item">
-                        <div class="status-label">퇴근시간</div>
-                        <div class="status-value" th:text="${checkOutTime != null} ? ${checkOutTime} : '--:--'">--:--
-                        </div>
+                        <span th:text="${commuteDto != null and commuteDto.workOnTime != null} ? ${commuteDto.workOnTime} : '출근 정보 없음'"></span>
                     </div>
                 </div>
-
-                <!--                <div class="btn-group">-->
-                <!--                    <button class="btn btn-primary" th:disabled="${checkInTime != null}" onclick="checkIn()">출근</button>-->
-                <!--                    <button class="btn btn-success" th:disabled="${checkInTime == null || checkOutTime != null}"-->
-                <!--                            onclick="checkOut()">퇴근-->
-                <!--                    </button>-->
-                <!--                </div>-->
+                <div class="status-item">
+                    <div class="status-label">퇴근시간</div>
+                    <span th:text="${commuteDto != null and commuteDto.workOffTime != null} ? ${commuteDto.workOffTime} : '퇴근 정보 없음'"></span>
+                </div>
 
                 <!-- 출퇴근 기록 -->
                 <div class="attendance-buttons">
-                    <form th:action="@{/att/general/on}" method="post" style="display:inline;">
+                    <form th:action="@{/commute/on}" method="post" style="display:inline;">
                         <button class="btn btn-primary" type="submit">출근</button>
                     </form>
-                    <form th:action="@{/att/general/off}" method="post" style="display:inline;">
+                    <form th:action="@{/commute/off}" method="post" style="display:inline;">
                         <button class="btn btn-success" type="submit">퇴근</button>
                     </form>
                 </div>
             </div>
 
-            <!-- 이번주 근무 현황 -->
+<!--            이번주 근무 현황-->
             <div class="card weekly-work-card">
                 <div class="card-header">
                     <div>
@@ -84,21 +75,9 @@
                     </div>
                 </div>
 
-<!--                <div class="bar-chart">-->
-<!--                    <div class="bar-item"-->
-<!--                         th:each="day, iterStat : ${weeklyWork != null ? weeklyWork : {'월':8.5, '화':9.0, '수':8.0, '목':0, '금':0}}">-->
-<!--                        <div class="bar"-->
-<!--                             th:style="'height: ' + ${day.value * 15} + 'px'"-->
-<!--                             th:attr="data-day=${day.key}, data-hours=${day.value}">-->
-<!--                            <span class="bar-value" th:text="${day.value} + 'h'">8.5h</span>-->
-<!--                        </div>-->
-
-<!--                        <div class="bar-label"-->
-<!--                             th:text="${day.key}"-->
-<!--                             th:classappend="${iterStat.index == 2} ? 'today'">-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
+                <div class="bar-chart">
+                    <!-- JS가 여기 안에 bar-item 추가 -->
+                </div>
             </div>
 
             <!-- 연차 현황 카드 -->
@@ -133,20 +112,20 @@
                     </div>
 
                     <div class="leave-stat">
-                        <div class="leave-stat-value" th:text="${annualLeave != null} ? ${annualLeave.used} : '6'">6
+                        <div class="leave-stat-value" th:text="${annualLeaveDto.useDay != null} ? ${annualLeaveDto.useDay} : '6'">6
                         </div>
                         <div class="leave-stat-label">사용</div>
                     </div>
 
                     <div class="leave-stat">
-                        <div class="leave-stat-value" th:text="${annualLeave != null} ? ${annualLeave.remaining} : '9'">
+                        <div class="leave-stat-value" th:text="${annualLeaveDto.balanceDay != null} ? ${annualLeaveDto.balanceDay} : '9'">
                             9
                         </div>
                         <div class="leave-stat-label">잔여</div>
                     </div>
 
                     <div class="leave-stat">
-                        <div class="leave-stat-value" th:text="${annualLeave != null} ? ${annualLeave.planned} : '2'">
+                        <div class="leave-stat-value" th:text="${annualLeaveDto.expectedDay != null} ? ${annualLeaveDto.expectedDay} : '2'">
                             2
                         </div>
                         <div class="leave-stat-label">예정</div>
@@ -158,7 +137,7 @@
             <div class="card task-card">
                 <div class="card-header">
                     <div>
-                        <div class="card-title">오늘의 할일</div>
+                        <div class="card-title">오늘의 알림</div>
                         <div class="card-subtitle">Today's Tasks</div>
                     </div>
                 </div>
@@ -230,6 +209,48 @@
 
 <script th:src="@{/js/script.js}"></script>
 <script th:src="@{/js/home.js}"></script>
+<script th:inline="javascript">
+    /* 서버에서 weeklyWorkedHours를 넘겨줍니다 */
+    const weeklyWorkedHours = /*[[${weeklyWorkedHours}]]*/ [8.5, 9.0, 8.0, 0, 0, 0, 0];
 
+    const weekdays = ['월','화','수','목','금','토','일'];
+
+    /* JS 기준 오늘 인덱스 (0=월) */
+    const today = new Date();
+    const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
+
+    const chartContainer = document.querySelector('.bar-chart');
+
+    weeklyWorkedHours.forEach((hour, i) => {
+        // bar-item
+        const barItem = document.createElement('div');
+        barItem.className = 'bar-item';
+
+        // bar
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.style.height = (hour * 15) + 'px';
+        bar.dataset.day = weekdays[i];
+        bar.dataset.hours = hour;
+
+        const barValue = document.createElement('span');
+        barValue.className = 'bar-value';
+        barValue.textContent = hour + 'h';
+        bar.appendChild(barValue);
+
+        // label
+        const barLabel = document.createElement('div');
+        barLabel.className = 'bar-label';
+        barLabel.textContent = weekdays[i];
+        if (i === todayIndex) barLabel.classList.add('today');
+
+        // bar-item에 붙이기
+        barItem.appendChild(bar);
+        barItem.appendChild(barLabel);
+
+        // chartContainer에 붙이기
+        chartContainer.appendChild(barItem);
+    });
+</script>
 </body>
 </html>
