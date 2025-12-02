@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skuniv.dfocus_project.mapper.CommuteMapper">
+
+    <!-- DTO 매핑 -->
+    <resultMap id="CommuteTimeMap" type="com.skuniv.dfocus_project.dto.commute.CommuteTimeDto">
+        <result property="empCode" column="emp_code"/>
+        <result property="workDate" column="work_date"/>
+        <result property="startTime" column="start_time"/>
+        <result property="workOffTime" column="work_off_time"/>
+        <result property="startNextDay" column="start_next_day"/>
+        <result property="endNextDay" column="start_end_day"/>
+    </resultMap>
+
+
+    <!-- 1) 출근 기록 여부 확인 -->
+    <select id="isAlreadyCommute" resultType="boolean">
+        SELECT
+            CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+        FROM webcommuterecord
+        WHERE emp_code = #{username}
+          AND work_date = #{today}
+    </select>
+
+
+    <!-- 2) 출근 저장 -->
+    <insert id="setWorkOnTime">
+        INSERT INTO webcommuterecord (
+            emp_code, work_date, start_time, start_next_day, end_next_day
+        ) VALUES (
+                     #{username},
+                     #{today},
+                     #{now},
+                     0,        -- 출근 기준에서는 next_day 아님
+                     0         -- 퇴근 전이므로 endDay도 false
+                 )
+    </insert>
+
+
+    <!-- 3) 가장 최근의 출근(퇴근 없음) 기록 가져오기 -->
+    <select id="getLatestWorkOnTime" resultMap="CommuteTimeMap">
+        SELECT TOP 1
+            emp_code,
+            work_date,
+            start_time,
+            end_time,
+            start_next_day,
+            end_next_day
+        FROM webcommuterecord
+        WHERE emp_code = #{username}
+        ORDER BY work_date DESC, start_time DESC
+    </select>
+
+
+    <!-- 4) 퇴근 처리 (퇴근 시간 + start_end_day 업데이트) -->
+    <update id="setWorkOffTime">
+        UPDATE webcommuterecord
+        SET
+            end_time = #{workOffTime},
+            end_next_day = #{startEndDay}
+        WHERE emp_code = #{empCode}
+          AND work_date = #{workDate}
+          AND end_time IS NULL
+    </update>
+</mapper>
