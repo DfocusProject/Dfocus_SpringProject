@@ -32,7 +32,7 @@ public class AttController {
     public String search(
             @RequestParam(required = false) String attType,
             @RequestParam(required = false) LocalDate workDate,
-            @RequestParam(required = false) List<String> empCode,
+            @RequestParam(required = false) List<String> empCodes,
             Model model,
             Authentication authentication
     ) {
@@ -45,43 +45,19 @@ public class AttController {
 
         List<String> searchEmpCode;
         if ("LEADER".equals(loginRole)) {
-            searchEmpCode = empCode;
+            searchEmpCode = empCodes;
         } else {
             searchEmpCode = Collections.singletonList(loginUser.getUsername());
         }
 
         // 근태 대상자 조회 + 휴일 로직 처리
         List<AttEmpViewDto> empList = attService.getAttEmpListWithHolidayCheck(attType, workDate, searchEmpCode, deptName);
-        System.out.println(empList.getFirst().getStartTime());
-        System.out.println(empList.getFirst().getEndTime());
         model.addAttribute("attType", attType);
         model.addAttribute("workDate", workDate);
         model.addAttribute("empList", empList);
 
         return "att/general";
     }
-
-
-    @PostMapping("/{type}") // type = "on" 또는 "off"
-    public String recordCommute(
-            @PathVariable String type,
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        String empCode = userDetails.getUsername(); // 로그인 사용자 empCode
-        LocalTime now = LocalTime.now();
-        LocalDate today = LocalDate.now();
-
-        if ("on".equals(type)) {
-            attService.recordOnCommute(empCode, today, now);
-        } else if ("off".equals(type)) {
-            attService.recordOffCommute(empCode, today, now);
-        } else {
-            throw new IllegalArgumentException("Invalid commute type: " + type);
-        }
-
-        return "redirect:/home";
-    }
-
 
     @PostMapping("/save")
     public String saveAttendance(@ModelAttribute AttendanceRequestDto request,

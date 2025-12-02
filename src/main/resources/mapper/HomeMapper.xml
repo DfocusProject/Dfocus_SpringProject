@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.skuniv.dfocus_project.mapper.HomeMapper">
+
+    <select id="getLatestCommuteRecord" resultType="com.skuniv.dfocus_project.dto.home.CommuteDto">
+        SELECT TOP 1
+            work_date AS workDate,
+            start_time AS workOnTime,
+            end_time AS workOffTime
+        FROM
+            WEBCOMMUTERECORD
+        WHERE
+            emp_code = #{username}
+        ORDER BY
+            work_date DESC
+        </select>
+    <select id="getAnnualLeaveRecord" resultType="com.skuniv.dfocus_project.dto.home.AnnualLeaveDto">
+        SELECT
+            use_day AS useDay,
+            BALANCE_DAY AS balanceDay
+        FROM WEBANNUALDETAIL
+        where emp_code = #{username}
+        and year = ${now}
+    </select>
+</mapper>
