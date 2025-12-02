@@ -93,8 +93,11 @@
                             <th>상태</th>
                         </tr>
                         </thead>
-                        <tbody th:each="list : ${lists}">
-                        <tr class="doc-row">
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(lists)}">
+                            <td colspan="7" class="no-data" style="text-align: center">조회된 데이터가 없습니다.</td>
+                        </tr>
+                        <tr class="doc-row" th:each="list : ${lists}" th:unless="${#lists.isEmpty(lists)}">
                             <td>
                                 <input type="checkbox" class="rowCheck">
                                 <input type="hidden" class="requestId" th:value="${list.requestId}">
@@ -105,14 +108,15 @@
                             <td th:text="${list.targetEmpCode}"></td>
                             <td th:text="${list.reqAttType}"></td>
                             <td>
-                              <span th:switch="${list.status}">
-                                  <span th:case="'SAVED'">저장</span>
-                                  <span th:case="'APPROVED'">승인</span>
-                                  <span th:case="'REJECTED'">반려</span>
-                                  <span th:case="'REQUESTED'">상신</span>
-                              </span>
+      <span th:switch="${list.status}">
+          <span th:case="'SAVED'">저장</span>
+          <span th:case="'APPROVED'">승인</span>
+          <span th:case="'REJECTED'">반려</span>
+          <span th:case="'REQUESTED'">상신</span>
+      </span>
                             </td>
                         </tr>
+
                         </tbody>
                     </table>
                 </div>
