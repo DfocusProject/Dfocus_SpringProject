@@ -4,11 +4,13 @@ import com.skuniv.dfocus_project.domain.Time.TimeRange;
 import com.skuniv.dfocus_project.dto.BaseAttEmpDto;
 import com.skuniv.dfocus_project.dto.ExistingEtcRequestDto;
 import com.skuniv.dfocus_project.dto.TimeRecordDto;
+import com.skuniv.dfocus_project.dto.home.DurationDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Year;
 import java.util.List;
 import java.util.Map;
 
@@ -105,4 +107,6 @@ public interface AttMapper {
     List<TimeRange> getAttRequestRecord(LocalDate startDate, LocalDate endDate, String empCode, String attType);
 
     List<TimeRange> getActualCommuteRecordList(LocalDate startDate, LocalDate endDate, String empCode);
+
+    List<DurationDto> getExpectedDay(String empCode, Year year);
 }

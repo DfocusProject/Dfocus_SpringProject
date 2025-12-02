@@ -20,25 +20,22 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/deptAttSearch")
-@SessionAttributes("deptAttSearchDto")  // 검색조건 DTO를 세션에서 유지
 public class deptHistoryController {
     private final DeptHistoryService deptHistoryService;
     @ModelAttribute("deptAttSearchDto")
     public DeptAttSearchDto createSearchDto(Authentication authentication) {
         CustomUserDetails loginUser = (CustomUserDetails) authentication.getPrincipal();
-
+        String deptCode = loginUser.getDeptCode();
         DeptAttSearchDto dto = new DeptAttSearchDto();
+        List<String> childDeptList = deptHistoryService.getChildDeptList(deptCode);
+        dto.setChildDeptList(childDeptList);
         dto.setWorkDate(LocalDate.now());
         dto.setDepartment(loginUser.getDeptCode());
         return dto;
     }
 
     @GetMapping("/main")
-    public String main(Authentication authentication, Model model) {
-        CustomUserDetails loginUser = (CustomUserDetails) authentication.getPrincipal();
-        String deptCode = loginUser.getDeptCode();
-        List<String> childDeptList = deptHistoryService.getChildDeptList(deptCode);
-        model.addAttribute("childeDeptList", childDeptList);
+    public String main() {
         return "deptAttSearch/main";
     }
     @GetMapping("/search")

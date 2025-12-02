@@ -1,4 +1,4 @@
-package com.skuniv.dfocus_project.controller;
+package com.skuniv.dfocus_project.controller.pattern;
 
 import com.skuniv.dfocus_project.domain.pattern.Pattern;
 import com.skuniv.dfocus_project.domain.pattern.ShiftType;
