@@ -1,8 +1,10 @@
 package com.skuniv.dfocus_project.controller.common;
 
 import com.skuniv.dfocus_project.CustomUserDetails;
+import com.skuniv.dfocus_project.dto.EmpDto;
 import com.skuniv.dfocus_project.dto.home.AnnualLeaveDto;
 import com.skuniv.dfocus_project.dto.home.CommuteDto;
+import com.skuniv.dfocus_project.service.EmpService;
 import com.skuniv.dfocus_project.service.HomeService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -19,17 +21,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomeController {
     private final HomeService homeService;
+    private final EmpService empService;
     @GetMapping("/home")
     public String HomeController(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         CommuteDto commuteDto = homeService.getLatestCommuteRecord(userDetails.getUsername());
         AnnualLeaveDto annualLeaveDto = homeService.getAnnualLeaveRecord(userDetails.getUsername());
         List<Double> weeklyWorkedHours = homeService.getWeeklyWorkedHours(userDetails.getUsername());
-        for(Double weeklyWorkedHour : weeklyWorkedHours){
-            System.out.println("weeklyWorkedHour = " + weeklyWorkedHour);
-        }
+        EmpDto empInfo = empService.getEmpInfo(userDetails.getUsername());
         model.addAttribute("commuteDto", commuteDto);
         model.addAttribute("annualLeaveDto", annualLeaveDto);
         model.addAttribute("weeklyWorkedHours", weeklyWorkedHours);
+        model.addAttribute("empInfo", empInfo);
         return "home";
     }
     @PostMapping("/clearSearchSession")

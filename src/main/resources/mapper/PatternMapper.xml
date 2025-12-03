@@ -66,6 +66,10 @@
         FROM WEBSHIFTTYPE
         WHERE shift_name = #{patternName}
     </select>
+    <delete id="deletePattern" parameterType="java.lang.String">
+        DELETE FROM WEBWORKPATTERN
+        WHERE work_pattern_code = #{patternCode}
+    </delete>
 
 
 </mapper>

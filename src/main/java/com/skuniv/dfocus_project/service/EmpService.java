@@ -110,4 +110,8 @@ public class EmpService {
             }
         }
     }
+
+    public EmpDto getEmpInfo(String username) {
+        return empMapper.getDashBoardEmpInfo(username);
+    }
 }

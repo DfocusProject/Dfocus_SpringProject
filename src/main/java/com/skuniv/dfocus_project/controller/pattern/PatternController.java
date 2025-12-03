@@ -66,4 +66,10 @@ public class PatternController {
         patternService.savePattern(form);
         return "redirect:/pattern/main";
     }
+
+    @PostMapping("/delete")
+    public String deletePattern(@RequestParam String patternCode) {
+        patternService.deletePattern(patternCode);
+        return "redirect:/pattern/main";
+    }
 }

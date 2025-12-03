@@ -4,16 +4,6 @@
 
 <mapper namespace="com.skuniv.dfocus_project.mapper.CommuteMapper">
 
-    <!-- DTO 매핑 -->
-    <resultMap id="CommuteTimeMap" type="com.skuniv.dfocus_project.dto.commute.CommuteTimeDto">
-        <result property="empCode" column="emp_code"/>
-        <result property="workDate" column="work_date"/>
-        <result property="startTime" column="start_time"/>
-        <result property="workOffTime" column="work_off_time"/>
-        <result property="startNextDay" column="start_next_day"/>
-        <result property="endNextDay" column="start_end_day"/>
-    </resultMap>
-
 
     <!-- 1) 출근 기록 여부 확인 -->
     <select id="isAlreadyCommute" resultType="boolean">
@@ -40,14 +30,14 @@
 
 
     <!-- 3) 가장 최근의 출근(퇴근 없음) 기록 가져오기 -->
-    <select id="getLatestWorkOnTime" resultMap="CommuteTimeMap">
+    <select id="getLatestWorkOnTime" resultType="com.skuniv.dfocus_project.dto.commute.CommuteTimeDto">
         SELECT TOP 1
-            emp_code,
-            work_date,
-            start_time,
-            end_time,
-            start_next_day,
-            end_next_day
+            emp_code AS empCode,
+            work_date AS workDate,
+            start_time AS startTime,
+            end_time AS endTime,
+            start_next_day AS startNextDay,
+            end_next_day AS endNextDay
         FROM webcommuterecord
         WHERE emp_code = #{username}
         ORDER BY work_date DESC, start_time DESC
@@ -58,8 +48,8 @@
     <update id="setWorkOffTime">
         UPDATE webcommuterecord
         SET
-            end_time = #{workOffTime},
-            end_next_day = #{startEndDay}
+            end_time = #{endTime},
+            end_next_day = #{endNextDay}
         WHERE emp_code = #{empCode}
           AND work_date = #{workDate}
           AND end_time IS NULL

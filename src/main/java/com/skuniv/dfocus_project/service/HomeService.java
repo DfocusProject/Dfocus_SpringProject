@@ -7,7 +7,6 @@ import com.skuniv.dfocus_project.dto.home.DurationDto;
 import com.skuniv.dfocus_project.mapper.AttMapper;
 import com.skuniv.dfocus_project.mapper.HomeMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -33,21 +32,25 @@ public class HomeService {
 
         // 2. 연차 요청 리스트 가져오기 (start_date ~ end_date 포함)
         List<DurationDto> requestedDayList = attMapper.getExpectedDay(username, Year.now());
-
         double expectedDay = 0.0;
 
         // 3. 각 요청의 기간을 1일 단위로 순회
         for (DurationDto requestedDay : requestedDayList) {
-            LocalDate start = requestedDay.getStartDate();
-            LocalDate end = requestedDay.getEndDate();
+            if(requestedDay != null) {
+                LocalDate start = requestedDay.getStartDate();
+                LocalDate end = requestedDay.getEndDate();
 
-            for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
-                // 휴일이나 제외 날짜가 아니면 계산
-                if (!attMapper.isHoliday(username, date)) {
-                    expectedDay += 1.0;
+                for (LocalDate date = start; !date.isAfter(end); date = date.plusDays(1)) {
+                    // 휴일이나 제외 날짜가 아니면 계산
+                    if (!attMapper.isHoliday(username, date)) {
+                        expectedDay += 1.0;
+                    }
                 }
             }
         }
+        // 반차 요청 개수 가져오기
+        Double halfTypeCount = attMapper.getHalfRequestedCount(username, Year.now());
+        expectedDay += halfTypeCount;
         // 6. 계산된 예정 연차 세팅
         annualLeaveDto.setExpectedDay(expectedDay);
 
