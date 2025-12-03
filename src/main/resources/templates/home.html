@@ -28,6 +28,128 @@
         <!-- 대시보드 -->
         <div class="dashboard-grid">
 
+            <!-- 사원 정보 -->
+            <div class="card task-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">사원 정보</div>
+                        <div class="card-subtitle">Today's Tasks</div>
+                    </div>
+                </div>
+
+                <div class="task-stats">
+                    <div class="task-stat">
+                        <div class="task-stat-circle total">
+                            <span th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
+                        </div>
+                        <div class="task-stat-info">
+                            <span class="task-stat-value"
+                                  th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
+                            <span class="task-stat-label">전체 업무</span>
+                        </div>
+                    </div>
+
+                    <div class="task-stat">
+                        <div class="task-stat-circle completed">
+                            <span th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
+                        </div>
+                        <div class="task-stat-info">
+                            <span class="task-stat-value" th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
+                            <span class="task-stat-label">완료</span>
+                        </div>
+                    </div>
+
+                    <div class="task-stat">
+                        <div class="task-stat-circle pending">
+                            <span th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
+                        </div>
+                        <div class="task-stat-info">
+                            <span class="task-stat-value"
+                                  th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
+                            <span class="task-stat-label">진행중</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-list">
+                    <div class="task-item"
+                         th:each="task : ${tasks}"
+                         th:classappend="'priority-' + ${task.priority}">
+                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
+
+                        <div class="task-content">
+                            <div class="task-title" th:text="${task.title}">API 문서 작성</div>
+                            <div class="task-meta">
+                                <span class="task-time">⏰ <span th:text="${task.dueTime}">14:00</span></span>
+                                <span th:text="${task.category}">개발</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 오늘의 알림 -->
+            <div class="card task-card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">오늘의 알림</div>
+                        <div class="card-subtitle">Today's Tasks</div>
+                    </div>
+                </div>
+
+                <div class="task-stats">
+                    <div class="task-stat">
+                        <div class="task-stat-circle total">
+                            <span th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
+                        </div>
+                        <div class="task-stat-info">
+                            <span class="task-stat-value"
+                                  th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
+                            <span class="task-stat-label">전체 업무</span>
+                        </div>
+                    </div>
+
+                    <div class="task-stat">
+                        <div class="task-stat-circle completed">
+                            <span th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
+                        </div>
+                        <div class="task-stat-info">
+                            <span class="task-stat-value" th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
+                            <span class="task-stat-label">완료</span>
+                        </div>
+                    </div>
+
+                    <div class="task-stat">
+                        <div class="task-stat-circle pending">
+                            <span th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
+                        </div>
+                        <div class="task-stat-info">
+                            <span class="task-stat-value"
+                                  th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
+                            <span class="task-stat-label">진행중</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="task-list">
+                    <div class="task-item"
+                         th:each="task : ${tasks}"
+                         th:classappend="'priority-' + ${task.priority}">
+                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
+
+                        <div class="task-content">
+                            <div class="task-title" th:text="${task.title}">API 문서 작성</div>
+                            <div class="task-meta">
+                                <span class="task-time">⏰ <span th:text="${task.dueTime}">14:00</span></span>
+                                <span th:text="${task.category}">개발</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
             <!-- 출퇴근 관리 -->
             <div class="card attendance-card">
                 <div class="card-header">

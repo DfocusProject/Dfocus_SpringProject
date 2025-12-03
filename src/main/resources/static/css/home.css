@@ -46,13 +46,15 @@
 main {
     flex: 1 !important;
     width: 100% !important;
-    height: auto;
 }
 .container {
+    display: flex;
+    justify-content: center;   /* 세로 가운데 */
+    align-items: center;       /* 가로 가운데 */
     flex: 1 !important;
     width: 100% !important;
-    padding: 20px; !important;
     height: 100%; !important;
+    overflow-y: auto;          /* 스크롤 가능 */
 }
 
 .container h2 {
@@ -66,9 +68,11 @@ main {
 }
 
 .dashboard-grid {
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+    padding: 20px;
 }
 /* 연차 현황 카드 */
 .annual-leave-card {

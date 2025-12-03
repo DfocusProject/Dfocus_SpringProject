@@ -23,7 +23,7 @@ body {
 
 main {
     display: flex;
-    height: 100%;
+    height: calc(100% - 80px);
 }
 
 /**************************************
@@ -43,6 +43,7 @@ main {
     padding: 10px 20px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000;
+    white-space: nowrap;
 }
 
 .header-left {
@@ -78,6 +79,7 @@ main {
     background-color: #2b2f33;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     z-index: 900;
+    white-space: nowrap;
 }
 
 .sidebar-header {
