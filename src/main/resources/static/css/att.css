@@ -10,10 +10,13 @@ body {
 
 /* Search Box */
 .search-box {
+    display: block;
     border: 2px solid #1e88e5;
-    padding: 10px;
     background-color: #fff;
-    margin: 10px 20px; /* ✅ 좌우 margin 제거 */
+    padding: 10px;
+    margin: 10px 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .search-box select,
@@ -31,6 +34,7 @@ body {
     padding: 6px 12px;
     cursor: pointer;
     border-radius: 3px;
+    white-space: nowrap;
 }
 
 .note {
@@ -96,6 +100,7 @@ input[readonly]:focus {
     overflow-y: hidden;
     max-width: 100%;         /* 컨테이너 밖으로 못 나가게 */
     box-sizing: border-box;
+    margin: 0 20px;
 }
 
 /* 헤더 스타일 */

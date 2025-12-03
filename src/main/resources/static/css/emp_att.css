@@ -41,6 +41,8 @@ table td {
     background-color: #fff;
     padding: 10px;
     margin-bottom: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .search-box label {
@@ -62,20 +64,22 @@ table td {
     padding: 6px 12px;
     cursor: pointer;
     border-radius: 3px;
+    white-space: nowrap;
 }
 
 .search-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    flex-wrap: wrap;    /* row 안에서는 줄 바뀌어도 OK */
-    margin-bottom: 10px;
+    row-gap: 10px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
 }
 
 .search-row label {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 10px;
 }
 
 .btnSearchEmpAtt {
@@ -340,17 +344,12 @@ table td {
     padding: 20px;
 }
 
-/* 검색행 여백 강화 */
-.search-row {
-    gap: 35px !important;
-    margin-bottom: 12px !important;
-}
-
 /* 검색 input/select 크기 통일 */
 .search-box input,
 .search-box select {
     height: 32px;
-    min-width: 140px;
+    min-width: 50px;
+    max-width: 140px;
 }
 
 /* 조회 버튼 (파란색) */
@@ -368,6 +367,7 @@ table td {
 .btn.approval {
     background: #2d7df4 !important;
     padding: 8px 18px !important;
+    color: #fff;
     color: #fff;
     border-radius: 4px !important;
 }
@@ -457,9 +457,9 @@ table td {
 
 /* 화면이 좁아지면 자동으로 wrap */
 @media (max-width: 1500px) {     /* 여기 기준 너가 조절 가능! */
-    .search-box .attform {
-        flex-wrap: wrap;         /* 좁아지면 줄바꿈 */
-    }
+    /*.search-box .attform {*/
+    /*    flex-wrap: wrap;         !* 좁아지면 줄바꿈 *!*/
+    /*}*/
     .search-box .right {
         margin-left: 0;
         justify-content: flex-end;
