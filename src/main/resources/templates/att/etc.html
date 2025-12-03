@@ -30,7 +30,7 @@
                 <input type="text"
                        th:field="*{empCode}"
                        placeholder="사번 입력"
-                       th:readonly="${!#authorization.expression('hasRole(''LEADER'')')}" />
+                       th:readonly="${!#authorization.expression('hasRole(''LEADER'')')}"/>
 
             </label>
 
@@ -54,7 +54,7 @@
 
             <label>부서</label>
             <input type="text" id="deptName" name="deptName"
-                   th:value="${#authentication.principal.deptName}" readonly placeholder="부서명" />
+                   th:value="${#authentication.principal.deptName}" readonly placeholder="부서명"/>
 
             <button type="submit" id="btnSearchEtc">조회</button>
             <span class="note">※ 근무일 선택 후 '조회' 클릭</span>
@@ -100,91 +100,94 @@
             <button class="btn btn-cancel" id="btnRequestCancel">상신 취소</button>
         </div>
 
-        <!-- 조회 결과 목록 -->
-        <table id="attTable">
-            <thead>
-            <tr>
-                <th><input type="checkbox" id="checkAll"></th>
-                <th>사번</th>
-                <th>성명</th>
-                <th>직위</th>
-                <th>부서</th>
-                <th>계획</th>
-                <th>실적</th>
-                <th>변경근무</th>
-                <th>시작일</th>
-                <th>종료일</th>
-                <th>연차잔여</th>
-                <th>사유</th>
-                <th>신청시각</th>
-                <th>상태</th>
-                <th>신청자</th>
-            </tr>
-            </thead>
+        <div class="attAprlList">
+            <!-- 조회 결과 목록 -->
+            <table id="attTable">
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="checkAll"></th>
+                    <th>사번</th>
+                    <th>성명</th>
+                    <th>직위</th>
+                    <th>부서</th>
+                    <th>계획</th>
+                    <th>실적</th>
+                    <th>변경근무</th>
+                    <th>시작일</th>
+                    <th>종료일</th>
+                    <th>연차잔여</th>
+                    <th>사유</th>
+                    <th>신청시각</th>
+                    <th>상태</th>
+                    <th>신청자</th>
+                </tr>
+                </thead>
 
-            <tbody id="tableBodyE">
-            <tr th:each="emp : ${empList}"
-                th:classappend="${emp.status} == 'APPROVED' ? 'approved' : ''">
-                <td>
-                    <input type="checkbox" class="rowCheck">
-                    <input type="hidden" class="requestId" th:value="${emp.requestId}">
-                </td>
-                <td class="empCode" th:text="${emp.empCode}"></td>
-                <td class="name" th:text="${emp.name}"></td>
-                <td class="position" th:text="${emp.position}"></td>
-                <td class="department" th:text="${emp.department}"></td>
-                <td class="planType" th:text="${emp.planType}"></td>
-                <td class="realWorkRecord" th:text="${emp.realWorkRecord}"></td>
+                <tbody id="tableBodyE">
+                <tr th:each="emp : ${empList}"
+                    th:classappend="${emp.status} == 'APPROVED' ? 'approved' : ''">
+                    <td>
+                        <input type="checkbox" class="rowCheck">
+                        <input type="hidden" class="requestId" th:value="${emp.requestId}">
+                    </td>
+                    <td class="empCode" th:text="${emp.empCode}"></td>
+                    <td class="name" th:text="${emp.name}"></td>
+                    <td class="position" th:text="${emp.position}"></td>
+                    <td class="department" th:text="${emp.department}"></td>
+                    <td class="planType" th:text="${emp.planType}"></td>
+                    <td class="realWorkRecord" th:text="${emp.realWorkRecord}"></td>
 
-                <!-- 변경근무 newShiftType -->
-                <td>
-                    <select class="newShiftType" required>
-                        <option value="">선택</option>
-                        <option value="05" th:selected="${emp.newShiftType == '05'}">주간</option>
-                        <option value="05-A" th:selected="${emp.newShiftType == '05-A'}">현장실습</option>
-                        <option value="06" th:selected="${emp.newShiftType == '06'}">연차</option>
-                        <option value="10" th:selected="${emp.newShiftType == '10'}">출장</option>
-                        <option value="31" th:selected="${emp.newShiftType == '31'}">4전</option>
-                        <option value="32" th:selected="${emp.newShiftType == '32'}">4후</option>
-                        <option value="33" th:selected="${emp.newShiftType == '33'}">4야</option>
-                        <option value="45" th:selected="${emp.newShiftType == '45'}">3전</option>
-                        <option value="46" th:selected="${emp.newShiftType == '46'}">3후</option>
-                        <option value="61" th:selected="${emp.newShiftType == '61'}">휴직</option>
-                        <option value="64" th:selected="${emp.newShiftType == '64'}">육아휴직</option>
-                        <option value="62" th:selected="${emp.newShiftType == '62'}">사외교육</option>
-                    </select>
-                </td>
+                    <!-- 변경근무 newShiftType -->
+                    <td>
+                        <select class="newShiftType" required>
+                            <option value="">선택</option>
+                            <option value="05" th:selected="${emp.newShiftType == '05'}">주간</option>
+                            <option value="05-A" th:selected="${emp.newShiftType == '05-A'}">현장실습</option>
+                            <option value="06" th:selected="${emp.newShiftType == '06'}">연차</option>
+                            <option value="10" th:selected="${emp.newShiftType == '10'}">출장</option>
+                            <option value="31" th:selected="${emp.newShiftType == '31'}">4전</option>
+                            <option value="32" th:selected="${emp.newShiftType == '32'}">4후</option>
+                            <option value="33" th:selected="${emp.newShiftType == '33'}">4야</option>
+                            <option value="45" th:selected="${emp.newShiftType == '45'}">3전</option>
+                            <option value="46" th:selected="${emp.newShiftType == '46'}">3후</option>
+                            <option value="61" th:selected="${emp.newShiftType == '61'}">휴직</option>
+                            <option value="64" th:selected="${emp.newShiftType == '64'}">육아휴직</option>
+                            <option value="62" th:selected="${emp.newShiftType == '62'}">사외교육</option>
+                        </select>
+                    </td>
 
 
-                <td><input type="date" class="startDate" th:value="${emp.startDate}"></td>
-                <td><input type="date" class="endDate" required th:value="${emp.endDate}"></td>
-                <td class="balanceDay" th:text="${emp.balanceDay}"></td>
+                    <td><input type="date" class="startDate" th:value="${emp.startDate}"></td>
+                    <td><input type="date" class="endDate" required th:value="${emp.endDate}"></td>
+                    <td class="balanceDay" th:text="${emp.balanceDay}"></td>
 
-                <td><input type="text" class="reason" required th:value="${emp.reason}"></td>
+                    <td><input type="text" class="reason" required th:value="${emp.reason}"></td>
 
-                <!-- 신청시각 isTodayRequest -->
-                <td>
-                    <select id="isTodayRequest" name="isTodayRequest" class="isTodayRequest" required>
-                        <option value="">선택</option>
-                        <option value="true" th:selected="${emp.isTodayRequest} == true">1일 이전 신청</option>
-                        <option value="false" th:selected="${emp.isTodayRequest} == false">당일 신청</option>
-                    </select>
-                </td>
-                <td>
+                    <!-- 신청시각 isTodayRequest -->
+                    <td>
+                        <select id="isTodayRequest" name="isTodayRequest" class="isTodayRequest" required>
+                            <option value="">선택</option>
+                            <option value="true" th:selected="${emp.isTodayRequest} == true">1일 이전 신청</option>
+                            <option value="false" th:selected="${emp.isTodayRequest} == false">당일 신청</option>
+                        </select>
+                    </td>
+                    <td>
                       <span th:switch="${emp.status}">
                           <span th:case="'SAVED'">저장</span>
                           <span th:case="'APPROVED'">승인</span>
                           <span th:case="'REJECTED'">반려</span>
                           <span th:case="'REQUESTED'">상신</span>
                       </span>
-                </td>
-                <td th:text="${emp.applicant}"></td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(empList)}">
-                <td colspan="15" style="text-align:center;">조회된 데이터가 없습니다.</td>
-            </tr>
-            </tbody>
-        </table>
+                    </td>
+                    <td th:text="${emp.applicant}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(empList)}">
+                    <td colspan="15" style="text-align:center;">조회된 데이터가 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+
+        </div>
 
     </section>
 </main>

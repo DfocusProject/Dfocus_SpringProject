@@ -1,4 +1,3 @@
-<!-- templates/approval/main.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
@@ -29,7 +28,7 @@
                     <form th:action="@{/myHistory/search}" method="get"
                           th:object="${myHistorySearchDto}">
 
-                    <div class="search-row">
+                        <div class="search-row" style="margin-bottom: 10px;">
                             <label>대상일자
                                 <input type="date" th:field="*{startDate}" required>
                                 <span>~</span>
@@ -45,7 +44,9 @@
                                     <option value="REJECTED">반려</option>
                                 </select>
                             </label>
-                            <button type="submit" id="btnSearchMyhistory" class="btnSearchMyhistory">조회</button>
+                            <div style="padding: 0 20px 0 0">
+                                <button type="submit" id="btnSearchMyhistory" class="btnSearchMyhistory">조회</button>
+                            </div>
                         </div>
 
                         <div class="search-row">
@@ -80,7 +81,7 @@
                         </div>
                     </form>
                 </div>
-                 <div class="list tab-content active">
+                <div class="attAprlList">
                     <table>
                         <thead>
                         <tr>

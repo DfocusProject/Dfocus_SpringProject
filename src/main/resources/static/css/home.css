@@ -1,9 +1,3 @@
-body {
-    font-family: 'Segoe UI', 'Malgun Gothic', sans-serif;
-    background: #f5f6f8;
-    color: #2c3e50;
-}
-
 .header {
     background: white;
     border-bottom: 1px solid #e1e4e8;
@@ -49,10 +43,18 @@ body {
 /*    !*padding: 30px 40px;*!*/
 /*    flex: 1;*/
 /*}*/
-main .container {
+main {
     flex: 1 !important;
     width: 100% !important;
-    padding: 20px; !important;
+}
+.container {
+    display: flex;
+    justify-content: center;   /* 세로 가운데 */
+    align-items: center;       /* 가로 가운데 */
+    flex: 1 !important;
+    width: 100% !important;
+    height: 100%; !important;
+    overflow-y: auto;          /* 스크롤 가능 */
 }
 
 .container h2 {
@@ -66,9 +68,11 @@ main .container {
 }
 
 .dashboard-grid {
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+    padding: 20px;
 }
 /* 연차 현황 카드 */
 .annual-leave-card {
@@ -135,7 +139,7 @@ main .container {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #3498db, #2980b9);
+    background: linear-gradient(180deg, #4dabff 0%, #1e88e5 100%);
     transition: width 0.3s ease;
 }
 
@@ -171,7 +175,7 @@ main .container {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    height: 150px;
+    height: 200px;
     margin-top: 20px;
     padding: 0 10px;
     border-bottom: 2px solid #e1e4e8;
@@ -186,15 +190,17 @@ main .container {
 }
 
 .bar {
-    width: 60%;
-    background: linear-gradient(180deg, #3498db, #2980b9);
+    width: 30%;
+    background: #404040 100%;
     border-radius: 4px 4px 0 0;
     position: relative;
     transition: all 0.3s ease;
 }
 
 .bar:hover {
-    background: linear-gradient(180deg, #5dade2, #3498db);
+    transform: translateY(-4px) scale(1.05);
+    background: linear-gradient(180deg, #666 0%, #333 100%);
+    box-shadow: 0px 6px 12px rgba(14, 14, 14, 0.2);
 }
 
 .bar-value {
@@ -203,24 +209,51 @@ main .container {
     left: 50%;
     transform: translateX(-50%);
     font-size: 12px;
-    font-weight: 600;
-    color: #2c3e50;
+    font-weight: bold;
+    color: #222;
+    transition: opacity 0.2s ease;
 }
 
+
 .bar-label {
+    margin-top: 6px;
     font-size: 12px;
-    color: #7f8c8d;
+    color: #555;
     font-weight: 500;
 }
 
 .bar-label.today {
-    color: #3498db;
-    font-weight: 700;
+    color: #e74c3c;
+    font-weight: bold;
+    text-decoration: underline;
+    text-shadow: 0px 0px 5px rgba(231, 76, 60, 0.5);
 }
+
+
+.bar.today-bar {
+    background: linear-gradient(180deg, #e74c3c 0%, #c0392b 100%);
+    box-shadow: 0px 4px 5px rgba(231, 76, 60, 0.4);
+}
+
+/* 호버 시 더 강조 */
+.bar.today-bar:hover {
+    background: linear-gradient(180deg, #ff5b5b 0%, #c0392b 100%);
+    transform: translateY(-6px) scale(1.07);
+    box-shadow: 0px 8px 14px rgba(231, 76, 60, 0.5);
+}
+
+.bar-value.today-value {
+    color: #e74c3c;
+    font-weight: 700;
+    opacity: 1 !important;
+    text-shadow: 0px 0px 6px rgba(231, 76, 60, 0.5);
+}
+
 
 .time-display {
     text-align: center;
     margin: 20px 0;
+    display: flex;
 }
 
 .time-label {
@@ -256,18 +289,18 @@ main .container {
     background: #f8f9fa;
     border-radius: 6px;
     text-align: center;
+    width: 50%;
+}
+.attendance-card span,
+.status-value{
+    color: #555;
+    font-size: 14px;
 }
 
 .status-label {
     font-size: 11px;
     color: #7f8c8d;
     margin-bottom: 6px;
-}
-
-.status-value {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2c3e50;
 }
 
 .btn-group {

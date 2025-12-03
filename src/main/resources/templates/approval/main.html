@@ -29,7 +29,7 @@
 
                     <form th:action="@{/approval/search}" th:object="${approvalSearchDto}" method="get">
 
-                        <div class="search-row">
+                        <div class="search-row" style="margin-bottom: 10px;">
                             <label>대상일자
                                 <input type="date" th:field="*{startDate}" required>
                                 <span>~</span>
@@ -39,10 +39,18 @@
                             <label>사번
                                 <input type="text" th:field="*{empCode}" placeholder="사번 입력"/>
                             </label>
-                            <button type="submit" class="btnSearchEmpAtt">조회</button>
+                            <div style="padding: 0 20px 0 0">
+                                <button type="submit" class="btnSearchEmpAtt">조회</button>
+                            </div>
                         </div>
 
                         <div class="search-row">
+                            <label>부서
+                                <input type="text" name="department" style="max-width: 100px;"
+                                       th:value="${#authentication.principal.deptCode}"
+                                       readonly placeholder="부서명"/>
+                            </label>
+
                             <label>근태유형
                                 <select th:field="*{reqType}">
                                     <option value="">전체</option>
@@ -69,12 +77,6 @@
                                     <option value="64">육아휴직</option>
                                     <option value="62">사외교육</option>
                                 </select>
-                            </label>
-
-                            <label>부서
-                            <input type="text" name="department"
-                                   th:value="${#authentication.principal.deptCode}"
-                                   readonly placeholder="부서명"/>
                             </label>
                         </div>
                     </form>
@@ -209,6 +211,12 @@
         </div>
     </div>
 </main>
+<script th:inline="javascript">
+    /* principal 객체 JSON으로 출력 */
+    var principal = /*[[${#authentication.principal}]]*/ null;
+    console.log("로그인 principal:", JSON.stringify(principal));
+</script>
+
 
 <script th:src="@{/js/script.js}"></script>
 <script th:src="@{/js/approval.js}"></script>
@@ -237,6 +245,5 @@
         }
     });
 </script>
-
 </body>
 </html>
