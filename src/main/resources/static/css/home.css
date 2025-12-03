@@ -180,18 +180,17 @@ main .container {
 }
 
 .bar {
-    width: 60%;
-    background: linear-gradient(180deg, #4dabff 0%, #1e88e5 100%);
+    width: 30%;
+    background: #404040 100%;
     border-radius: 4px 4px 0 0;
     position: relative;
     transition: all 0.3s ease;
-    box-shadow: 0px 2px 6px rgba(0,0,0,0.15);
 }
 
 .bar:hover {
     transform: translateY(-4px) scale(1.05);
-    background: linear-gradient(180deg, #64b5ff 0%, #1e88e5 100%);
-    box-shadow: 0px 6px 12px rgba(0,0,0,0.25);
+    background: linear-gradient(180deg, #666 0%, #333 100%);
+    box-shadow: 0px 6px 12px rgba(14, 14, 14, 0.2);
 }
 
 .bar-value {
@@ -201,9 +200,10 @@ main .container {
     transform: translateX(-50%);
     font-size: 12px;
     font-weight: bold;
-    color: #1e88e5;
+    color: #222;
     transition: opacity 0.2s ease;
 }
+
 
 .bar-label {
     margin-top: 6px;
@@ -213,30 +213,30 @@ main .container {
 }
 
 .bar-label.today {
-    color: #ff7043;
+    color: #e74c3c;
     font-weight: bold;
     text-decoration: underline;
-    text-shadow: 0px 0px 6px rgba(255, 112, 67, 0.5);
+    text-shadow: 0px 0px 5px rgba(231, 76, 60, 0.5);
 }
 
-/* 오늘 bar 강조 */
+
 .bar.today-bar {
-    background: linear-gradient(180deg, #ff8a65 0%, #ff7043 100%);  /* 오렌지 계열 강조 */
-    box-shadow: 0px 4px 10px rgba(255, 112, 67, 0.4);
+    background: linear-gradient(180deg, #e74c3c 0%, #c0392b 100%);
+    box-shadow: 0px 4px 5px rgba(231, 76, 60, 0.4);
 }
 
 /* 호버 시 더 강조 */
 .bar.today-bar:hover {
-    background: linear-gradient(180deg, #ffa383 0%, #ff7043 100%);
+    background: linear-gradient(180deg, #ff5b5b 0%, #c0392b 100%);
     transform: translateY(-6px) scale(1.07);
-    box-shadow: 0px 8px 14px rgba(255, 112, 67, 0.5);
+    box-shadow: 0px 8px 14px rgba(231, 76, 60, 0.5);
 }
-/* 오늘 bar의 value 강조 */
+
 .bar-value.today-value {
-    color: #ff7043;            /* 오렌지 계열 */
-    font-weight: 700;          /* 더 굵게 */
-    opacity: 1 !important;     /* 항상 보이도록 */
-    text-shadow: 0px 0px 6px rgba(255, 112, 67, 0.5);
+    color: #e74c3c;
+    font-weight: 700;
+    opacity: 1 !important;
+    text-shadow: 0px 0px 6px rgba(231, 76, 60, 0.5);
 }
 
 
@@ -291,12 +291,6 @@ main .container {
     font-size: 11px;
     color: #7f8c8d;
     margin-bottom: 6px;
-}
-
-.status-value {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2c3e50;
 }
 
 .btn-group {
