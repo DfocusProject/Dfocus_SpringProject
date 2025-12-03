@@ -24,11 +24,6 @@
     padding: 12px;
 }
 
-.left .attAprlList {
-    overflow-x: hidden;
-    white-space: normal;
-}
-
 table td:empty::after {
     content: "\00a0"; /* non-breaking space */
 }
@@ -158,6 +153,7 @@ table td {
     border-bottom: 2px solid #ccc;
     font-weight: 600;
     text-align: center;
+    white-space: nowrap;
 }
 
 .attAprlList tbody td {

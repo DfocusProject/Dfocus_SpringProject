@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>일반근태 신청</title>
-    <link rel="stylesheet" href="/css/common.css" />
-    <link rel="stylesheet" href="/css/att.css" />
+    <link rel="stylesheet" href="/css/common.css"/>
+    <link rel="stylesheet" href="/css/att.css"/>
 </head>
 <body data-page="general">
 
@@ -37,12 +37,12 @@
             <input type="text" id="empCode" name="empCode"
                    th:value="${#authorization.expression('hasRole(''LEADER'')') ? '' : #authentication.name}"
                    th:readonly="${!#authorization.expression('hasRole(''LEADER'')')}"
-                   placeholder="사번 입력" />
+                   placeholder="사번 입력"/>
 
             <!-- 부서 -->
             <label for="deptName">부서</label>
             <input type="text" id="deptName" name="deptName"
-                   th:value="${#authentication.principal.deptName}" readonly placeholder="부서명" />
+                   th:value="${#authentication.principal.deptName}" readonly placeholder="부서명"/>
 
             <button type="button" id="btnSearchGeneral">조회</button>
             <span class="note">※ 근무일 선택 후 '조회' 클릭</span>
@@ -56,98 +56,100 @@
             <button class="btn btn-cancel" id="btnRequestCancel">상신 취소</button>
         </div>
 
-        <!-- 테이블 -->
-        <table id="attTable">
-            <thead>
-            <tr>
-                <th><input type="checkbox" id="checkAll"></th>
-                <th>사번</th>
-                <th>성명</th>
-                <th>직위</th>
-                <th>부서</th>
-                <th>계획</th>
-                <th>실적</th>
-                <th>구분</th>
-                <th>사유</th>
-                <th>사유내용</th>
-                <th>시작시간</th>
-                <th>종료시간</th>
-                <th class="highlight">예상근로시간</th>
-                <th>상태</th>
-                <th>신청자</th>
-            </tr>
-            </thead>
-            <tbody id="tableBody">
-            <tr th:each="emp : ${empList}"
-                th:classappend="${emp.status} == 'APPROVED' ? 'approved' : ''"
-                th:data-half-type="${emp.halfType}"
-                th:data-start-time="${emp.startTime}"
-                th:data-end-time="${emp.endTime}"
-                th:data-plan-start="${emp.plannedStartTime}"
-                th:data-plan-end="${emp.plannedEndTime}"
-                th:data-req-start="${emp.startTime}"
-                th:data-req-end="${emp.endTime}"
-                th:data-start-next="${emp.startNextDay != null and emp.startNextDay} ? 'true' : 'false'"
-                th:data-end-next="${emp.endNextDay != null and emp.endNextDay} ? 'true' : 'false'"
-                th:data-plan-start-next="${emp.plannedStartNextDay != null and emp.plannedStartNextDay} ? 'true' : 'false'"
-                th:data-plan-end-next="${emp.plannedEndNextDay != null and emp.plannedEndNextDay} ? 'true' : 'false'">
+        <div class="attAprlList">
+            <!-- 테이블 -->
+            <table id="attTable">
+                <thead>
+                <tr>
+                    <th><input type="checkbox" id="checkAll"></th>
+                    <th>사번</th>
+                    <th>성명</th>
+                    <th>직위</th>
+                    <th>부서</th>
+                    <th>계획</th>
+                    <th>실적</th>
+                    <th>구분</th>
+                    <th>사유</th>
+                    <th>사유내용</th>
+                    <th>시작시간</th>
+                    <th>종료시간</th>
+                    <th class="highlight">예상근로시간</th>
+                    <th>상태</th>
+                    <th>신청자</th>
+                </tr>
+                </thead>
+                <tbody id="tableBody">
+                <tr th:each="emp : ${empList}"
+                    th:classappend="${emp.status} == 'APPROVED' ? 'approved' : ''"
+                    th:data-half-type="${emp.halfType}"
+                    th:data-start-time="${emp.startTime}"
+                    th:data-end-time="${emp.endTime}"
+                    th:data-plan-start="${emp.plannedStartTime}"
+                    th:data-plan-end="${emp.plannedEndTime}"
+                    th:data-req-start="${emp.startTime}"
+                    th:data-req-end="${emp.endTime}"
+                    th:data-start-next="${emp.startNextDay != null and emp.startNextDay} ? 'true' : 'false'"
+                    th:data-end-next="${emp.endNextDay != null and emp.endNextDay} ? 'true' : 'false'"
+                    th:data-plan-start-next="${emp.plannedStartNextDay != null and emp.plannedStartNextDay} ? 'true' : 'false'"
+                    th:data-plan-end-next="${emp.plannedEndNextDay != null and emp.plannedEndNextDay} ? 'true' : 'false'">
 
-                <td>
-                    <input type="checkbox" class="rowCheck" th:value="${emp.empCode}">
-                    <input type="hidden" class="requestId" th:value="${emp.requestId}">
-                </td>
-                <td class="empCode" th:text="${emp.empCode}"></td>
-                <td class="name" th:text="${emp.name}"></td>
-                <td class="position" th:text="${emp.position}"></td>
-                <td class="department" th:text="${emp.department}"></td>
-                <td class="planShiftType" th:text="${emp.planShiftType}"></td>
-                <td class="result" th:text="${emp.realWorkRecord}"></td>
-                <td class="attType" th:text="${emp.attType}"></td>
-                <td>
-                    <select class="reason" required>
-                        <option value="">--선택--</option>
-                        <option value="업무지연" th:selected="${emp.reason == '업무지연'}">업무지연</option>
-                        <option value="프로젝트마감" th:selected="${emp.reason == '프로젝트마감'}">프로젝트 마감</option>
-                        <option value="고객요청" th:selected="${emp.reason == '고객요청'}">고객 요청</option>
-                        <option value="기타" th:selected="${emp.reason == '기타'}">기타</option>
-                    </select>
-                </td>
-                <td><input type="text" class="reasonDetail" th:value="${emp.reasonDetail}" required></td>
+                    <td>
+                        <input type="checkbox" class="rowCheck" th:value="${emp.empCode}">
+                        <input type="hidden" class="requestId" th:value="${emp.requestId}">
+                    </td>
+                    <td class="empCode" th:text="${emp.empCode}"></td>
+                    <td class="name" th:text="${emp.name}"></td>
+                    <td class="position" th:text="${emp.position}"></td>
+                    <td class="department" th:text="${emp.department}"></td>
+                    <td class="planShiftType" th:text="${emp.planShiftType}"></td>
+                    <td class="result" th:text="${emp.realWorkRecord}"></td>
+                    <td class="attType" th:text="${emp.attType}"></td>
+                    <td>
+                        <select class="reason" required>
+                            <option value="">--선택--</option>
+                            <option value="업무지연" th:selected="${emp.reason == '업무지연'}">업무지연</option>
+                            <option value="프로젝트마감" th:selected="${emp.reason == '프로젝트마감'}">프로젝트 마감</option>
+                            <option value="고객요청" th:selected="${emp.reason == '고객요청'}">고객 요청</option>
+                            <option value="기타" th:selected="${emp.reason == '기타'}">기타</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="reasonDetail" th:value="${emp.reasonDetail}" required></td>
 
-                <td>
-                    <label>
-                        <input type="hidden" name="startNextDay" value="false"/>
-                        <input type="checkbox" class="startNextDay" name="startNextDay" value="true" /> 익일
-                    </label>
-                    <input type="time" class="startTime" name="startTime" th:value="${emp.startTime}">
-                </td>
+                    <td>
+                        <label>
+                            <input type="hidden" name="startNextDay" value="false"/>
+                            <input type="checkbox" class="startNextDay" name="startNextDay" value="true"/> 익일
+                        </label>
+                        <input type="time" class="startTime" name="startTime" th:value="${emp.startTime}">
+                    </td>
 
-                <td>
-                    <label>
-                        <input type="hidden" name="endNextDay" value="false"/>
-                        <input type="checkbox" class="endNextDay" name="endNextDay" value="true" /> 익일
-                    </label>
-                    <input type="time" class="endTime" name="endTime" th:value="${emp.endTime}">
-                </td>
+                    <td>
+                        <label>
+                            <input type="hidden" name="endNextDay" value="false"/>
+                            <input type="checkbox" class="endNextDay" name="endNextDay" value="true"/> 익일
+                        </label>
+                        <input type="time" class="endTime" name="endTime" th:value="${emp.endTime}">
+                    </td>
 
 
-                <td class="expectedHours highlight">
-                    <span th:text="${#numbers.formatDecimal(emp.expectedWorkHours, 1, 2)}"></span>
-                </td>
-                <td class="status" th:switch="${emp.status}">
-                    <span th:case="'SAVED'">저장</span>
-                    <span th:case="'REQUESTED'">상신</span>
-                    <span th:case="'APPROVED'">승인</span>
-                    <span th:case="'REJECTED'">반려</span>
-                </td>
-                <td class="applicant" th:text="${emp.applicant}"></td>
-            </tr>
+                    <td class="expectedHours highlight">
+                        <span th:text="${#numbers.formatDecimal(emp.expectedWorkHours, 1, 2)}"></span>
+                    </td>
+                    <td class="status" th:switch="${emp.status}">
+                        <span th:case="'SAVED'">저장</span>
+                        <span th:case="'REQUESTED'">상신</span>
+                        <span th:case="'APPROVED'">승인</span>
+                        <span th:case="'REJECTED'">반려</span>
+                    </td>
+                    <td class="applicant" th:text="${emp.applicant}"></td>
+                </tr>
 
-            <tr th:if="${#lists.isEmpty(empList)}">
-                <td colspan="15" style="text-align:center;">조회된 데이터가 없습니다.</td>
-            </tr>
-            </tbody>
-        </table>
+                <tr th:if="${#lists.isEmpty(empList)}">
+                    <td colspan="15" style="text-align:center;">조회된 데이터가 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </main>
 
