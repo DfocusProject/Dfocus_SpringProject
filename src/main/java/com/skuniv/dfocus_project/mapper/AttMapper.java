@@ -109,4 +109,6 @@ public interface AttMapper {
     List<TimeRange> getActualCommuteRecordList(LocalDate startDate, LocalDate endDate, String empCode);
 
     List<DurationDto> getExpectedDay(String empCode, Year year);
+
+    Double getHalfRequestedCount(String username, Year now);
 }

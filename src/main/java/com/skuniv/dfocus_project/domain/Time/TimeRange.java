@@ -21,12 +21,20 @@ public class TimeRange {
 
     /** 실제 시작 시각 */
     public LocalDateTime getStartDateTime() {
-        return baseDate.plusDays(startNextDay ? 1 : 0).atTime(startTime);
+        if (baseDate == null || startTime == null) {
+            return null;
+        }
+        long plus = (startNextDay != null && startNextDay) ? 1 : 0;
+        return baseDate.plusDays(plus).atTime(startTime);
     }
 
     /** 실제 종료 시각 */
     public LocalDateTime getEndDateTime() {
-        return baseDate.plusDays(endNextDay ? 1 : 0).atTime(endTime);
+        if (baseDate == null || endTime == null) {
+            return null;
+        }
+        long plus = (endNextDay != null && endNextDay) ? 1 : 0;
+        return baseDate.plusDays(plus).atTime(endTime);
     }
 
     /** 총 지속 시간 (분) */

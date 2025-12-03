@@ -10,6 +10,8 @@ import java.util.List;
 
 @Mapper
 public interface EmpMapper {
+    EmpDto getDashBoardEmpInfo(String username);
+
     Emp findByEmpCode(String empCode);
 
     List<Emp> findByDepartmentId(String deptCode);

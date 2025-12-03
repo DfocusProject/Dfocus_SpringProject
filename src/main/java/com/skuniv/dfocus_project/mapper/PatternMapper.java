@@ -22,5 +22,7 @@ public interface PatternMapper {
     //name - > code
     String findShiftCodeByShiftName(String patternName);
 
+    void deletePattern(String patternCode);
+
     //List<String> selectDeptsByPattern(String patternName);
 }
