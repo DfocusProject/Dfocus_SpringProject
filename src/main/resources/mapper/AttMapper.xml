@@ -529,8 +529,8 @@
           AND work_date BETWEEN #{startDate} AND #{endDate}
     </select>
     <select id="getExpectedDay" resultType="com.skuniv.dfocus_project.dto.home.DurationDto">
-        SELECT s.start_date,
-               s.end_date
+        SELECT s.start_date AS startDate,
+               s.end_date AS endDate
         FROM WEBATTREQUEST r
                  JOIN WEBATTREQUESTSPECIAL s
                       ON r.request_id = s.request_id
@@ -539,5 +539,15 @@
           AND r.attendance_type = '연차'
           AND r.req_status = 'requested'
     </select>
+
+    <select id="getHalfRequestedCount" resultType="java.lang.Double">
+        SELECT COUNT(*) * 0.5
+        FROM WEBATTREQUEST r
+        WHERE r.emp_code = #{username}
+          AND YEAR(r.request_date) = #{now}
+          AND r.attendance_type = '반차'
+          AND r.req_status = 'requested'
+    </select>
+
 
 </mapper>

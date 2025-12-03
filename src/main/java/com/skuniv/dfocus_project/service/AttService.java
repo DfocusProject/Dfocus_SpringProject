@@ -46,15 +46,6 @@ public class AttService {
         return attMapper.getShiftName(plannedShift);
     }
 
-
-    public void recordOnCommute(String empCode, LocalDate today, LocalTime now) {
-        attMapper.addRecordOnCommute(empCode, today, now);
-    }
-
-    public void recordOffCommute(String empCode, LocalDate today, LocalTime now) {
-        attMapper.addRecordOffCommute(empCode, today, now);
-    }
-
     @Transactional
     public String saveAttendance(LocalDate workDate, List<BaseAttEmpDto> attList, String loginEmpCode) {
         StringBuilder message = new StringBuilder();

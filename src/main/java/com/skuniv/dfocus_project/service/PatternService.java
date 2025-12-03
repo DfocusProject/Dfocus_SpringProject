@@ -91,4 +91,8 @@ public class PatternService {
     public void createPattern(String patternName, String description) {
         patternMapper.createPattern(patternName, description);
     }
+
+    public void deletePattern(String patternCode) {
+        patternMapper.deletePattern(patternCode);
+    }
 }
