@@ -47,13 +47,20 @@
                 <div class="attendance-status">
                     <div class="status-item">
                         <div class="status-label">출근시간</div>
-                        <span th:text="${commuteDto != null and commuteDto.workOnTime != null} ? ${commuteDto.workOnTime} : '출근 정보 없음'"></span>
+                        <span th:text="${commuteDto != null and commuteDto.workOnTime != null} ?
+               ${#temporals.format(commuteDto.workOnTime, 'HH:mm:ss')} :
+               '출근 정보 없음'"></span>
+
+                    </div>
+                    <div class="status-item">
+                        <div class="status-label">퇴근시간</div>
+                        <span th:text="${commuteDto != null and commuteDto.workOffTime != null} ?
+               ${#temporals.format(commuteDto.workOffTime, 'HH:mm:ss')} :
+               '퇴근 정보 없음'"></span>
+
                     </div>
                 </div>
-                <div class="status-item">
-                    <div class="status-label">퇴근시간</div>
-                    <span th:text="${commuteDto != null and commuteDto.workOffTime != null} ? ${commuteDto.workOffTime} : '퇴근 정보 없음'"></span>
-                </div>
+
 
                 <!-- 출퇴근 기록 -->
                 <div class="attendance-buttons">
@@ -66,7 +73,7 @@
                 </div>
             </div>
 
-<!--            이번주 근무 현황-->
+            <!--이번주 근무 현황-->
             <div class="card weekly-work-card">
                 <div class="card-header">
                     <div>
@@ -93,39 +100,44 @@
                     <div class="progress-label">
                         <span>사용률</span>
                         <span><strong
-                                th:text="${annualLeave != null} ? ${annualLeave.usageRate} : '40'">40</strong>%</span>
+                                th:text="${annualLeaveDto.useDay != null} ? (${annualLeaveDto.useDay} * 100 / 20) : 0"></strong>%
+                        </span>
                     </div>
 
                     <div class="progress-bar">
                         <div class="progress-fill"
-                             th:style="'width: ' + ${annualLeave != null ? annualLeave.usageRate : 40} + '%'"
-                             style="width: 40%"></div>
+                             th:style="'width: ' + (${annualLeaveDto.useDay} * 100 / 20) + '%'">
+                        </div>
                     </div>
                 </div>
 
                 <div class="leave-stats">
                     <div class="leave-stat">
-                        <div class="leave-stat-value" th:text="${annualLeave != null} ? ${annualLeave.total} : '15'">
-                            15
+                        <div class="leave-stat-value">
+                            20
                         </div>
                         <div class="leave-stat-label">총 연차</div>
                     </div>
 
                     <div class="leave-stat">
-                        <div class="leave-stat-value" th:text="${annualLeaveDto.useDay != null} ? ${annualLeaveDto.useDay} : '6'">6
+                        <div class="leave-stat-value"
+                             th:text="${annualLeaveDto.useDay != null} ? ${annualLeaveDto.useDay} : '6'">
+                            6
                         </div>
                         <div class="leave-stat-label">사용</div>
                     </div>
 
                     <div class="leave-stat">
-                        <div class="leave-stat-value" th:text="${annualLeaveDto.balanceDay != null} ? ${annualLeaveDto.balanceDay} : '9'">
+                        <div class="leave-stat-value"
+                             th:text="${annualLeaveDto.balanceDay != null} ? ${annualLeaveDto.balanceDay} : '9'">
                             9
                         </div>
                         <div class="leave-stat-label">잔여</div>
                     </div>
 
                     <div class="leave-stat">
-                        <div class="leave-stat-value" th:text="${annualLeaveDto.expectedDay != null} ? ${annualLeaveDto.expectedDay} : '2'">
+                        <div class="leave-stat-value"
+                             th:text="${annualLeaveDto.expectedDay != null} ? ${annualLeaveDto.expectedDay} : '2'">
                             2
                         </div>
                         <div class="leave-stat-label">예정</div>
@@ -133,7 +145,7 @@
                 </div>
             </div>
 
-            <!-- 오늘의 할일 -->
+            <!-- 오늘의 알림 -->
             <div class="card task-card">
                 <div class="card-header">
                     <div>
@@ -199,58 +211,62 @@
     </div> <!-- container end -->
 
 </main>
-
-<script>
-    const error = document.getElementById("error-message").innerText;
-    if (error) {
-        alert(error);
-    }
-</script>
-
-<script th:src="@{/js/script.js}"></script>
-<script th:src="@{/js/home.js}"></script>
 <script th:inline="javascript">
-    /* 서버에서 weeklyWorkedHours를 넘겨줍니다 */
+    /*<![CDATA[*/
+    const errorMsg = /*[[${message}]]*/ null;
+    if (errorMsg != null) {
+        alert(errorMsg);
+    }
+    /*]]>*/
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
     const weeklyWorkedHours = /*[[${weeklyWorkedHours}]]*/ [8.5, 9.0, 8.0, 0, 0, 0, 0];
 
-    const weekdays = ['월','화','수','목','금','토','일'];
+    const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
 
-    /* JS 기준 오늘 인덱스 (0=월) */
     const today = new Date();
     const todayIndex = today.getDay() === 0 ? 6 : today.getDay() - 1;
 
     const chartContainer = document.querySelector('.bar-chart');
 
     weeklyWorkedHours.forEach((hour, i) => {
-        // bar-item
         const barItem = document.createElement('div');
         barItem.className = 'bar-item';
 
-        // bar
         const bar = document.createElement('div');
         bar.className = 'bar';
         bar.style.height = (hour * 15) + 'px';
         bar.dataset.day = weekdays[i];
         bar.dataset.hours = hour;
 
+        if (i === todayIndex) {
+            bar.classList.add('today-bar');
+        }
+
         const barValue = document.createElement('span');
         barValue.className = 'bar-value';
         barValue.textContent = hour + 'h';
         bar.appendChild(barValue);
 
-        // label
+        if (i === todayIndex) {
+            barValue.classList.add('today-value'); // ← 요 부분!
+        }
+
         const barLabel = document.createElement('div');
         barLabel.className = 'bar-label';
         barLabel.textContent = weekdays[i];
         if (i === todayIndex) barLabel.classList.add('today');
 
-        // bar-item에 붙이기
         barItem.appendChild(bar);
         barItem.appendChild(barLabel);
 
-        // chartContainer에 붙이기
         chartContainer.appendChild(barItem);
     });
+    /*]]>*/
 </script>
+
+<script th:src="@{/js/script.js}"></script>
+<script th:src="@{/js/home.js}"></script>
 </body>
 </html>
