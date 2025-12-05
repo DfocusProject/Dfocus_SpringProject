@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const topBtn = document.getElementById("topActionBtn");
     const registerBtn = document.getElementById("registerPatternBtn");
     const saveBtn = document.getElementById("savePatternBtn");
-    const deleteBtn = document.getElementById("deletePatternBtn ");
+    const deleteBtn = document.getElementById("deletePatternBtn");
     const modal = document.getElementById("patternModal");
     const modalCancelBtn = document.getElementById("modalCancelBtn");
     const modalConfirmBtn = document.getElementById("modalConfirmBtn");
@@ -154,10 +154,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!confirm("정말 삭제하시겠습니까?")) return;
 
-        const row = selected.closest("tr");
-        if (row) row.remove();
+        // BE로 보낼 데이터 설정
+        document.getElementById("deletePatternInput").value = selected.value;
+        // 실제 삭제 요청 전송
+        document.getElementById("deletePatternForm").submit();
 
         alert("삭제되었습니다.");
     });
+
 
 });
