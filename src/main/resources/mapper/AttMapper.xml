@@ -549,5 +549,41 @@
           AND r.req_status = 'requested'
     </select>
 
+    <select id="getTodayRequestCounts" resultType="com.skuniv.dfocus_project.dto.home.ToDoDto.User">
+        SELECT
+            COUNT(CASE WHEN attendance_type IN ('기타', '연차') THEN 1 END) AS etcCount,
+            COUNT(CASE WHEN attendance_type NOT IN ('기타', '연차') THEN 1 END) AS generalCount
+        FROM webattrequest
+        WHERE emp_code = #{username}
+          AND request_date = #{now};
+    </select>
+    <select id="getTodayApprovalCounts" resultType="com.skuniv.dfocus_project.dto.home.ToDoDto.User">
+        SELECT
+            COUNT(CASE WHEN a.approval_status = 'APPROVED' THEN 1 END) AS approvedCount,
+            COUNT(CASE WHEN a.approval_status = 'REJECTED' THEN 1 END) AS rejectedCount
+        FROM webattrequest w
+                 LEFT JOIN webapprovalline a
+                           ON w.request_id = a.request_id
+                               AND CONVERT(date, a.approval_time) = #{now}
+        WHERE w.emp_code = #{username};
+    </select>
+
+    <select id="getPendingApprovalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM webapprovalline
+        WHERE emp_response = #{username}
+        AND approval_status = 'PENDING';
+    </select>
+
+    <select id="getEmployeeStatusCounts" resultType="com.skuniv.dfocus_project.dto.home.ToDoDto.Admin">
+        SELECT
+            (SELECT COUNT(*)
+             FROM webempinfo
+             WHERE dept_code IS NULL OR dept_code = '') AS noDeptEmployeeCount,
+
+            (SELECT COUNT(*)
+             FROM webempinfo
+             WHERE work_pattern_code IS NULL OR work_pattern_code = '') AS noPatternEmployeeCount
+    </select>
 
 </mapper>

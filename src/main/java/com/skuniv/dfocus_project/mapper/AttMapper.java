@@ -5,6 +5,8 @@ import com.skuniv.dfocus_project.dto.BaseAttEmpDto;
 import com.skuniv.dfocus_project.dto.ExistingEtcRequestDto;
 import com.skuniv.dfocus_project.dto.TimeRecordDto;
 import com.skuniv.dfocus_project.dto.home.DurationDto;
+import com.skuniv.dfocus_project.dto.home.ToDoDto.Admin;
+import com.skuniv.dfocus_project.dto.home.ToDoDto.User;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
@@ -111,4 +113,13 @@ public interface AttMapper {
     List<DurationDto> getExpectedDay(String empCode, Year year);
 
     Double getHalfRequestedCount(String username, Year now);
+
+    User getTodayRequestCounts(String username, LocalDate now);
+
+    User getTodayApprovalCounts(String username, LocalDate now);
+
+    int getPendingApprovalCount(String username);
+
+    Admin getEmployeeStatusCounts();
+
 }

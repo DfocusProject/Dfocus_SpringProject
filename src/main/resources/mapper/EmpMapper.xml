@@ -254,14 +254,13 @@
         ELSE 0
         END
     </select>
-    getDashBoardEmpInfo
     <select id="getDashBoardEmpInfo" resultType="com.skuniv.dfocus_project.dto.EmpDto">
         SELECT
             e.emp_code AS empCode,
             e.emp_name AS empName,
             d.dept_name AS deptName,
             p.position_name AS positionName,
-            d.duty_name AS dutyName,
+            dt.duty_name AS dutyName,
             e.status AS status,
             e.work_pattern_code AS workPatternCode
         FROM WEBEMPINFO e
@@ -269,8 +268,8 @@
             ON e.dept_code = d.dept_code
         JOIN WEBPOSITIONINFO p
             ON e.position_code = p.position_code
-        JOIN WEBDUTYINFO d
-            ON e.duty_code = d.duty_code
+        JOIN WEBDUTYINFO dt
+            ON e.duty_code = dt.duty_code
         WHERE e.emp_code = #{username}
     </select>
 </mapper>

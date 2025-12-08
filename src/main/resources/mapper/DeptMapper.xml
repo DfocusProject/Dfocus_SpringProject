@@ -117,4 +117,10 @@
         DELETE FROM webdeptinfo
         WHERE dept_code = #{deptCode}
     </delete>
+    <select id="getNoLeaderDeptList" resultType="string">
+        SELECT dept_name
+        FROM webdeptinfo
+        WHERE dept_leader IS NULL OR dept_leader = '';
+    </select>
+
 </mapper>
