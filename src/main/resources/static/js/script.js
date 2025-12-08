@@ -13,6 +13,13 @@ function setupDropdowns() {
     }
 }
 window.addEventListener('beforeunload', function () {
-    navigator.sendBeacon('/clearSearchSession'); // POST 요청으로 서버 세션 삭제
+    try {
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon('/clearSearchSession'); // POST 요청으로 서버 세션 삭제
+        }
+    } catch (e) {
+        // 서버가 없거나 오류 발생 시 무시
+        console.log('Session clear request failed:', e);
+    }
 });
 

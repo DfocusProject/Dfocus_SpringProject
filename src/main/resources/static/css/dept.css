@@ -5,49 +5,74 @@
 
 /* 부서 메인 페이지 헤더 */
 .header {
-    background: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
-    padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
+    gap: 12px;
+    padding: 0 20px;
 }
 
 /* 부서 상세 정보 헤더 */
 .header2 {
-    background: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+    padding: 0;
+    margin-top: 0;
 }
 .header2 h1 {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 15px;
+    font-weight: 600;
     color: #212529;
     white-space: nowrap;
+    margin: 0;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    line-height: 1.4;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    letter-spacing: -0.3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .header h1 {
-    font-size: 18px;
-    font-weight: bold;
+    font-size: 15px;
+    font-weight: 600;
     color: #212529;
+    margin: 0;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    letter-spacing: -0.3px;
 }
 
 .create-btn {
-    background: #fff;
-    color: #333;
-    border: 1px solid #ccc;
-    padding: 6px 14px;
+    background: transparent;
+    color: #4a90e2;
+    border: 1px solid #4a90e2;
+    border-radius: 6px;
+    padding: 8px 16px;
     cursor: pointer;
     font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
 }
 
 .create-btn:hover {
-    background: #e9ecef;
+    background: rgba(74, 144, 226, 0.1);
+    border-color: #357abd;
+    color: #357abd;
 }
 
-/* 트리 구조 */
+/* 트리 구조 - 나뭇가지 스타일 */
 .tree-container {
     padding: 20px;
     margin: 10px;
@@ -55,16 +80,70 @@
 
 .tree {
     list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
 }
 
 .tree ul {
     list-style: none;
-    padding-left: 25px;
-    margin-top: 2px;
+    padding-left: 40px;
+    margin-top: 0;
+    margin-left: 0;
+    position: relative;
+}
+
+.tree ul::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #d0d0d0;
 }
 
 .tree-item {
-    margin: 2px 0;
+    margin: 8px 0;
+    position: relative;
+}
+
+.tree-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 20px;
+    width: 20px;
+    height: 1px;
+    background: #d0d0d0;
+}
+
+.tree-item::after {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 0;
+    width: 1px;
+    height: 20px;
+    background: #d0d0d0;
+}
+
+.tree-item:first-child::after {
+    display: none;
+}
+
+.tree-item:last-child::before {
+    border-bottom: none;
+}
+
+.tree-item:last-child > ul::before {
+    height: 20px;
+}
+
+/* 루트 아이템은 연결선 없음 */
+.tree > .tree-item::before,
+.tree > .tree-item::after {
+    display: none;
 }
 
 .tree-toggle {
@@ -72,7 +151,7 @@
     align-items: center;
     cursor: pointer;
     user-select: none;
-    padding: 4px 6px;
+    padding: 2px 4px;
     width: 100%;
 }
 
@@ -82,10 +161,11 @@
 
 .toggle-icon {
     display: inline-block;
-    width: 16px;
-    font-size: 11px;
+    width: 12px;
+    font-size: 9px;
     color: #666;
     transform: rotate(90deg);
+    margin-right: 2px;
 }
 
 .toggle-icon.collapsed {
@@ -94,8 +174,8 @@
 
 .department-icon {
     color: #666;
-    margin-right: 5px;
-    font-size: 13px;
+    margin-right: 4px;
+    font-size: 11px;
 }
 
 .person-icon {
@@ -107,9 +187,10 @@
 .department-link {
     color: #0066cc;
     text-decoration: none;
-    font-size: 17px;
+    font-size: 14px;
     flex: 1;
-    font-weight: 500;
+    font-weight: 400;
+    line-height: 1.4;
 }
 
 .department-link:hover {
@@ -149,13 +230,14 @@
 /* dept_detail -> 그리드 구조 */
 .dept-detail-container {
     display: grid;
-    grid-template-columns: 1fr 2fr 3fr 1fr; /* 1 2 3 1 비율 */
+    grid-template-columns: 0.3fr 2.7fr 3.7fr 0.3fr; /* 좌우 여백 줄이고 컨텐츠 영역 확대 */
     gap: 20px;
-    height: 100%; /* 화면 기준 제거 */
+    padding: 20px 0; /* 상하 여백 추가 */
 }
 
 .spacer {
-    /* 그냥 공백, 스타일 필요 없음 */
+    /* 공백 영역 */
+    display: block;
 }
 
 .dept-info, .dept-side {
@@ -173,8 +255,8 @@
 .dept-info {
     flex: 1;
     background-color: #fff;
-    padding: 20px;
-    border: 1px solid #ccc;
+    padding: 20px 20px;
+    border: 1px solid #e0e0e0;
     overflow-y: auto;
 }
 
@@ -196,35 +278,76 @@
     font-size: 20px;
 }
 
+#deleteDeptForm {
+    margin-left: auto;
+    padding-right: 0;
+}
+
 #deleteDeptBtn {
     padding: 6px 12px;
-    background-color: #d9534f;
-    color: #fff;
-    border: none;
+    background-color: transparent;
+    color: #d9534f;
+    border: 1px solid #d9534f;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s ease;
 }
 
 #deleteDeptBtn:hover {
-    background-color: #c9302c;
+    background-color: rgba(217, 83, 79, 0.1);
+    border-color: #c9302c;
+    color: #c9302c;
 }
 
+
+/* 부서 정보 본문 영역 */
+.dept-info > div:not(.header2) {
+    padding: 16px 16px;
+}
 
 .info-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center; /* 수직 중앙 정렬 */
+    align-items: center;
     padding: 8px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 12px;
+}
+
+.info-item:last-child {
+    border-bottom: none;
 }
 
 .info-item label {
-    font-weight: bold;
-    color: #555;
+    font-weight: 500;
+    color: #666;
+    font-size: 13px;
+    position: relative;
+    padding-left: 16px;
+    flex-shrink: 0;
+}
+
+.info-item label::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: #999;
+    font-size: 14px;
 }
 
 .info-item span {
-    color: #222;
+    color: #333;
+    font-size: 13px;
+    margin-left: auto;
+}
+
+/* 근태 패턴 코드 값과 버튼을 함께 배치 */
+.pattern-value-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-left: auto;
 }
 
 .info-item span.used {
@@ -256,9 +379,20 @@
 }
 
 .member-section h3 {
-    color: #333;
-    margin-bottom: 10px;
+    color: #212529;
+    margin: 0;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 600;
     flex-shrink: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    letter-spacing: -0.3px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+    box-sizing: border-box;
 }
 
 .member-section,
@@ -275,23 +409,66 @@
 }
 
 .no-dept-section .section1 {
-    display: flex;
-    align-items: center;  /* 세로 중앙 */
-    gap: 10px;            /* 제목과 버튼 사이 간격 */
+    display: block;
+    margin-bottom: 12px;
 }
 
 .no-dept-section h3 {
-    color: #333;
-    margin-bottom: 10px;
+    color: #212529;
+    margin: 0;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 600;
     flex-shrink: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    letter-spacing: -0.3px;
+    line-height: 1.4;
 }
 
 .emp-actions {
     flex-shrink: 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 #moveDeptSelect {
     flex-shrink: 0;
+}
+
+/* 부서 상세 페이지의 모든 버튼 스타일 통일 (투명한 블루 계열) */
+.dept-side button,
+.dept-side form button,
+.dept-side form button[type="submit"],
+.emp-actions button,
+.emp-actions button[type="submit"],
+#person-pattern-submit,
+#leave-change-submit {
+    padding: 8px 16px;
+    background-color: transparent;
+    color: #4a90e2;
+    border: 1px solid #4a90e2;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    margin-top: 0;
+}
+
+.dept-side button:hover,
+.dept-side form button:hover,
+.dept-side form button[type="submit"]:hover,
+.emp-actions button:hover,
+.emp-actions button[type="submit"]:hover,
+#person-pattern-submit:hover,
+#leave-change-submit:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-color: #357abd;
+    color: #357abd;
 }
 
 .table-scroll {
@@ -347,10 +524,10 @@ main {
 }
 
 .container {
-    height: 100%;!important;
-    display: flex;!important;
-    flex: 1;!important;
-    overflow: hidden; !important;
+    height: 100% !important;
+    display: flex !important;
+    flex: 1 !important;
+    overflow: hidden !important;
     flex-direction: column;
     /*height: auto; !important;*/
 }
@@ -411,6 +588,7 @@ main {
 
 /* 전체 div 내에서 요소들을 한 줄로 정렬 */
 .personal-pattern-container {
+    display: flex;
     align-items: center; /* 세로 정렬을 중앙으로 맞춤 */
     gap: 10px; /* 요소들 사이에 간격을 추가 */
 }
@@ -438,6 +616,26 @@ main {
     cursor: pointer;
     width: fit-content;
     font-weight: bold;
+}
+
+/* 부서 상세 페이지의 emp-actions 내부 버튼은 투명한 블루 스타일 적용 */
+.dept-side .emp-actions button[type="submit"],
+.dept-side form .emp-actions button[type="submit"] {
+    margin-top: 0;
+    padding: 8px 16px;
+    background-color: transparent;
+    color: #4a90e2;
+    border: 1px solid #4a90e2;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.dept-side .emp-actions button[type="submit"]:hover,
+.dept-side form .emp-actions button[type="submit"]:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-color: #357abd;
+    color: #357abd;
 }
 
 .container button {
@@ -486,88 +684,121 @@ main {
 
 /* 드롭다운(select)과 버튼을 한 줄로 배치 */
 #patternForm {
-    display: flex; /* flexbox로 배치 */
-    gap: 10px; /* 요소 간 간격 설정 */
-    align-items: center; /* 수직으로 정렬을 맞춤 */
+    display: flex;
+    gap: 8px;
+    align-items: center;
     padding: 0;
     flex-direction: row;
 }
 
 /* select의 크기와 스타일 설정 */
 #patternForm select {
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 6px 10px;
+    font-size: 12px;
     border-radius: 4px;
-    border: 1px solid #ccc;
-    width: auto; /* select 박스의 너비를 자동으로 맞춤 */
+    border: 1px solid #ddd;
+    width: auto;
 }
 
 /* 버튼 스타일 설정 */
 #patternForm button {
     margin: 0;
-    padding: 8px 12px;
-    background-color: #0066b3;
-    color: white;
-    border: none;
+    padding: 5px 12px;
+    background-color: transparent;
+    color: #4a90e2;
+    border: 1px solid #4a90e2;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 12px;
     cursor: pointer;
     width: fit-content;
+    transition: all 0.2s ease;
 }
 
 #patternForm button:hover {
-    background-color: #004d8a; /* hover시 색 변경 */
+    background-color: rgba(74, 144, 226, 0.1);
+    border-color: #357abd;
+    color: #357abd;
 }
 
 /* 버튼을 고정된 크기로 만들기 */
 #setPatternBtn {
-    padding: 6px 16px; /* 버튼의 내부 여백 */
-    background-color: #0066b3;
-    color: white;
-    border: none;
+    padding: 5px 12px;
+    background-color: transparent;
+    color: #4a90e2;
+    border: 1px solid #4a90e2;
     border-radius: 4px;
-    font-size: 14px; /* 폰트 크기 */
+    font-size: 12px;
     cursor: pointer;
-    text-align: center; /* 텍스트 수평 중앙 정렬 */
-    line-height: 1.5; /* 텍스트 수직 중앙 정렬 */
+    text-align: center;
+    line-height: 1.4;
     display: inline-flex;
-    align-items: center; /* 수직 중앙 정렬 */
-    justify-content: center; /* 수평 중앙 정렬 */
-    height: auto; /* 버튼 높이 자동으로 결정 */
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    transition: all 0.2s ease;
 }
 
 /* 버튼 hover 효과 */
 #setPatternBtn:hover {
-    background-color: #004d8a;
+    background-color: rgba(74, 144, 226, 0.1);
+    border-color: #357abd;
+    color: #357abd;
 }
 
 .section1 {
     display: flex;
-    align-items: center;  /* 세로 중앙 정렬 */
-    gap: 10px;            /* 제목과 버튼 사이 간격 */
+    align-items: center;
+    gap: 10px;
 }
 
 .section1 h3 {
-    margin: 0;            /* 불필요한 여백 제거 */
-    font-size: 16px;
-    flex-shrink: 0;       /* 줄어들지 않게 */
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    flex-shrink: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    letter-spacing: -0.3px;
 }
 
 .section1 .emp-actions {
     flex-shrink: 0;
 }
 
+/* 부서 구성원 섹션의 버튼들을 일렬로 정렬 */
+.member-section .emp-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    margin-bottom: 10px;
+    justify-content: flex-end;
+    box-sizing: border-box;
+}
+
+/* 부서 미배정 섹션의 버튼도 일렬로 정렬 */
+.no-dept-section .emp-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
 .container form .no-dept-section .section1 button {
     margin: 0px;
-    padding: 10px 20px;
-    background-color: #0066b3;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
+    padding: 8px 16px;
+    background-color: transparent;
+    color: #4a90e2;
+    border: 1px solid #4a90e2;
+    border-radius: 6px;
+    font-size: 13px;
     cursor: pointer;
     width: fit-content;
-    font-weight: bold;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.container form .no-dept-section .section1 button:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-color: #357abd;
+    color: #357abd;
 }
 
 /* ------------------ 사용 여부 토글 버튼 ------------------ */
@@ -575,6 +806,7 @@ main {
 /* 토글 스위치 전체 */
 .info-item form {
     padding: 0;
+    margin-left: auto;
 }
 .switch {
     position: relative;

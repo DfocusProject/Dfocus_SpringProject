@@ -6,7 +6,9 @@ function toggleNode(element) {
     const icon = element.querySelector('.toggle-icon');
 
     if (children && children.classList.contains('children')) {
-        children.classList.toggle('show');
-        icon.classList.toggle('expanded');
+        children.classList.toggle('hide');
+        if (icon) {
+            icon.classList.toggle('expanded');
+        }
     }
 }
