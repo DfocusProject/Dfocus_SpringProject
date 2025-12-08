@@ -36,15 +36,16 @@ main {
     left: 0;
     right: 0;
     height: 60px;
-    background-color: #0066b3;
+    background: #1e88f6;
     color: #fff;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
     z-index: 1000;
     white-space: nowrap;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header-left {
@@ -65,7 +66,57 @@ main {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+}
+
+/* 사용자 정보 스타일 */
+.user-info {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 12px;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* 로그아웃 버튼 스타일 */
+.logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #fff;
+    color: #4a90e2;
+    border: 1px solid #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logout-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #f0f0f0;
+    color: #357abd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+.logout-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logout-btn svg {
+    flex-shrink: 0;
+}
+
+.logout-btn span {
+    white-space: nowrap;
 }
 
 /**************************************
@@ -76,11 +127,11 @@ main {
     left: 0;
     height: 100%;
     padding-block: 8px;
-    backdrop-filter: blur(10px);
-    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.06);
+    background-color: #f0f4f9;
+    box-shadow: 2px 0 8px rgba(74, 144, 226, 0.1);
     z-index: 900;
     white-space: nowrap;
-    border-right: 1px solid rgba(0, 0, 0, 0.06);
+    border-right: 1px solid rgba(74, 144, 226, 0.15);
 }
 
 .sidebar-header {
@@ -97,8 +148,8 @@ main {
 .sidebar .dropdown-btn {
     padding: 14px 40px 14px 24px;
     text-decoration: none;
-    font-size: 15px;
-    color: #4a5568;
+    font-size: 14px;
+    color: #495057;
     display: block;
     border: none;
     background: none;
@@ -107,24 +158,25 @@ main {
     outline: none;
     transition: all 0.2s ease;
     position: relative;
-    font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
     font-weight: 500;
     margin: 0px 12px;
-    border-radius: 8px;
-    border-bottom: 1px solid rgba(74, 144, 226, 0.2);
+    border-radius: 6px;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.1);
 }
 
 .sidebar a:hover,
 .sidebar .dropdown-btn:hover {
-    background: rgba(74, 144, 226, 0.08);
+    background: rgba(74, 144, 226, 0.1);
     color: #4a90e2;
     transform: translateX(2px);
+    border-left: 3px solid #4a90e2;
 }
 
 .active-menu {
     background: linear-gradient(135deg, rgba(74, 144, 226, 0.12) 0%, rgba(74, 144, 226, 0.08) 100%);
     color: #4a90e2 !important;
-    border-radius: 8px;
+    border-radius: 6px;
     font-weight: 600;
 }
 
@@ -146,18 +198,18 @@ main {
 
 .sidebar .dropdown-container {
     display: none;
-    background: rgba(74, 144, 226, 0.03);
+    background: rgba(74, 144, 226, 0.05);
     padding: 8px 0;
     margin: 4px 12px 8px 12px;
-    border-radius: 8px;
+    border-radius: 6px;
     border-left: 2px solid rgba(74, 144, 226, 0.2);
 }
 
 .sidebar .dropdown-container a {
-    font-size: 14px;
+    font-size: 13px;
     padding: 10px 16px 10px 32px;
     margin: 2px 8px;
-    color: #718096;
+    color: #6c757d;
     font-weight: 400;
 }
 
@@ -282,7 +334,7 @@ tr:nth-child(even) {
     background: none;
     color: rgba(255, 255, 255, 0.85);
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 15px;
     font-weight: 500;
     cursor: pointer;

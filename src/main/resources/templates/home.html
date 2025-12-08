@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
     <title>홈</title>
@@ -269,66 +270,39 @@
 
                 <div class="card-body">
 
-                    <!-- 일반 사원 -->
-                    <div class="todo-section">
-                        <h4 class="todo-role-title">일반사원</h4>
-
+                    <!-- 일반사원 (ROLE_USER) -->
+                    <div class="todo-section" sec:authorize="hasRole('USER')">
                         <div class="todo-info">
                             <p>[금일 근태 신청 내역]</p>
-                            <p>오늘 신청한 일반 근태가 <strong>0건</strong> 있습니다</p>
-                            <p>오늘 신청한 기타 근태가 <strong>0건</strong> 있습니다</p>
+                            <p>오늘 신청한 일반 근태가 <strong th:text="${user.generalCount}">0</strong>건 있습니다</p>
+                            <p>오늘 신청한 기타 근태가 <strong th:text="${user.etcCount}">0</strong>건 있습니다</p>
 
                             <br/>
 
                             <p>[금일 결재된 신청서]</p>
-                            <p>오늘 승인된 신청이 <strong>0건</strong> 있습니다</p>
-                            <p>오늘 반려된 신청이 <strong>0건</strong> 있습니다</p>
+                            <p>오늘 승인된 신청이 <strong th:text="${user.approvedCount}">0</strong>건 있습니다</p>
+                            <p>오늘 반려된 신청이 <strong th:text="${user.rejectedCount}">0</strong>건 있습니다</p>
                         </div>
                     </div>
 
-                    <!-- 리더 (일반사원 + 리더 정보) -->
-                    <div class="todo-section">
-                        <h4 class="todo-role-title">리더</h4>
-
+                    <!-- 리더 (ROLE_LEADER) -->
+                    <div class="todo-section" sec:authorize="hasRole('LEADER')">
                         <div class="todo-info">
-                            <!-- 일반사원 정보 포함 -->
                             <p>[금일 근태 신청 내역]</p>
-                            <p>오늘 신청한 일반 근태가 <strong>0건</strong> 있습니다</p>
-                            <p>오늘 신청한 기타 근태가 <strong>0건</strong> 있습니다</p>
+                            <p>오늘 신청한 일반 근태가 <strong th:text="${leader.generalCount}">0</strong>건 있습니다</p>
+                            <p>오늘 신청한 기타 근태가 <strong th:text="${leader.etcCount}">0</strong>건 있습니다</p>
 
                             <br/>
-
-                            <p>[금일 결재된 신청서]</p>
-                            <p>오늘 승인된 신청이 <strong>0건</strong> 있습니다</p>
-                            <p>오늘 반려된 신청이 <strong>0건</strong> 있습니다</p>
-
-                            <br/>
-
                             <!-- 리더 고유 정보 -->
                             <p>[처리할 문서]</p>
-                            <p>결재 대기 중인 문서가 <strong>2건</strong> 있습니다</p>
+                            <p>결재 대기 중인 문서가 <strong th:text="${leader.pendingApprovalCount}">0</strong>건 있습니다</p>
                         </div>
                     </div>
 
-                    <!-- 관리자 (일반사원 + 관리자 정보) -->
-                    <div class="todo-section">
-                        <h4 class="todo-role-title">관리자</h4>
+                    <!-- 관리자 (ROLE_ADMIN) -->
+                    <div class="todo-section" sec:authorize="hasRole('ADMIN')">
 
                         <div class="todo-info">
-                            <!-- 일반사원 정보 포함 -->
-                            <p>[금일 근태 신청 내역]</p>
-                            <p>오늘 신청한 일반 근태가 <strong>0건</strong> 있습니다</p>
-                            <p>오늘 신청한 기타 근태가 <strong>0건</strong> 있습니다</p>
-
-                            <br/>
-
-                            <p>[금일 결재된 신청서]</p>
-                            <p>오늘 승인된 신청이 <strong>0건</strong> 있습니다</p>
-                            <p>오늘 반려된 신청이 <strong>0건</strong> 있습니다</p>
-
-                            <br/>
-
-                            <!-- 관리자 고유 정보 -->
                             <p>[부서 미배정 사원]</p>
                             <p>부서 미배정 사원이 <strong>2명</strong> 있습니다</p>
 
@@ -340,12 +314,11 @@
                             <br/>
 
                             <p>[리더 미배정 부서]</p>
-                            <p>리더가 배정되지 않은 부서가 <strong>2곳</strong> 있습니다</p>
+                            <p>리더가 배정되지 않은 부서가 <strong>2개</strong> 있습니다</p>
                         </div>
                     </div>
 
                 </div>
-
             </div>
 
 

@@ -8,12 +8,19 @@
             </h2>
         </div>
         <div class="header-right" th:if="${#authentication != null}">
-            <span>
-                <span th:text="${#authentication.principal.empName + ' (' + #authentication.principal.username + ')님 😄'}"></span>
+            <span class="user-info">
+                <span th:text="${#authentication.principal.empName + ' (' + #authentication.principal.username + ')님'}"></span>
             </span>
             <!-- 로그아웃 버튼 -->
             <form th:action="@{/logout}" method="post" style="display:inline">
-                <button type="submit" onclick="return confirm('로그아웃하시겠습니까?')">로그아웃</button>
+                <button type="submit" class="logout-btn" onclick="return confirm('로그아웃하시겠습니까?')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m16 17 5-5-5-5"/>
+                        <path d="M21 12H9"/>
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    </svg>
+                    <span>로그아웃</span>
+                </button>
             </form>
 
         </div>
