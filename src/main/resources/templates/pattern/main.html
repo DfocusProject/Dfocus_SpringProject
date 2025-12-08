@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>근태패턴별 캘린더</title>
-    <link rel="stylesheet" href="/css/common.css" />
-    <link rel="stylesheet" href="/css/pattern.css" />
+    <link rel="stylesheet" href="/css/common.css"/>
+    <link rel="stylesheet" href="/css/pattern.css"/>
 </head>
 <body>
 <div th:replace="~{ header.html::header}"></div>
@@ -21,6 +21,38 @@
                     <button type="button" id="savePatternBtn" class="btn">등록</button>
                     <button type="button" id="topActionBtn" class="btn">패턴 추가</button>
                     <button type="button" id="deletePatternBtn" class="btn">패턴 삭제</button>
+                </div>
+
+                <!-- 코드 일괄 입력 -->
+                <div id="bulkInputContainer" class="bulk-input-container" style="display: none;">
+                    <div class="bulk-input-row">
+                        <input type="text"
+                               id="bulkCodeInput"
+                               class="bulk-code-input"
+                               placeholder="코드 입력"
+                               autocomplete="off">
+                        <button type="button" id="applyBulkCodeBtn" class="btn btn-apply">전체 기입</button>
+                    </div>
+
+                    <!-- 요일별 입력 -->
+                    <div class="bulk-input-row">
+                        <select id="dayOfWeekSelect" class="day-select">
+                            <option value="">요일 선택</option>
+                            <option value="1">월요일</option>
+                            <option value="2">화요일</option>
+                            <option value="3">수요일</option>
+                            <option value="4">목요일</option>
+                            <option value="5">금요일</option>
+                            <option value="6">토요일</option>
+                            <option value="7">일요일</option>
+                        </select>
+                        <input type="text"
+                               id="dayCodeInput"
+                               class="bulk-code-input"
+                               placeholder="코드 입력"
+                               autocomplete="off">
+                        <button type="button" id="applyDayCodeBtn" class="btn btn-apply">요일 기입</button>
+                    </div>
                 </div>
             </div>
             <form th:action="@{/pattern/main}" method="get" id="searchForm">
@@ -41,9 +73,12 @@
                             <th th:each="date : ${dates}" class="date-header"
                                 th:classappend="${date.dayOfWeek.value >= 6} ? 'weekend' : ''"
                                 th:data-full-date="${date}">
-                                <div class="date-header-date" th:text="${#numbers.formatInteger(date.dayOfMonth,2)} + '일'">01일</div>
+                                <div class="date-header-date"
+                                     th:text="${#numbers.formatInteger(date.dayOfMonth,2)} + '일'">01일
+                                </div>
                                 <div class="date-header-day"
-                                     th:text="'(' + ${date.dayOfWeek.toString().substring(0,3)} + ')'">(MON)</div>
+                                     th:text="'(' + ${date.dayOfWeek.toString().substring(0,3)} + ')'">(MON)
+                                </div>
                             </th>
                         </tr>
                         </thead>
@@ -55,7 +90,8 @@
                                 class="code-cell"
                                 th:classappend="${pattern.dateCodeMap[date.toString()] != null ? 'code-' + pattern.dateCodeMap[date.toString()] : ''}"
                                 th:data-date="${date.toString()}"
-                                th:text="${pattern.dateCodeMap[date.toString()]}">코드</td>
+                                th:text="${pattern.dateCodeMap[date.toString()]}">코드
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -112,7 +148,7 @@
     <input type="hidden" name="description" id="patternDescInput">
 </form>
 <form id="deletePatternForm" method="post" th:action="@{/pattern/delete}">
-    <input type="hidden" name="deletePattern" id="deletePatternInput">
+    <input type="hidden" name="patternCode" id="deletePatternInput">
 </form>
 <script th:src="@{/js/script.js}"></script>
 <script th:src="@{/js/pattern.js}"></script>

@@ -85,8 +85,7 @@ input[readonly]:focus {
     background-color: #fff;
     border: 1px solid #ddd;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    /* 기존: margin: 0px 20px; */
-    margin: 10px auto; /* 가운데 정렬 + 좌우 여백 제거 */
+    margin: 10px 20px; /* 가운데 정렬 + 좌우 여백 제거 */
     width: calc(100% - 40px); /* search-box 여백과 맞춤 (선택사항) */
     white-space: nowrap;
     text-overflow: clip;
@@ -100,7 +99,7 @@ input[readonly]:focus {
     overflow-y: hidden;
     max-width: 100%;         /* 컨테이너 밖으로 못 나가게 */
     box-sizing: border-box;
-    margin: 0 20px;
+    margin: 0 0;
 }
 
 /* 헤더 스타일 */

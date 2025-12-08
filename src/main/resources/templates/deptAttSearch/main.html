@@ -50,7 +50,7 @@
                     </label>
 
                     <label>부서
-                        <select th:field="*{department}">
+                        <select th:field="*{department}" id="departmentSelect">
                             <option value="">전체</option>
                             <option th:each="dept : *{childDeptList}"
                                     th:value="${dept}"
@@ -58,6 +58,7 @@
                             </option>
                         </select>
                     </label>
+
 
                     <button type="submit" id="btnSearchDeptAtt" class="btnSearchDeptAtt">조회</button>
                     <div class="right">
@@ -136,6 +137,34 @@
         }
     });
 </script>
+<script>
+    const deptMap = {
+        "G0000": "CEO",
+        "G1000": "COO",
+        "G1100": "사업기획본부",
+        "G1110": "경영기획팀",
+        "G1120": "재경팀",
+        "G1200": "경영지원본부",
+        "G1210": "총무팀",
+        "G1230": "인사팀",
+        "G1240": "구매팀",
+        "G1500": "상생안전실",
+        "G1510": "상생협력팀",
+        "G1520": "안전환경팀"
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const options = document.querySelectorAll("#departmentSelect option");
+
+        options.forEach(opt => {
+            const code = opt.value;
+            if (deptMap[code]) {
+                opt.textContent = deptMap[code]; // 코드 → 부서명 변경
+            }
+        });
+    });
+</script>
+
 <script th:inline="javascript">
     console.log("results:", /*[[${results}]]*/ []);
 </script>
