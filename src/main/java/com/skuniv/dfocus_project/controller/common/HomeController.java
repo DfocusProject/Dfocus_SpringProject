@@ -4,6 +4,9 @@ import com.skuniv.dfocus_project.CustomUserDetails;
 import com.skuniv.dfocus_project.dto.EmpDto;
 import com.skuniv.dfocus_project.dto.home.AnnualLeaveDto;
 import com.skuniv.dfocus_project.dto.home.CommuteDto;
+import com.skuniv.dfocus_project.dto.home.ToDoDto.Admin;
+import com.skuniv.dfocus_project.dto.home.ToDoDto.Leader;
+import com.skuniv.dfocus_project.dto.home.ToDoDto.User;
 import com.skuniv.dfocus_project.service.EmpService;
 import com.skuniv.dfocus_project.service.HomeService;
 import jakarta.servlet.http.HttpSession;
@@ -28,10 +31,16 @@ public class HomeController {
         AnnualLeaveDto annualLeaveDto = homeService.getAnnualLeaveRecord(userDetails.getUsername());
         List<Double> weeklyWorkedHours = homeService.getWeeklyWorkedHours(userDetails.getUsername());
         EmpDto empInfo = empService.getEmpInfo(userDetails.getUsername());
+        User user = homeService.getUserToDoInfo(userDetails.getUsername());
+        Admin admin = homeService.getAdminToDoInfo(userDetails.getUsername());
+        Leader leader = homeService.getLeaderToDoInfo(userDetails.getUsername());
         model.addAttribute("commuteDto", commuteDto);
         model.addAttribute("annualLeaveDto", annualLeaveDto);
         model.addAttribute("weeklyWorkedHours", weeklyWorkedHours);
         model.addAttribute("empInfo", empInfo);
+        model.addAttribute("user", user);
+        model.addAttribute("admin", admin);
+        model.addAttribute("leader", leader);
         return "home";
     }
     @PostMapping("/clearSearchSession")

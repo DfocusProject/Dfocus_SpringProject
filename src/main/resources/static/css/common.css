@@ -5,6 +5,7 @@
     margin: 0;
     padding: 0;
     user-select: none;
+    white-space: nowrap;
 }
 
 body, button, input, select, textarea {
@@ -71,20 +72,21 @@ main {
  * 🔷 사이드바
  **************************************/
 .sidebar {
-    /*position: fixed;*/
     top: 60px;
     left: 0;
-    /*width: 200px;*/
     height: 100%;
-    background-color: #2b2f33;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    padding-block: 8px;
+    backdrop-filter: blur(10px);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.06);
     z-index: 900;
     white-space: nowrap;
+    border-right: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .sidebar-header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    padding-top: 20px;
 }
 
 .sidebar-logo {
@@ -93,57 +95,89 @@ main {
 
 .sidebar a,
 .sidebar .dropdown-btn {
-    padding: 8px 35px 8px 20px;
+    padding: 14px 40px 14px 24px;
     text-decoration: none;
-    font-size: 16px;
-    color: #fff;
+    font-size: 15px;
+    color: #4a5568;
     display: block;
     border: none;
     background: none;
     text-align: left;
     cursor: pointer;
     outline: none;
-    transition: 0.3s;
+    transition: all 0.2s ease;
     position: relative;
     font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+    font-weight: 500;
+    margin: 0px 12px;
+    border-radius: 8px;
+    border-bottom: 1px solid rgba(74, 144, 226, 0.2);
 }
 
 .sidebar a:hover,
 .sidebar .dropdown-btn:hover {
-    color: #a9cfe2;
+    background: rgba(74, 144, 226, 0.08);
+    color: #4a90e2;
+    transform: translateX(2px);
 }
 
 .active-menu {
-    background-color: #1e1f22;
-    color: #a9cfe2 !important;
-    border-radius: 4px;
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.12) 0%, rgba(74, 144, 226, 0.08) 100%);
+    color: #4a90e2 !important;
+    border-radius: 8px;
+    font-weight: 600;
 }
 
 .sidebar .dropdown-btn::after {
     content: "▼";
     position: absolute;
-    right: 12px;
+    right: 16px;
     top: 50%;
     transform: translateY(-50%) rotate(0deg);
-    transition: transform 0.3s ease;
-    font-size: 14px;
-    color: #a9cfe2;
+    transition: transform 0.2s ease;
+    font-size: 11px;
+    color: #a0aec0;
 }
 
 .sidebar .dropdown-btn.active::after {
     transform: translateY(-50%) rotate(180deg);
-    color: #a9cfe2;
+    color: #4a90e2;
 }
 
 .sidebar .dropdown-container {
     display: none;
-    background-color: #242a2f;
-    padding-left: 15px;
+    background: rgba(74, 144, 226, 0.03);
+    padding: 8px 0;
+    margin: 4px 12px 8px 12px;
+    border-radius: 8px;
+    border-left: 2px solid rgba(74, 144, 226, 0.2);
 }
 
 .sidebar .dropdown-container a {
     font-size: 14px;
-    padding: 6px 8px 6px 20px;
+    padding: 10px 16px 10px 32px;
+    margin: 2px 8px;
+    color: #718096;
+    font-weight: 400;
+}
+
+.sidebar .dropdown-container a:hover {
+    background: rgba(74, 144, 226, 0.1);
+    color: #4a90e2;
+}
+
+.menu-item {
+    display: flex;          /* 아이콘과 텍스트를 한 줄에 정렬 */
+    align-items: center;    /* 수직 가운데 정렬 */
+    gap: 8px;               /* 아이콘과 텍스트 사이 간격 */
+    text-decoration: none;  /* 기본 링크 밑줄 제거 */
+    color: #000;            /* 텍스트 색상 */
+}
+
+.menu-icon {
+    width: 16px;            /* 원하는 아이콘 크기 */
+    height: 16px;
+    vertical-align: middle; /* 수직 가운데 정렬 */
 }
 
 /**************************************
@@ -235,4 +269,34 @@ th {
 
 tr:nth-child(even) {
     background-color: #fafafa;
+}
+/* 로그아웃 버튼 스타일 */
+.logout-form {
+    display: block;
+    margin: 4px 12px;
+}
+
+.logout-form button {
+    width: 100%;
+    padding: 14px 24px;
+    background: none;
+    color: rgba(255, 255, 255, 0.85);
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-family: '맑은 고딕', 'Malgun Gothic', sans-serif;
+}
+
+.logout-form button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    transform: translateX(2px);
+}
+
+.logout-form button:active {
+    background: rgba(255, 255, 255, 0.2);
 }

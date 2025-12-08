@@ -10,21 +10,20 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    public SecurityConfig(CustomAccessDeniedHandler customAccessDeniedHandler) {
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // 테스트 용, 실제 서비스 시에는 enable 권장
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 퍼블릭 접근
                         .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**").permitAll()
-
-                        // ADMIN 전용
                         .requestMatchers("/dept/**", "/pattern/**").hasRole("ADMIN")
-
-                        // 로그인한 모든 사용자 접근 가능
-                        .requestMatchers("/att/**").authenticated()
-
-                        // 나머지 요청은 인증 필요
+                        .requestMatchers("/approval/main").hasRole("LEADER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -33,6 +32,9 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/home", true)
                         .failureUrl("/login?error")
                         .permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -46,5 +48,4 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
