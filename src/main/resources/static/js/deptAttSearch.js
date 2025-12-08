@@ -31,13 +31,6 @@ function submitWithAction(url, userDept) {
         return;
     }
 
-    // 본인 부서 확인
-    const invalid = selected.some(emp => emp.empDept !== userDept);
-    if (invalid) {
-        alert("하위 부서 직원은 근태신청할 수 없습니다.");
-        return;
-    }
-
     const empCodes = selected.map(emp => emp.empCode).join(",");
     const workDate = document.querySelector("input[name='workDate']").value;
 
@@ -51,9 +44,6 @@ function submitWithAction(url, userDept) {
 
     window.location.href = finalUrl;
 }
-
-// userDept 서버에서 세팅해야 함
-const userDept = /*[[${loginUser.department}]]*/ 'G1510'; // 예시
 
 // 일반근태신청 → /att/general/search
 document.getElementById("btnGoGeneral").onclick = () =>

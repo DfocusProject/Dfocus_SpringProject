@@ -3,6 +3,59 @@
  * common.css를 먼저 로드한 후 이 파일을 로드하세요
  **************************************/
 
+/* 코드 일괄 입력 컨테이너 */
+.bulk-input-container {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.bulk-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.bulk-code-input {
+    font-size: 14px;
+    width: 90px;
+}
+
+.bulk-code-input:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+.day-select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100px;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.day-select:focus {
+    outline: none;
+    border-color: #4a90e2;
+}
+
+.btn-apply {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 16px;
+    white-space: nowrap;
+}
+
+.btn-apply:hover {
+    background-color: #218838;
+}
+
 /* pattern 페이지 전용 container 오버라이드 */
 .container {
     max-width: none !important;
@@ -22,6 +75,7 @@
 }
 
 .header h2 {
+    white-space: nowrap;
     font-size: 16px;
     margin: 0;
 }
@@ -89,6 +143,7 @@
 }
 
 .header form label {
+    white-space: nowrap;
     font-size: 13px;
 }
 
@@ -107,6 +162,7 @@
     font-size: 13px;
     border-radius: 0;
     margin-right: 10px;
+    white-space: nowrap;
 }
 
 .header form button:hover {

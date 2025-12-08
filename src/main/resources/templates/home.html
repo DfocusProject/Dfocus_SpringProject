@@ -28,126 +28,56 @@
         <!-- 대시보드 -->
         <div class="dashboard-grid">
 
-            <!-- 사원 정보 -->
-            <div class="card task-card">
+            <!--             사원 정보-->
+            <div class="card employee-info-card">
                 <div class="card-header">
                     <div>
+
                         <div class="card-title">사원 정보</div>
-                        <div class="card-subtitle">Today's Tasks</div>
+                        <div class="card-subtitle">Employee Information</div>
+                        <!--                        <div class="card-header-right" style="position: relative;">-->
+                        <!--                            <div class="card-empinfo" style="position: absolute; right: 0;">일반사원/리더/관리자</div>-->
+                        <!--                        </div>-->
                     </div>
                 </div>
 
-                <div class="task-stats">
-                    <div class="task-stat">
-                        <div class="task-stat-circle total">
-                            <span th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
-                        </div>
-                        <div class="task-stat-info">
-                            <span class="task-stat-value"
-                                  th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
-                            <span class="task-stat-label">전체 업무</span>
+                <div class="employee-info-table">
+                    <div class="row">
+                        <div class="label">사번</div>
+                        <div class="value" th:text="${empInfo.empCode}">EMP001</div>
+                    </div>
+                    <div class="row">
+                        <div class="label">이름</div>
+                        <div class="value" th:text="${empInfo.empName}">홍길동</div>
+                    </div>
+                    <div class="row">
+                        <div class="label">부서</div>
+                        <div class="value" th:text="${empInfo.deptName}">개발팀</div>
+                    </div>
+                    <div class="row">
+                        <div class="label">근무 패턴</div>
+                        <div class="value" th:text="${empInfo.workPatternCode}">WP01</div>
+                    </div>
+                    <div class="row">
+                        <div class="label">직급</div>
+                        <div class="value" th:text="${empInfo.positionName}">대리</div>
+                    </div>
+                    <div class="row">
+                        <div class="label">직위</div>
+                        <div class="value" th:text="${empInfo.dutyName}">팀원</div>
+                    </div>
+                    <div class="row">
+                        <div class="label">근무 상태</div>
+                        <div class="value status-value"
+                             th:classappend="${empInfo.status == 'WORK'} ? 'status-work' :
+                         (${empInfo.status == 'OFF'} ? 'status-off' : 'status-leave')"
+                             th:text="${empInfo.status == 'WORK'} ? '🟢 재직' :
+                  (${empInfo.status == 'OFF'} ? '🔴 휴직' : '🟡 관리자')">
+                            근무중
                         </div>
                     </div>
 
-                    <div class="task-stat">
-                        <div class="task-stat-circle completed">
-                            <span th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
-                        </div>
-                        <div class="task-stat-info">
-                            <span class="task-stat-value" th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
-                            <span class="task-stat-label">완료</span>
-                        </div>
-                    </div>
-
-                    <div class="task-stat">
-                        <div class="task-stat-circle pending">
-                            <span th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
-                        </div>
-                        <div class="task-stat-info">
-                            <span class="task-stat-value"
-                                  th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
-                            <span class="task-stat-label">진행중</span>
-                        </div>
-                    </div>
                 </div>
-
-                <div class="task-list">
-                    <div class="task-item"
-                         th:each="task : ${tasks}"
-                         th:classappend="'priority-' + ${task.priority}">
-                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
-
-                        <div class="task-content">
-                            <div class="task-title" th:text="${task.title}">API 문서 작성</div>
-                            <div class="task-meta">
-                                <span class="task-time">⏰ <span th:text="${task.dueTime}">14:00</span></span>
-                                <span th:text="${task.category}">개발</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- 오늘의 알림 -->
-            <div class="card task-card">
-                <div class="card-header">
-                    <div>
-                        <div class="card-title">오늘의 알림</div>
-                        <div class="card-subtitle">Today's Tasks</div>
-                    </div>
-                </div>
-
-                <div class="task-stats">
-                    <div class="task-stat">
-                        <div class="task-stat-circle total">
-                            <span th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
-                        </div>
-                        <div class="task-stat-info">
-                            <span class="task-stat-value"
-                                  th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
-                            <span class="task-stat-label">전체 업무</span>
-                        </div>
-                    </div>
-
-                    <div class="task-stat">
-                        <div class="task-stat-circle completed">
-                            <span th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
-                        </div>
-                        <div class="task-stat-info">
-                            <span class="task-stat-value" th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
-                            <span class="task-stat-label">완료</span>
-                        </div>
-                    </div>
-
-                    <div class="task-stat">
-                        <div class="task-stat-circle pending">
-                            <span th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
-                        </div>
-                        <div class="task-stat-info">
-                            <span class="task-stat-value"
-                                  th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
-                            <span class="task-stat-label">진행중</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="task-list">
-                    <div class="task-item"
-                         th:each="task : ${tasks}"
-                         th:classappend="'priority-' + ${task.priority}">
-                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
-
-                        <div class="task-content">
-                            <div class="task-title" th:text="${task.title}">API 문서 작성</div>
-                            <div class="task-meta">
-                                <span class="task-time">⏰ <span th:text="${task.dueTime}">14:00</span></span>
-                                <span th:text="${task.category}">개발</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
             <!-- 출퇴근 관리 -->
@@ -268,65 +198,156 @@
             </div>
 
             <!-- 오늘의 알림 -->
-            <div class="card task-card">
+            <!--            <div class="card task-card">-->
+            <!--                <div class="card-header">-->
+            <!--                    <div>-->
+            <!--                        <div class="card-title">오늘의 알림</div>-->
+            <!--                        <div class="card-subtitle">Today's Tasks</div>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+
+            <!--                <div class="task-stats">-->
+            <!--                    <div class="task-stat">-->
+            <!--                        <div class="task-stat-circle total">-->
+            <!--                            <span th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>-->
+            <!--                        </div>-->
+            <!--                        <div class="task-stat-info">-->
+            <!--                            <span class="task-stat-value"-->
+            <!--                                  th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>-->
+            <!--                            <span class="task-stat-label">전체 업무</span>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="task-stat">-->
+            <!--                        <div class="task-stat-circle completed">-->
+            <!--                            <span th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>-->
+            <!--                        </div>-->
+            <!--                        <div class="task-stat-info">-->
+            <!--                            <span class="task-stat-value" th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>-->
+            <!--                            <span class="task-stat-label">완료</span>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+
+            <!--                    <div class="task-stat">-->
+            <!--                        <div class="task-stat-circle pending">-->
+            <!--                            <span th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>-->
+            <!--                        </div>-->
+            <!--                        <div class="task-stat-info">-->
+            <!--                            <span class="task-stat-value"-->
+            <!--                                  th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>-->
+            <!--                            <span class="task-stat-label">진행중</span>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+
+            <!--                <div class="task-list">-->
+            <!--                    <div class="task-item"-->
+            <!--                         th:each="task : ${tasks}"-->
+            <!--                         th:classappend="'priority-' + ${task.priority}">-->
+            <!--                        <div class="task-checkbox" onclick="toggleTask(this)"></div>-->
+
+            <!--                        <div class="task-content">-->
+            <!--                            <div class="task-title" th:text="${task.title}">API 문서 작성</div>-->
+            <!--                            <div class="task-meta">-->
+            <!--                                <span class="task-time">⏰ <span th:text="${task.dueTime}">14:00</span></span>-->
+            <!--                                <span th:text="${task.category}">개발</span>-->
+            <!--                            </div>-->
+            <!--                        </div>-->
+            <!--                    </div>-->
+            <!--                </div>-->
+
+            <!--            </div> &lt;!&ndash; task-card end &ndash;&gt;-->
+
+            <!-- 오늘의 할일 -->
+            <div class="card today-task-card">
                 <div class="card-header">
                     <div>
-                        <div class="card-title">오늘의 알림</div>
+                        <div class="card-title">오늘의 할일</div>
                         <div class="card-subtitle">Today's Tasks</div>
                     </div>
                 </div>
 
-                <div class="task-stats">
-                    <div class="task-stat">
-                        <div class="task-stat-circle total">
-                            <span th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
-                        </div>
-                        <div class="task-stat-info">
-                            <span class="task-stat-value"
-                                  th:text="${taskStats != null} ? ${taskStats.total} : '9'">9</span>
-                            <span class="task-stat-label">전체 업무</span>
+                <div class="card-body">
+
+                    <!-- 일반 사원 -->
+                    <div class="todo-section">
+                        <h4 class="todo-role-title">일반사원</h4>
+
+                        <div class="todo-info">
+                            <p>[금일 근태 신청 내역]</p>
+                            <p>오늘 신청한 일반 근태가 <strong>0건</strong> 있습니다</p>
+                            <p>오늘 신청한 기타 근태가 <strong>0건</strong> 있습니다</p>
+
+                            <br/>
+
+                            <p>[금일 결재된 신청서]</p>
+                            <p>오늘 승인된 신청이 <strong>0건</strong> 있습니다</p>
+                            <p>오늘 반려된 신청이 <strong>0건</strong> 있습니다</p>
                         </div>
                     </div>
 
-                    <div class="task-stat">
-                        <div class="task-stat-circle completed">
-                            <span th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
-                        </div>
-                        <div class="task-stat-info">
-                            <span class="task-stat-value" th:text="${taskStats != null} ? ${taskStats.completed} : '4'">4</span>
-                            <span class="task-stat-label">완료</span>
+                    <!-- 리더 (일반사원 + 리더 정보) -->
+                    <div class="todo-section">
+                        <h4 class="todo-role-title">리더</h4>
+
+                        <div class="todo-info">
+                            <!-- 일반사원 정보 포함 -->
+                            <p>[금일 근태 신청 내역]</p>
+                            <p>오늘 신청한 일반 근태가 <strong>0건</strong> 있습니다</p>
+                            <p>오늘 신청한 기타 근태가 <strong>0건</strong> 있습니다</p>
+
+                            <br/>
+
+                            <p>[금일 결재된 신청서]</p>
+                            <p>오늘 승인된 신청이 <strong>0건</strong> 있습니다</p>
+                            <p>오늘 반려된 신청이 <strong>0건</strong> 있습니다</p>
+
+                            <br/>
+
+                            <!-- 리더 고유 정보 -->
+                            <p>[처리할 문서]</p>
+                            <p>결재 대기 중인 문서가 <strong>2건</strong> 있습니다</p>
                         </div>
                     </div>
 
-                    <div class="task-stat">
-                        <div class="task-stat-circle pending">
-                            <span th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
-                        </div>
-                        <div class="task-stat-info">
-                            <span class="task-stat-value"
-                                  th:text="${taskStats != null} ? ${taskStats.pending} : '5'">5</span>
-                            <span class="task-stat-label">진행중</span>
+                    <!-- 관리자 (일반사원 + 관리자 정보) -->
+                    <div class="todo-section">
+                        <h4 class="todo-role-title">관리자</h4>
+
+                        <div class="todo-info">
+                            <!-- 일반사원 정보 포함 -->
+                            <p>[금일 근태 신청 내역]</p>
+                            <p>오늘 신청한 일반 근태가 <strong>0건</strong> 있습니다</p>
+                            <p>오늘 신청한 기타 근태가 <strong>0건</strong> 있습니다</p>
+
+                            <br/>
+
+                            <p>[금일 결재된 신청서]</p>
+                            <p>오늘 승인된 신청이 <strong>0건</strong> 있습니다</p>
+                            <p>오늘 반려된 신청이 <strong>0건</strong> 있습니다</p>
+
+                            <br/>
+
+                            <!-- 관리자 고유 정보 -->
+                            <p>[부서 미배정 사원]</p>
+                            <p>부서 미배정 사원이 <strong>2명</strong> 있습니다</p>
+
+                            <br/>
+
+                            <p>[근태패턴 미지정 사원]</p>
+                            <p>근태패턴이 미지정된 사원이 <strong>2명</strong> 있습니다</p>
+
+                            <br/>
+
+                            <p>[리더 미배정 부서]</p>
+                            <p>리더가 배정되지 않은 부서가 <strong>2곳</strong> 있습니다</p>
                         </div>
                     </div>
+
                 </div>
 
-                <div class="task-list">
-                    <div class="task-item"
-                         th:each="task : ${tasks}"
-                         th:classappend="'priority-' + ${task.priority}">
-                        <div class="task-checkbox" onclick="toggleTask(this)"></div>
+            </div>
 
-                        <div class="task-content">
-                            <div class="task-title" th:text="${task.title}">API 문서 작성</div>
-                            <div class="task-meta">
-                                <span class="task-time">⏰ <span th:text="${task.dueTime}">14:00</span></span>
-                                <span th:text="${task.category}">개발</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div> <!-- task-card end -->
 
         </div> <!-- dashboard-grid end -->
 

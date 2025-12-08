@@ -24,12 +24,6 @@
     color: #7f8c8d;
 }
 
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
 .current-time {
     font-size: 28px;
     font-weight: 600;
@@ -68,11 +62,17 @@ main {
 }
 
 .dashboard-grid {
+    height: calc(100% - 40px);
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     padding: 20px;
+}
+
+/* 연차 현황 카드 */
+.employee-info-card{
+    grid-column: span 1;
 }
 /* 연차 현황 카드 */
 .annual-leave-card {
@@ -88,6 +88,9 @@ main {
 }
 /* 할일 목록 */
 .task-card {
+    grid-column: span 1;
+}
+.today-task-card {
     grid-column: span 1;
 }
 .card {
@@ -118,6 +121,10 @@ main {
     margin-top: 4px;
 }
 
+.card-empinfo {
+    font-size: 14px;
+    color: #2c3e50;
+}
 .progress-container {
     margin-top: 20px;
 }
@@ -356,6 +363,57 @@ main {
     cursor: not-allowed;
 }
 
+.employee-info-table {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px 20px;
+}
+
+.employee-info-table .row {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ececec;
+    padding-bottom: 8px;
+    font-size: 15px;
+}
+
+.employee-info-table .label {
+    font-weight: 600;
+    color: #555;
+}
+
+.employee-info-table .value {
+    font-weight: 500;
+    color: #222;
+}
+
+.status-value {
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* 근무중 */
+.status-work {
+    color: #0a7e30;
+    background: #e8fbe9;
+}
+
+/* 휴무 */
+.status-off {
+    color: #c0392b;
+    background: #fdecea;
+}
+
+/* 휴직 */
+.status-leave {
+    color: #b8860b;
+    background: #fff7df;
+}
+
+
 .task-stats {
     /*display: flex;*/
     gap: 20px;
@@ -484,11 +542,13 @@ main {
 @media (max-width: 1200px) {
     .dashboard-grid {
         grid-template-columns: repeat(2, 1fr);
+        height: calc(100% - 40px);
     }
     .annual-leave-card,
     .weekly-work-card,
     .attendance-card,
-    .task-card {
+    .task-card,
+    .today-task-card {
         grid-column: span 1;
     }
     .task-list {
@@ -509,7 +569,8 @@ main {
     .annual-leave-card,
     .weekly-work-card,
     .attendance-card,
-    .task-card {
+    .task-card,
+    .today-task-card{
         grid-column: span 1;
     }
 

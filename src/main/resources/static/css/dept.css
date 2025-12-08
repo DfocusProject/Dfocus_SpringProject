@@ -25,6 +25,7 @@
     font-size: 18px;
     font-weight: bold;
     color: #212529;
+    white-space: nowrap;
 }
 
 .header h1 {
@@ -338,13 +339,11 @@ main, .container, .dept-detail-container {
 /* 전체 화면 스크롤 제거, 내부 컨테이너만 스크롤 가능 */
 html, body {
     height: 100%;
-    overflow: hidden; /* 화면 전체 스크롤 제거 */
 }
 
 main {
     display: flex;
     height: 100%; /* 화면 높이 꽉 채움 */
-    overflow: hidden; /* main 내부 스크롤 제거 */
 }
 
 .container {

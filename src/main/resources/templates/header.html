@@ -13,8 +13,9 @@
             </span>
             <!-- 로그아웃 버튼 -->
             <form th:action="@{/logout}" method="post" style="display:inline">
-                <button type="submit">로그아웃</button>
+                <button type="submit" onclick="return confirm('로그아웃하시겠습니까?')">로그아웃</button>
             </form>
+
         </div>
         <!-- 로그인 상태가 아닌 경우 -->
         <div class="header-right" th:if="${#authentication == null}">
