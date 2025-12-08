@@ -4,7 +4,11 @@ import com.skuniv.dfocus_project.domain.Time.TimeRange;
 import com.skuniv.dfocus_project.dto.home.AnnualLeaveDto;
 import com.skuniv.dfocus_project.dto.home.CommuteDto;
 import com.skuniv.dfocus_project.dto.home.DurationDto;
+import com.skuniv.dfocus_project.dto.home.ToDoDto.Admin;
+import com.skuniv.dfocus_project.dto.home.ToDoDto.Leader;
+import com.skuniv.dfocus_project.dto.home.ToDoDto.User;
 import com.skuniv.dfocus_project.mapper.AttMapper;
+import com.skuniv.dfocus_project.mapper.DeptMapper;
 import com.skuniv.dfocus_project.mapper.HomeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,7 @@ public class HomeService {
     private final HomeMapper homeMapper;
     private final AttMapper attMapper;
     private final AttService attService;
+    private final DeptMapper deptMapper;
 
     public CommuteDto getLatestCommuteRecord(String username) {
         return homeMapper.getLatestCommuteRecord(username);
@@ -84,4 +89,32 @@ public class HomeService {
         return dailyHours;
     }
 
+    public User getUserToDoInfo(String username) {
+        User requestCounts = attMapper.getTodayRequestCounts(username, LocalDate.now());
+        User approvalCounts = attMapper.getTodayApprovalCounts(username, LocalDate.now());
+
+        User user = new User();
+        user.setEtcCount(requestCounts.getEtcCount());
+        user.setGeneralCount(requestCounts.getGeneralCount());
+        user.setApprovedCount(approvalCounts.getApprovedCount());
+        user.setRejectedCount(approvalCounts.getRejectedCount());
+
+        return user;
+    }
+
+
+    public Admin getAdminToDoInfo(String username) {
+        Admin admin = attMapper.getEmployeeStatusCounts();
+        admin.setNoLeaderDeptList(deptMapper.getNoLeaderDeptList());
+        return admin;
+    }
+
+    public Leader getLeaderToDoInfo(String username) {
+        User user = attMapper.getTodayRequestCounts(username, LocalDate.now());
+        Leader leader = new Leader();
+        leader.setGeneralCount(user.getGeneralCount());
+        leader.setEtcCount(user.getEtcCount());
+        leader.setPendingApprovalCount(attMapper.getPendingApprovalCount(username));
+        return leader;
+    }
 }

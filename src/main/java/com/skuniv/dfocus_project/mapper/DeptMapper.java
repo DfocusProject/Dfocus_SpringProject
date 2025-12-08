@@ -31,4 +31,6 @@ public interface DeptMapper {
     boolean isExistDept(String deptCode);
 
     void deleteDept(String deptCode);
+
+    List<String> getNoLeaderDeptList();
 }

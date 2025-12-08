@@ -27,11 +27,11 @@
         SELECT
         i.emp_code AS empCode,
         i.emp_name AS empName,
-        i.position_code AS position,
+        wp.position_name AS position,
         c.start_time AS workOnTime,
         c.end_time AS workOffTime,
-        i.dept_code AS department,
-        p.shift_code AS planType
+        d.dept_name AS department,
+        ws.shift_name AS planType
         FROM WEBEMPINFO i
         LEFT JOIN WEBEMPPLAN p
         ON p.emp_code = i.emp_code
@@ -39,6 +39,12 @@
         LEFT JOIN WEBCOMMUTERECORD c
         ON c.emp_code = p.emp_code
         AND c.work_date = p.work_date
+        LEFT JOIN WEBPOSITIONINFO wp
+        ON i.position_code = wp.position_code
+        LEFT JOIN WEBDEPTINFO d
+        ON i.dept_code = d.dept_code
+        LEFT JOIN WEBSHIFTTYPE ws
+        ON p.shift_code = ws.shift_code
         WHERE i.dept_code = #{department}   <!-- ← 이 부분을 JOIN 밖으로 이동 -->
 
         <!-- 사번(empCode) 조건 -->

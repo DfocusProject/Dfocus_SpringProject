@@ -110,7 +110,7 @@
                             <td th:text="${row.empName}"></td>
                             <td th:text="${row.position}"></td>
                             <td th:text="${row.department}"></td>
-                            <td th:text="${row.planType + ' / ' + row.realType}"></td>
+                            <td th:text="${row.planType != null ? row.planType + ' / ' + row.realType : '계획 없음'}"></td>
                             <td th:text="${#temporals.format(row.workOnTime, 'HH:mm:ss')}"></td>
                             <td th:text="${#temporals.format(row.workOffTime, 'HH:mm:ss')}"></td>
                             <td th:text="${row.holidayTime}"></td>
