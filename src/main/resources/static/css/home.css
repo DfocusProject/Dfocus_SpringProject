@@ -40,6 +40,8 @@
 main {
     flex: 1 !important;
     width: 100% !important;
+    height: calc(100vh - 60px) !important;
+    overflow: hidden;
 }
 .container {
     display: flex;
@@ -47,7 +49,7 @@ main {
     align-items: center;       /* 가로 가운데 */
     flex: 1 !important;
     width: 100% !important;
-    height: 100%; !important;
+    height: 100% !important;
     overflow-y: auto;          /* 스크롤 가능 */
 }
 
@@ -62,13 +64,14 @@ main {
 }
 
 .dashboard-grid {
-    height: calc(100% - 40px);
+    height: 100%;
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 0.65fr;
     grid-template-rows: auto auto;
     gap: 20px;
     padding: 20px;
+    box-sizing: border-box;
 }
 
 /* 출퇴근 관리 - 첫 번째 줄 첫 번째 */
@@ -532,7 +535,7 @@ main {
 .employee-info-table .label {
     font-weight: 500;
     color: #555;
-    font-size: 13px;
+    font-size: 15px;
 }
 
 .employee-info-table .value {
