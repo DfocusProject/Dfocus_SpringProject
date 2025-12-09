@@ -32,5 +32,5 @@ public interface DeptMapper {
 
     void deleteDept(String deptCode);
 
-    List<String> getNoLeaderDeptList();
+    int getNoLeaderDeptCount();
 }
