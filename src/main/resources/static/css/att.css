@@ -17,6 +17,7 @@ body {
     margin: 10px 20px;
     overflow-x: auto;
     overflow-y: hidden;
+    white-space: normal;
 }
 
 .search-box select,

@@ -60,7 +60,7 @@
               <label>부서 시작일</label>
               <span th:text="${dept.startDate}">2023-01-01</span>
             </div>
-            <div class="info-item">
+            <div class="info-item toggle-row">
               <label>사용 여부</label>
               <form th:action="@{/dept/toggleUseYn}" method="post">
                 <input

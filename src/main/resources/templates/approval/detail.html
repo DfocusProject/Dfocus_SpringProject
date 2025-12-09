@@ -136,8 +136,8 @@
         <!-- 근태기 정보 -->
         <div class="panel">
             <div class="title">근태기 정보</div>
-            <table class="detail-table">
-                <thead>
+            <table class="detail-table commute-table">
+            <thead>
                 <tr>
                     <th>날짜</th>
                     <th>출근시간</th>
@@ -145,9 +145,9 @@
                 </tr>
                 </thead>
                 <tr>
-                    <td th:text="${commuteInfo != null && commuteInfo.workDate != null ? commuteInfo.workDate : '-'}"></td>
-                    <td th:text="${commuteInfo != null && commuteInfo.workOnTime != null ? #temporals.format(commuteInfo.workOnTime, 'HH:mm:ss') : '-'}"></td>
-                    <td th:text="${commuteInfo != null && commuteInfo.workOffTime != null ? #temporals.format(commuteInfo.workOffTime, 'HH:mm:ss') : '-'}"></td>
+                    <td colspan="1" th:text="${commuteInfo != null && commuteInfo.workDate != null ? commuteInfo.workDate : '-'}"></td>
+                    <td colspan="1" th:text="${commuteInfo != null && commuteInfo.workOnTime != null ? #temporals.format(commuteInfo.workOnTime, 'HH:mm:ss') : '-'}"></td>
+                    <td colspan="1" th:text="${commuteInfo != null && commuteInfo.workOffTime != null ? #temporals.format(commuteInfo.workOffTime, 'HH:mm:ss') : '-'}"></td>
                 </tr>
             </table>
         </div>
