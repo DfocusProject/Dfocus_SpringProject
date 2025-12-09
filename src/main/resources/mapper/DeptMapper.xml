@@ -117,8 +117,9 @@
         DELETE FROM webdeptinfo
         WHERE dept_code = #{deptCode}
     </delete>
-    <select id="getNoLeaderDeptList" resultType="string">
-        SELECT dept_name
+
+    <select id="getNoLeaderDeptCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS no_leader_count
         FROM webdeptinfo
         WHERE dept_leader IS NULL OR dept_leader = '';
     </select>

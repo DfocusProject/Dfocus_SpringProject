@@ -24,7 +24,7 @@ body {
 
 main {
     display: flex;
-    height: calc(100% - 80px);
+    height: calc(100% - 120px);
 }
 
 /**************************************
@@ -123,7 +123,7 @@ main {
  * 🔷 사이드바
  **************************************/
 .sidebar {
-    top: 60px;
+    top: 100px;
     left: 0;
     height: 100%;
     padding-block: 8px;

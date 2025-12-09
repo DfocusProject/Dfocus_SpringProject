@@ -3,10 +3,11 @@
         <div class="header-left">
             <h2>
                 <a href="/home">
-                    <img src="/images/logo.png" alt="회사 로고" class="sidebar-logo" />
+                    <img src="/images/logo-header.png" alt="회사 로고" class="sidebar-logo" />
                 </a>
             </h2>
         </div>
+
         <div class="header-right" th:if="${#authentication != null}">
             <span class="user-info">
                 <span th:text="${#authentication.principal.empName + ' (' + #authentication.principal.username + ')님'}"></span>

@@ -94,7 +94,7 @@
                 <div class="time-display">
                     <div class="status-item">
                         <div class="status-label">근무시간</div>
-                        <div class="status-value" th:text="${workHours != null} ? ${workHours} : '--:--'">--:--</div>
+                        <div class="status-value" th:text="${workHours}">--:--</div>
                     </div>
                 </div>
                 <div class="attendance-status">
@@ -273,48 +273,69 @@
                     <!-- 일반사원 (ROLE_USER) -->
                     <div class="todo-section" sec:authorize="hasRole('USER')">
                         <div class="todo-info">
-                            <p>[금일 근태 신청 내역]</p>
-                            <p>오늘 신청한 일반 근태가 <strong th:text="${user.generalCount}">0</strong>건 있습니다</p>
-                            <p>오늘 신청한 기타 근태가 <strong th:text="${user.etcCount}">0</strong>건 있습니다</p>
-
-                            <br/>
-
-                            <p>[금일 결재된 신청서]</p>
-                            <p>오늘 승인된 신청이 <strong th:text="${user.approvedCount}">0</strong>건 있습니다</p>
-                            <p>오늘 반려된 신청이 <strong th:text="${user.rejectedCount}">0</strong>건 있습니다</p>
+                            <div class="todo-item">
+                                <div class="todo-item-title">금일 근태 신청 내역</div>
+                                <div class="todo-item-content">
+                                    일반 근태 <strong th:text="${user.generalCount}">0</strong>건
+                                </div>
+                                <div class="todo-item-content">
+                                    기타 근태 <strong th:text="${user.etcCount}">0</strong>건
+                                </div>
+                            </div>
+                            <div class="todo-item">
+                                <div class="todo-item-title">금일 결재된 신청서</div>
+                                <div class="todo-item-content">
+                                    승인 <strong th:text="${user.approvedCount}">0</strong>건
+                                </div>
+                                <div class="todo-item-content">
+                                    반려 <strong th:text="${user.rejectedCount}">0</strong>건
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- 리더 (ROLE_LEADER) -->
                     <div class="todo-section" sec:authorize="hasRole('LEADER')">
                         <div class="todo-info">
-                            <p>[금일 근태 신청 내역]</p>
-                            <p>오늘 신청한 일반 근태가 <strong th:text="${leader.generalCount}">0</strong>건 있습니다</p>
-                            <p>오늘 신청한 기타 근태가 <strong th:text="${leader.etcCount}">0</strong>건 있습니다</p>
-
-                            <br/>
-                            <!-- 리더 고유 정보 -->
-                            <p>[처리할 문서]</p>
-                            <p>결재 대기 중인 문서가 <strong th:text="${leader.pendingApprovalCount}">0</strong>건 있습니다</p>
+                            <div class="todo-item">
+                                <div class="todo-item-title">금일 근태 신청 내역</div>
+                                <div class="todo-item-content">
+                                    일반 근태 <strong th:text="${leader.generalCount}">0</strong>건
+                                </div>
+                                <div class="todo-item-content">
+                                    기타 근태 <strong th:text="${leader.etcCount}">0</strong>건
+                                </div>
+                            </div>
+                            <div class="todo-item">
+                                <div class="todo-item-title">처리할 문서</div>
+                                <div class="todo-item-content">
+                                    결재 대기 <strong th:text="${leader.pendingApprovalCount}">0</strong>건
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- 관리자 (ROLE_ADMIN) -->
                     <div class="todo-section" sec:authorize="hasRole('ADMIN')">
-
-                        <div class="todo-info">
-                            <p>[부서 미배정 사원]</p>
-                            <p>부서 미배정 사원이 <strong>2명</strong> 있습니다</p>
-
-                            <br/>
-
-                            <p>[근태패턴 미지정 사원]</p>
-                            <p>근태패턴이 미지정된 사원이 <strong>2명</strong> 있습니다</p>
-
-                            <br/>
-
-                            <p>[리더 미배정 부서]</p>
-                            <p>리더가 배정되지 않은 부서가 <strong>2개</strong> 있습니다</p>
+                        <div class="todo-info admin-todo-info">
+                            <div class="todo-item">
+                                <div class="todo-item-title">부서 미배정 사원</div>
+                                <div class="todo-item-content">
+                                    <strong th:text="${admin.noDeptEmployeeCount}">0</strong>명
+                                </div>
+                            </div>
+                            <div class="todo-item">
+                                <div class="todo-item-title">근태패턴 미지정 사원</div>
+                                <div class="todo-item-content">
+                                    <strong th:text="${admin.noPatternEmployeeCount}">0</strong>명
+                                </div>
+                            </div>
+                            <div class="todo-item">
+                                <div class="todo-item-title">리더 미배정 부서</div>
+                                <div class="todo-item-content">
+                                    <strong th:text="${admin.noLeaderDeptCount}">0</strong>개
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -359,6 +380,11 @@
         if (i === todayIndex) {
             bar.classList.add('today-bar');
         }
+        
+        // 주말(토, 일) 스타일 추가
+        if (i === 5 || i === 6) {
+            bar.classList.add('weekend-bar');
+        }
 
         const barValue = document.createElement('span');
         barValue.className = 'bar-value';
@@ -368,11 +394,21 @@
         if (i === todayIndex) {
             barValue.classList.add('today-value'); // ← 요 부분!
         }
+        
+        // 주말 값 스타일
+        if (i === 5 || i === 6) {
+            barValue.classList.add('weekend-value');
+        }
 
         const barLabel = document.createElement('div');
         barLabel.className = 'bar-label';
         barLabel.textContent = weekdays[i];
         if (i === todayIndex) barLabel.classList.add('today');
+        
+        // 주말 라벨 스타일
+        if (i === 5 || i === 6) {
+            barLabel.classList.add('weekend');
+        }
 
         barItem.appendChild(bar);
         barItem.appendChild(barLabel);
