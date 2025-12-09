@@ -365,13 +365,16 @@ table td {
 /* 신청 버튼 영역 — 이미지 스타일 */
 .btn.approval {
     background: #2d7df4 !important;
-    padding: 8px 18px !important;
-    color: #fff;
     color: #fff;
     border-radius: 4px !important;
 }
 .btn.approval:hover {
     background: #1f60c7 !important;
+}
+
+.jb-division-line {
+    border-top: 1px solid #8B8B8B;
+    margin: 15px 0px;
 }
 
 /* 테이블 스크롤 감싸기 */
