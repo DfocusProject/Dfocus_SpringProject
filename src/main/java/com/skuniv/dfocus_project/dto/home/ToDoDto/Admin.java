@@ -8,5 +8,5 @@ import java.util.List;
 public class Admin {
     private int noDeptEmployeeCount;        // 부서 미배정 사원
     private int noPatternEmployeeCount;     // 근태패턴 미지정 사원
-    private List<String> noLeaderDeptList;  // 리더 미배정 부서
+    private int noLeaderDeptCount;  // 리더 미배정 부서
 }

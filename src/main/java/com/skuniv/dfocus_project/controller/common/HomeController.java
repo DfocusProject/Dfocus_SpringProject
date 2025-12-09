@@ -34,6 +34,7 @@ public class HomeController {
         User user = homeService.getUserToDoInfo(userDetails.getUsername());
         Admin admin = homeService.getAdminToDoInfo(userDetails.getUsername());
         Leader leader = homeService.getLeaderToDoInfo(userDetails.getUsername());
+        String workHours = homeService.calculateWorkHours(commuteDto);
         model.addAttribute("commuteDto", commuteDto);
         model.addAttribute("annualLeaveDto", annualLeaveDto);
         model.addAttribute("weeklyWorkedHours", weeklyWorkedHours);
@@ -41,6 +42,7 @@ public class HomeController {
         model.addAttribute("user", user);
         model.addAttribute("admin", admin);
         model.addAttribute("leader", leader);
+        model.addAttribute("workHours", workHours);
         return "home";
     }
     @PostMapping("/clearSearchSession")

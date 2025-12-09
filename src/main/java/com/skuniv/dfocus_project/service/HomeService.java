@@ -105,7 +105,7 @@ public class HomeService {
 
     public Admin getAdminToDoInfo(String username) {
         Admin admin = attMapper.getEmployeeStatusCounts();
-        admin.setNoLeaderDeptList(deptMapper.getNoLeaderDeptList());
+        admin.setNoLeaderDeptCount(deptMapper.getNoLeaderDeptCount());
         return admin;
     }
 
@@ -116,5 +116,30 @@ public class HomeService {
         leader.setEtcCount(user.getEtcCount());
         leader.setPendingApprovalCount(attMapper.getPendingApprovalCount(username));
         return leader;
+    }
+
+    public String calculateWorkHours(CommuteDto commuteDto) {
+        if (commuteDto == null || commuteDto.getWorkOnTime() == null) {
+            return "--:--";
+        }
+
+        LocalTime workOnTime = commuteDto.getWorkOnTime();
+        LocalTime workOffTime = commuteDto.getWorkOffTime();
+        LocalTime now = LocalTime.now();
+
+        LocalTime endTime;
+        if (workOffTime != null) {
+            // 퇴근 시간이 있으면 퇴근 시간까지
+            endTime = workOffTime;
+        } else {
+            // 퇴근 시간이 없으면 현재 시간까지
+            endTime = now;
+        }
+
+        Duration duration = Duration.between(workOnTime, endTime);
+        long hours = duration.toHours();
+        long minutes = duration.toMinutes() % 60;
+
+        return String.format("%02d:%02d", hours, minutes);
     }
 }
