@@ -12,45 +12,62 @@
   <main>
     <div th:replace="~{ sidebar.html::sidebar}"></div>
     <div class="container">
-      <h2>부서 생성</h2>
-      <form th:action="@{/dept/create}" method="post">
-        <label for="deptCode">부서 코드</label>
-        <input type="text" id="deptCode" name="deptCode" required>
+      <div class="create-header">
+        <h2>부서 생성</h2>
+      </div>
+      <form th:action="@{/dept/create}" method="post" class="create-form">
+        <div class="form-group">
+          <label for="deptCode">부서 코드</label>
+          <input type="text" id="deptCode" name="deptCode" required>
+        </div>
 
-        <label for="deptName">부서 이름</label>
-        <input type="text" id="deptName" name="deptName" required>
+        <div class="form-group">
+          <label for="deptName">부서 이름</label>
+          <input type="text" id="deptName" name="deptName" required>
+        </div>
 
-        <label for="parentDept">상위 부서</label>
-        <select id="parentDept" name="parentDeptCode">
-          <option value="">선택</option>
-          <option th:each="dept : ${depts}"
-                  th:value="${dept.deptCode}"
-                  th:text="${dept.deptName}">
-          </option>
-        </select>
+        <div class="form-group">
+          <label for="parentDept">상위 부서</label>
+          <select id="parentDept" name="parentDeptCode">
+            <option value="">선택</option>
+            <option th:each="dept : ${depts}"
+                    th:value="${dept.deptCode}"
+                    th:text="${dept.deptName}">
+            </option>
+          </select>
+        </div>
 
-        <label for="category">카테고리</label>
-        <select id="category" name="deptCategory" required>
-          <option value="">선택</option>
-          <option value="10">CEO</option>
-          <option value="20">COO</option>
-          <option value="21">위원회</option>
-          <option value="30">본부</option>
-          <option value="40">팀</option>
-          <option value="41">부</option>
-          <option value="50">과</option>
-          <option value="60">그룹</option>
-          <option value="70">파트</option>
-        </select>
+        <div class="form-group">
+          <label for="category">카테고리</label>
+          <select id="category" name="deptCategory" required>
+            <option value="">선택</option>
+            <option value="10">CEO</option>
+            <option value="20">COO</option>
+            <option value="21">위원회</option>
+            <option value="30">본부</option>
+            <option value="40">팀</option>
+            <option value="41">부</option>
+            <option value="50">과</option>
+            <option value="60">그룹</option>
+            <option value="70">파트</option>
+          </select>
+        </div>
 
-        <label for="startDate">부서 시작일</label>
-        <input type="date" id="startDate" name="startDate" required>
+        <div class="form-group">
+          <label for="startDate">부서 시작일</label>
+          <input type="date" id="startDate" name="startDate" required>
+        </div>
 
-        <label for= "useYn">사용 여부
-          <input type="checkbox" id="useYn" name="useYn" checked>
-        </label>
+        <div class="form-group checkbox-group">
+          <label for="useYn">
+            <input type="checkbox" id="useYn" name="useYn" checked>
+            <span>사용 여부</span>
+          </label>
+        </div>
 
-        <button type="submit">부서 생성</button>
+        <div class="form-actions">
+          <button type="submit" class="submit-btn">부서 생성</button>
+        </div>
      </form>
     </div>
 
