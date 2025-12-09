@@ -33,8 +33,7 @@ public class AttendanceValidateService {
             endMinutes += 1440;
         }
 
-        long workHours = (endMinutes - startMinutes) / 60;
-
+        double workHours = (endMinutes - startMinutes) / 60.0;
         if (workHours + weeklyWorkHours > 52) {
             return "주 예상 근로 시간이 52시간을 초과합니다";
         }

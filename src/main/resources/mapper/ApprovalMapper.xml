@@ -133,25 +133,29 @@
             s.is_today_request AS isTodayRequest,
             s.start_date AS startDate,
             s.end_date AS endDate,
-            s.new_shift_code AS reqDetailType
+            st.shift_name AS reqDetailType
 
         FROM webattrequest wr
                  LEFT JOIN webattrequestspecial s
                            ON wr.request_id = s.request_id
+                 LEFT JOIN webshifttype st
+                           ON s.new_shift_code = st.shift_code
         WHERE wr.request_id = #{requestId}
     </select>
 
     <select id="getApprovalInfo" resultType="com.skuniv.dfocus_project.dto.approval.ApprovalInfoDto">
         SELECT
             wal.sequence_no          AS sequenceNo,
-            we.dept_code             AS department,
-            we.duty_code             AS duty,
+            d.dept_name              AS department,
+            di.duty_name             AS duty,
             we.emp_name              AS name,
             wal.emp_response         AS empCode,
             wal.approval_status      AS result,
             wal.approval_time        AS date
         FROM webapprovalline wal
             LEFT JOIN webempinfo we ON wal.emp_response = we.emp_code
+            LEFT JOIN WEBDEPTINFO d ON we.dept_code = d.dept_code
+            LEFT JOIN WEBDUTYINFO di ON we.duty_code = di.duty_code
         WHERE wal.request_id = #{requestId}
         ORDER BY wal.sequence_no
     </select>
