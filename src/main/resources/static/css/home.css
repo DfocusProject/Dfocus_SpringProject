@@ -218,7 +218,6 @@ main {
     text-align: center;
 }
 
-/* 관리자 섹션의 todo-item은 가로로 길게 */
 .admin-todo-info .todo-item {
     text-align: left;
     display: flex;
@@ -240,7 +239,6 @@ main {
     font-weight: 600;
 }
 
-/* 관리자 섹션의 todo-item-title은 margin 제거 */
 .admin-todo-info .todo-item-title {
     margin-bottom: 0;
     margin-right: 20px;
@@ -261,7 +259,6 @@ main {
     margin-bottom: 0;
 }
 
-/* 관리자 섹션의 todo-item-content는 flex로 배치 */
 .admin-todo-info .todo-item-content {
     margin-bottom: 0;
     margin-left: auto;
