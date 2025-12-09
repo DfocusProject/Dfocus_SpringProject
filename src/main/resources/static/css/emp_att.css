@@ -43,6 +43,7 @@ table td {
     margin-bottom: 10px;
     overflow-x: auto;
     overflow-y: hidden;
+    white-space: normal;
 }
 
 .search-box label {
@@ -246,10 +247,8 @@ table td {
  * 📄 상세 테이블
  *******************************************/
 .detail-table {
-    width: 100%;
-    border-collapse: collapse;
     margin-bottom: 10px;
-    table-layout: fixed;
+    /*table-layout: fixed;*/
     text-align: center;
 }
 
@@ -464,4 +463,17 @@ table td {
         margin-left: 0;
         justify-content: flex-end;
     }
+}
+
+/* 근태기 테이블 전용: 3개 컬럼 동일한 너비 설정 */
+.commute-table {
+    table-layout: fixed;  /* 고정 레이아웃 */
+    width: 100%;         /* 전체 너비 꽉 차게 */
+}
+
+.commute-table th,
+.commute-table td {
+    width: 33.33%;       /* 3열이므로 동일한 비율 */
+    white-space: nowrap; /* 글자 줄바꿈 방지 → 더 깔끔해짐 */
+    text-align: center;  /* 가운데 정렬 (원하면 제거) */
 }

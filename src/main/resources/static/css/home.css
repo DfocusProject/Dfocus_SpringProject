@@ -1,3 +1,6 @@
+* {
+    white-space: nowrap;
+}
 .header {
     background: white;
     border-bottom: 1px solid #e1e4e8;
