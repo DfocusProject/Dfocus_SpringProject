@@ -65,18 +65,6 @@ function hasCheckedEmployees() {
     return document.querySelectorAll('input[name="empCodes"]:checked').length > 0;
 }
 
-// 부서에서 삭제, 리더로 지정 (form전에 검사)
-document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn => {
-    if (btn.value === "delete" || btn.value === "setLeader") {
-        btn.addEventListener('click', (e) => {
-            if (!hasCheckedEmployees()) {
-                e.preventDefault();
-                alert("먼저 사원을 선택해주세요.");
-            }
-        });
-    }
-});
-
 document.querySelectorAll('button[type="submit"][name="action"]').forEach(btn => {
 
     btn.addEventListener('click', (e) => {

@@ -78,6 +78,7 @@
     white-space: nowrap;
     font-size: 16px;
     margin: 0;
+    font-weight: 600;
 }
 .button-group {
     display: flex;
